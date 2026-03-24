@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberEscudo Aventuras — Segurança Online para Crianças 🇧🇷</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --verde:#009739;--amarelo:#FFDF00;--azul:#002776;--branco:#FFFFFF;
+  --coral:#FF6B6B;--teal:#4ECDC4;--sun:#FFE66D;--purple:#A78BFA;
+  --green:#6BCB77;--blue:#4D96FF;--pink:#FF85A1;--orange:#FF9F43;
+  --dark:#2D3436;--light:#FFF9F0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Quicksand',sans-serif;background:#0a1628;overflow:hidden;height:100vh;width:100vw;display:flex;align-items:center;justify-content:center;user-select:none;}
+h1,h2,h3,.title-text{font-family:'Baloo 2',cursive;}
+
+.book-container{width:100vw;height:100vh;position:relative;overflow:hidden;}
+.page{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 30px;opacity:0;pointer-events:none;transition:opacity .6s ease,transform .6s ease;transform:scale(.95);overflow-y:auto;}
+.page.active{opacity:1;pointer-events:auto;transform:scale(1);}
+.page.exit-left{opacity:0;transform:translateX(-100%) scale(.9);}
+.page.exit-right{opacity:0;transform:translateX(100%) scale(.9);}
+
+.nav-bar{position:fixed;bottom:0;left:0;right:0;height:70px;background:rgba(0,20,50,.6);backdrop-filter:blur(15px);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:1000;border-top:2px solid rgba(0,151,57,.3);}
+.nav-btn{background:none;border:none;cursor:pointer;font-size:40px;color:white;transition:all .3s;padding:8px 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.nav-btn:hover{background:rgba(255,255,255,.15);transform:scale(1.15);}
+.nav-btn:active{transform:scale(.95);}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.page-indicator{color:white;font-family:'Baloo 2',cursive;font-size:18px;background:rgba(0,151,57,.25);padding:6px 18px;border-radius:20px;border:1px solid rgba(0,151,57,.3);}
+.progress-bar{position:fixed;top:0;left:0;height:5px;background:linear-gradient(90deg,var(--verde),var(--amarelo),var(--verde));z-index:1001;transition:width .4s ease;border-radius:0 3px 3px 0;}
+
+.score-display{position:fixed;top:12px;right:16px;z-index:1001;background:rgba(0,20,50,.5);backdrop-filter:blur(10px);padding:8px 18px;border-radius:25px;color:var(--amarelo);font-family:'Baloo 2',cursive;font-size:18px;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,223,0,.3);}
+.toc-btn{position:fixed;top:12px;left:16px;z-index:1001;background:rgba(0,20,50,.5);backdrop-filter:blur(10px);border:2px solid rgba(0,151,57,.3);color:white;font-family:'Baloo 2',cursive;font-size:16px;padding:8px 18px;border-radius:25px;cursor:pointer;transition:all .3s;}
+.toc-btn:hover{background:rgba(0,151,57,.25);transform:scale(1.05);}
+
+.toc-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:2000;display:none;align-items:center;justify-content:center;}
+.toc-modal.show{display:flex;}
+.toc-content{background:var(--light);border-radius:24px;padding:30px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;position:relative;border:3px solid var(--verde);}
+.toc-content h2{font-size:28px;color:var(--dark);margin-bottom:16px;text-align:center;}
+.toc-chapter{padding:10px 16px;margin:4px 0;border-radius:12px;cursor:pointer;font-family:'Baloo 2',cursive;font-size:16px;transition:all .2s;display:flex;align-items:center;gap:10px;}
+.toc-chapter:hover{background:rgba(0,151,57,.1);transform:translateX(5px);}
+.toc-chapter .ch-icon{font-size:24px;}
+.toc-close{position:absolute;top:12px;right:16px;font-size:28px;cursor:pointer;color:var(--dark);background:none;border:none;}
+
+.page-content{max-width:700px;width:100%;text-align:center;position:relative;}
+.page-title{font-size:clamp(26px,5vw,42px);margin-bottom:14px;line-height:1.2;}
+.page-subtitle{font-size:clamp(16px,3vw,22px);margin-bottom:12px;opacity:.85;font-weight:600;}
+.page-text{font-size:clamp(15px,2.8vw,21px);line-height:1.65;margin-bottom:16px;font-weight:500;}
+.page-tip{background:rgba(255,255,255,.15);border-radius:20px;padding:16px 24px;font-size:clamp(14px,2.5vw,19px);margin:12px 0;border:2px dashed rgba(255,255,255,.3);line-height:1.5;font-weight:600;}
+.page-tip .tip-icon{font-size:28px;display:block;margin-bottom:4px;}
+
+.illust{width:180px;height:180px;margin:0 auto 16px;position:relative;display:flex;align-items:center;justify-content:center;}
+.illust svg{width:100%;height:100%;filter:drop-shadow(0 8px 20px rgba(0,0,0,.15));}
+
+.quiz-container{width:100%;max-width:500px;margin:0 auto;}
+.quiz-option{background:rgba(255,255,255,.14);border:3px solid rgba(255,255,255,.2);border-radius:18px;padding:13px 20px;margin:9px 0;cursor:pointer;font-size:clamp(14px,2.4vw,19px);font-family:'Quicksand',sans-serif;font-weight:600;color:white;transition:all .3s;display:flex;align-items:center;gap:12px;text-align:left;}
+.quiz-option:hover{background:rgba(255,255,255,.25);transform:translateX(8px);border-color:rgba(255,255,255,.4);}
+.quiz-option.correct{background:rgba(0,151,57,.45);border-color:var(--verde);animation:popCorrect .5s ease;}
+.quiz-option.wrong{background:rgba(255,107,107,.4);border-color:var(--coral);animation:shake .5s ease;}
+.quiz-option .opt-letter{background:rgba(255,255,255,.18);width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:17px;flex-shrink:0;}
+.quiz-result{font-size:20px;margin-top:14px;font-family:'Baloo 2',cursive;opacity:0;transition:opacity .3s;}
+.quiz-result.show{opacity:1;}
+
+.tap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;max-width:360px;margin:0 auto;}
+.tap-card{aspect-ratio:1;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all .3s;border:3px solid rgba(255,255,255,.18);background:rgba(255,255,255,.1);padding:6px;}
+.tap-card:hover{transform:scale(1.06);}
+.tap-card.safe{background:rgba(0,151,57,.45);border-color:var(--verde);animation:popCorrect .4s ease;}
+.tap-card.danger{background:rgba(255,107,107,.45);border-color:var(--coral);animation:shake .4s ease;}
+.tap-card .tap-label{font-size:11px;font-weight:700;line-height:1.2;margin-top:4px;color:white;}
+
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.3)}50%{transform:scale(1.08)}70%{transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+@keyframes starBurst{0%{opacity:1;transform:scale(0) rotate(0)}100%{opacity:0;transform:scale(2) rotate(180deg)}}
+@keyframes rainbowBg{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+@keyframes samba{0%,100%{transform:rotate(0) scale(1)}25%{transform:rotate(-3deg) scale(1.02)}75%{transform:rotate(3deg) scale(1.02)}}
+
+.float{animation:float 3s ease-in-out infinite;}
+.pulse{animation:pulse 2s ease-in-out infinite;}
+.wiggle{animation:wiggle 1s ease-in-out infinite;}
+.slide-up{animation:slideUp .8s ease both;}
+.bounce-in{animation:bounceIn .8s ease both;}
+.samba{animation:samba 1.5s ease-in-out infinite;}
+
+.star-burst{position:fixed;pointer-events:none;z-index:3000;font-size:30px;animation:starBurst .8s ease forwards;}
+
+.badge-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:linear-gradient(135deg,var(--amarelo),var(--orange));border-radius:24px;padding:30px 40px;z-index:3000;text-align:center;transition:transform .5s cubic-bezier(.68,-.55,.27,1.55);box-shadow:0 20px 60px rgba(0,0,0,.4);border:3px solid var(--verde);}
+.badge-popup.show{transform:translate(-50%,-50%) scale(1);}
+.badge-popup h3{font-family:'Baloo 2',cursive;font-size:26px;color:var(--dark);}
+.badge-popup p{font-size:17px;color:var(--dark);opacity:.8;margin-top:4px;}
+.badge-popup .badge-icon{font-size:56px;display:block;margin-bottom:8px;}
+.badge-close{margin-top:14px;padding:8px 28px;border:none;border-radius:14px;background:var(--verde);color:white;font-family:'Baloo 2',cursive;font-size:18px;cursor:pointer;transition:all .2s;}
+.badge-close:hover{transform:scale(1.06);}
+
+/* Temas brasileiros */
+.theme-brasil{background:linear-gradient(135deg,#002776,#009739);}
+.theme-verde{background:linear-gradient(135deg,#009739,#00b34a);}
+.theme-amarelo{background:linear-gradient(135deg,#e6a800,#FFD700);color:var(--dark);text-shadow:none;}
+.theme-amarelo .quiz-option,.theme-amarelo .tap-card{color:var(--dark);}
+.theme-azul{background:linear-gradient(135deg,#002776,#0040a0);}
+.theme-tropica{background:linear-gradient(135deg,#FF6B6B,#FFD700,#009739);background-size:400% 400%;animation:rainbowBg 6s ease infinite;}
+.theme-mata{background:linear-gradient(135deg,#1a5c0a,#2d8a1e,#4CAF50);}
+.theme-praia{background:linear-gradient(135deg,#0077b6,#00b4d8,#90e0ef);}
+.theme-sertao{background:linear-gradient(135deg,#b8860b,#d2691e,#f4a460);}
+.theme-coral{background:linear-gradient(135deg,#FF6B6B,#ee5a24);}
+.theme-noite{background:linear-gradient(135deg,#0c0c1d,#1a1a3e,#2d2b55);}
+.theme-roxo{background:linear-gradient(135deg,#A78BFA,#6c5ce7);}
+.theme-rosa{background:linear-gradient(135deg,#FF85A1,#fd79a8);}
+.theme-laranja{background:linear-gradient(135deg,#FF9F43,#e17055);}
+.theme-teal{background:linear-gradient(135deg,#4ECDC4,#0abde3);}
+.theme-festa{background:linear-gradient(135deg,#6BCB77,#FFD700,#0077b6);background-size:300% 300%;animation:rainbowBg 5s ease infinite;}
+
+.page{color:white;text-shadow:0 1px 3px rgba(0,0,0,.2);}
+.page.theme-amarelo{color:var(--dark);text-shadow:none;}
+
+.deco{position:absolute;pointer-events:none;opacity:.12;font-size:36px;}
+
+@media(max-width:600px){
+  .page{padding:55px 18px 90px;}
+  .illust{width:140px;height:140px;}
+  .nav-bar{height:60px;}
+  .tap-grid{grid-template-columns:repeat(2,1fr);max-width:280px;}
+}
+@media(min-width:1200px){
+  .page-content{max-width:800px;}
+  .illust{width:220px;height:220px;}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="score-display" id="scoreDisplay">⭐ <span id="starCount">0</span></div>
+<button class="toc-btn" id="tocBtn" onclick="toggleTOC()">📖 Capítulos</button>
+
+<div class="toc-modal" id="tocModal">
+  <div class="toc-content" id="tocContent">
+    <button class="toc-close" onclick="toggleTOC()">✕</button>
+    <h2>📖 Índice</h2>
+    <div id="tocList"></div>
+  </div>
+</div>
+
+<div class="badge-popup" id="badgePopup">
+  <span class="badge-icon" id="badgeIcon">🏆</span>
+  <h3 id="badgeTitle">Conquista Desbloqueada!</h3>
+  <p id="badgeDesc">Você é demais!</p>
+  <button class="badge-close" onclick="closeBadge()">Oba! 🎉</button>
+</div>
+
+<div class="book-container" id="bookContainer"></div>
+
+<nav class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="prevPage()">◀</button>
+  <span class="page-indicator" id="pageIndicator">1 / 100</span>
+  <button class="nav-btn" id="nextBtn" onclick="nextPage()">▶</button>
+</nav>
+
+<div id="certKidsOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:3000;display:none;align-items:center;justify-content:center;">
+<div style="background:white;border-radius:24px;max-width:680px;width:94%;max-height:92vh;overflow-y:auto;position:relative;">
+<button onclick="closeCertKids()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:26px;cursor:pointer;color:#666;z-index:5;">✕</button>
+<div id="certKidsPrint" style="background:white;padding:36px;text-align:center;position:relative;overflow:hidden;border-radius:24px;">
+<div style="position:absolute;inset:10px;border:4px solid #009739;border-radius:16px;pointer-events:none;"></div>
+<div style="position:absolute;inset:18px;border:2px dashed #FFD700;border-radius:12px;pointer-events:none;"></div>
+<div style="position:relative;z-index:2;">
+<div style="font-size:50px;margin-bottom:4px;">🛡️🇧🇷</div>
+<h1 style="font-family:'Baloo 2',cursive;font-size:30px;font-weight:800;color:#009739;margin-bottom:0;">CyberEscudo</h1>
+<p style="font-family:'Quicksand',sans-serif;font-size:12px;letter-spacing:3px;color:#888;text-transform:uppercase;margin-bottom:18px;">Aventuras · Segurança Online para Crianças 🇧🇷</p>
+<p style="font-family:'Quicksand',sans-serif;font-size:14px;color:#666;margin-bottom:6px;">Este certificado confirma que</p>
+<h2 id="certKidsName" style="font-family:'Baloo 2',cursive;font-size:clamp(24px,5vw,38px);font-weight:800;color:#002776;margin:8px 0;padding:10px 0;border-top:3px solid #FFD700;border-bottom:3px solid #FFD700;">Nome</h2>
+<p style="font-family:'Quicksand',sans-serif;font-size:15px;color:#444;line-height:1.7;max-width:460px;margin:14px auto;">completou com sucesso o livro <strong>CyberEscudo Aventuras</strong> e agora é um <strong style="color:#009739;">CyberHerói Brasileiro</strong> certificado! 🦸‍♂️⭐</p>
+<div style="font-size:40px;margin:14px 0;">🏆⭐🛡️</div>
+<div style="display:flex;justify-content:center;gap:36px;margin:16px 0;flex-wrap:wrap;">
+<div><p style="font-family:'Baloo 2',cursive;font-weight:700;font-size:14px;color:#009739;">CyberHerói 🦸</p><p style="font-size:11px;color:#888;">Nível Conquistado</p></div>
+<div><p id="certKidsDate" style="font-family:'Baloo 2',cursive;font-weight:700;font-size:14px;color:#009739;">Data</p><p style="font-size:11px;color:#888;">Data de Conclusão</p></div>
+</div>
+<div style="margin-top:12px;padding-top:12px;border-top:2px solid #eee;">
+<p style="font-size:11px;color:#888;">Criado por <strong style="color:#002776;">Joas Antonio dos Santos</strong> · Fundador Red Team Leaders</p>
+<p style="font-size:10px;color:#aaa;margin-top:2px;">joasantonio.com</p>
+</div>
+</div>
+</div>
+<div style="text-align:center;padding:10px 20px 18px;">
+<button onclick="printCertKids()" style="padding:12px 34px;border:none;border-radius:14px;background:#009739;color:white;font-family:'Baloo 2',cursive;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(0,151,57,.3);">🖨️ Imprimir / Salvar PDF</button>
+</div>
+</div>
+</div>
+
+<script>
+let currentPage=0,stars=0,answeredQuizzes=new Set(),earnedBadges=new Set();
+
+const SVG={
+shield:`<svg viewBox="0 0 200 200"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#009739"/><stop offset="100%" stop-color="#FFD700"/></linearGradient></defs><path d="M100 20 L170 55 L170 110 C170 150 140 180 100 195 C60 180 30 150 30 110 L30 55 Z" fill="url(#sg)" stroke="white" stroke-width="4"/><circle cx="100" cy="100" r="28" fill="white" opacity=".25"/><text x="100" y="110" text-anchor="middle" font-size="34" fill="white">🛡️</text><path d="M80 130 Q100 150 120 130" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+stranger:`<svg viewBox="0 0 200 200"><circle cx="100" cy="65" r="38" fill="#636e72"/><rect x="65" y="105" width="70" height="65" rx="10" fill="#636e72"/><circle cx="85" cy="60" r="6" fill="white"/><circle cx="115" cy="60" r="6" fill="white"/><text x="100" y="85" text-anchor="middle" font-size="18" fill="white">?</text><text x="100" y="45" text-anchor="middle" font-size="28">🎭</text></svg>`,
+lock:`<svg viewBox="0 0 200 200"><rect x="50" y="90" width="100" height="75" rx="12" fill="#FFD700" stroke="#b8860b" stroke-width="3"/><path d="M70 90 V65 C70 40 130 40 130 65 V90" fill="none" stroke="#b8860b" stroke-width="8" stroke-linecap="round"/><circle cx="100" cy="122" r="12" fill="#b8860b"/><rect x="96" y="122" width="8" height="18" rx="3" fill="#b8860b"/></svg>`,
+heart:`<svg viewBox="0 0 200 200"><path d="M100 170 C30 120 10 80 40 50 C60 30 90 40 100 65 C110 40 140 30 160 50 C190 80 170 120 100 170Z" fill="#FF85A1" stroke="white" stroke-width="3"/><text x="100" y="112" text-anchor="middle" font-size="38">💚</text></svg>`,
+warning:`<svg viewBox="0 0 200 200"><path d="M100 30 L180 170 L20 170 Z" fill="#FFD700" stroke="#b8860b" stroke-width="3"/><text x="100" y="130" text-anchor="middle" font-size="48" fill="#b8860b">!</text></svg>`,
+phone:`<svg viewBox="0 0 200 200"><rect x="60" y="20" width="80" height="160" rx="14" fill="#2D3436" stroke="white" stroke-width="3"/><rect x="68" y="40" width="64" height="110" rx="4" fill="#002776"/><circle cx="100" cy="165" r="8" fill="#636e72"/><text x="100" y="100" text-anchor="middle" font-size="34">📱</text></svg>`,
+family:`<svg viewBox="0 0 200 200"><circle cx="70" cy="58" r="22" fill="#002776"/><rect x="52" y="82" width="36" height="50" rx="8" fill="#002776"/><circle cx="130" cy="58" r="22" fill="#009739"/><rect x="112" y="82" width="36" height="50" rx="8" fill="#009739"/><circle cx="100" cy="90" r="16" fill="#FFD700"/><rect x="88" y="108" width="24" height="35" rx="6" fill="#FFD700"/><text x="70" y="65" text-anchor="middle" font-size="16">😊</text><text x="130" y="65" text-anchor="middle" font-size="16">😊</text><text x="100" y="97" text-anchor="middle" font-size="12">😄</text></svg>`,
+globe:`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="65" fill="#002776" stroke="white" stroke-width="3"/><ellipse cx="100" cy="100" rx="32" ry="65" fill="none" stroke="white" stroke-width="2" opacity=".35"/><line x1="35" y1="100" x2="165" y2="100" stroke="white" stroke-width="2" opacity=".35"/><text x="100" y="110" text-anchor="middle" font-size="34">🌎</text></svg>`,
+robot:`<svg viewBox="0 0 200 200"><rect x="55" y="60" width="90" height="85" rx="14" fill="#636e72" stroke="white" stroke-width="3"/><rect x="42" y="88" width="14" height="28" rx="5" fill="#636e72"/><rect x="144" y="88" width="14" height="28" rx="5" fill="#636e72"/><circle cx="82" cy="92" r="11" fill="#FF6B6B"/><circle cx="118" cy="92" r="11" fill="#FF6B6B"/><rect x="78" y="118" width="44" height="8" rx="4" fill="white" opacity=".4"/><line x1="100" y1="36" x2="100" y2="60" stroke="#636e72" stroke-width="4"/><circle cx="100" cy="30" r="8" fill="#FFD700"/></svg>`,
+book:`<svg viewBox="0 0 200 200"><path d="M30 40 C30 40 100 30 100 50 L100 170 C100 150 30 160 30 160Z" fill="#009739" stroke="white" stroke-width="2"/><path d="M170 40 C170 40 100 30 100 50 L100 170 C100 150 170 160 170 160Z" fill="#002776" stroke="white" stroke-width="2"/><line x1="50" y1="70" x2="85" y2="65" stroke="white" stroke-width="2" opacity=".4"/><line x1="50" y1="90" x2="85" y2="85" stroke="white" stroke-width="2" opacity=".4"/><line x1="115" y1="65" x2="150" y2="70" stroke="white" stroke-width="2" opacity=".4"/></svg>`,
+camera:`<svg viewBox="0 0 200 200"><rect x="35" y="65" width="130" height="85" rx="14" fill="#636e72" stroke="white" stroke-width="3"/><circle cx="100" cy="108" r="26" fill="#2D3436" stroke="white" stroke-width="3"/><circle cx="100" cy="108" r="16" fill="#002776"/><circle cx="107" cy="101" r="5" fill="white" opacity=".4"/><rect x="75" y="55" width="38" height="14" rx="5" fill="#636e72" stroke="white" stroke-width="2"/><circle cx="145" cy="78" r="5" fill="#FF6B6B"/></svg>`,
+map:`<svg viewBox="0 0 200 200"><path d="M40 40 L100 30 L160 40 L160 160 L100 170 L40 160Z" fill="#009739" stroke="white" stroke-width="2"/><line x1="100" y1="30" x2="100" y2="170" stroke="white" stroke-width="2" opacity=".3"/><circle cx="80" cy="90" r="14" fill="#FF6B6B" opacity=".7"/><text x="80" y="96" text-anchor="middle" font-size="14" fill="white">📍</text></svg>`,
+chat:`<svg viewBox="0 0 200 200"><rect x="30" y="40" width="118" height="65" rx="15" fill="white" opacity=".85"/><polygon points="48,105 68,105 53,122" fill="white" opacity=".85"/><circle cx="58" cy="72" r="5" fill="#009739"/><circle cx="82" cy="72" r="5" fill="#009739"/><circle cx="106" cy="72" r="5" fill="#009739"/><rect x="70" y="96" width="108" height="55" rx="15" fill="#009739"/><polygon points="148,151 138,151 153,168" fill="#009739"/><text x="124" y="128" text-anchor="middle" font-size="18" fill="white">Oi! 👋</text></svg>`,
+trophy:`<svg viewBox="0 0 200 200"><rect x="80" y="128" width="40" height="28" rx="3" fill="#b8860b"/><rect x="70" y="152" width="60" height="14" rx="5" fill="#b8860b"/><path d="M60 48 L60 98 C60 128 100 142 100 142 C100 142 140 128 140 98 L140 48 Z" fill="#FFD700" stroke="#b8860b" stroke-width="3"/><path d="M60 62 C40 62 30 82 40 96 C45 104 55 101 60 96" fill="#FFD700" stroke="#b8860b" stroke-width="3"/><path d="M140 62 C160 62 170 82 160 96 C155 104 145 101 140 96" fill="#FFD700" stroke="#b8860b" stroke-width="3"/><text x="100" y="102" text-anchor="middle" font-size="34">⭐</text></svg>`,
+wifi:`<svg viewBox="0 0 200 200"><circle cx="100" cy="148" r="10" fill="white"/><path d="M70 128 C70 112 130 112 130 128" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/><path d="M50 108 C50 82 150 82 150 108" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/><path d="M30 88 C30 52 170 52 170 88" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/></svg>`,
+eye:`<svg viewBox="0 0 200 200"><ellipse cx="100" cy="100" rx="68" ry="42" fill="white" stroke="#002776" stroke-width="3"/><circle cx="100" cy="100" r="24" fill="#002776"/><circle cx="100" cy="100" r="11" fill="#2D3436"/><circle cx="109" cy="93" r="6" fill="white" opacity=".5"/></svg>`,
+gamepad:`<svg viewBox="0 0 200 200"><rect x="30" y="65" width="140" height="75" rx="25" fill="#636e72" stroke="white" stroke-width="3"/><circle cx="70" cy="98" r="14" fill="#2D3436"/><rect x="63" y="92" width="14" height="12" rx="2" fill="#009739"/><circle cx="130" cy="98" r="7" fill="#FF6B6B"/><circle cx="148" cy="98" r="7" fill="#6BCB77"/><circle cx="139" cy="83" r="7" fill="#FFD700"/><circle cx="139" cy="113" r="7" fill="#002776"/></svg>`,
+clock:`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="62" fill="white" stroke="#002776" stroke-width="4"/><circle cx="100" cy="100" r="5" fill="#2D3436"/><line x1="100" y1="100" x2="100" y2="55" stroke="#2D3436" stroke-width="4" stroke-linecap="round"/><line x1="100" y1="100" x2="132" y2="100" stroke="#FF6B6B" stroke-width="3" stroke-linecap="round"/></svg>`,
+email:`<svg viewBox="0 0 200 200"><rect x="30" y="55" width="140" height="95" rx="10" fill="white" stroke="#002776" stroke-width="3"/><path d="M30 65 L100 112 L170 65" fill="none" stroke="#002776" stroke-width="3"/><circle cx="148" cy="60" r="16" fill="#FF6B6B"/><text x="148" y="66" text-anchor="middle" font-size="14" fill="white" font-weight="bold">!</text></svg>`,
+fingerprint:`<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="58" fill="none" stroke="white" stroke-width="2" opacity=".25"/><path d="M70 118 C70 78 130 78 130 118" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M80 122 C80 92 120 92 120 122" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M90 126 C90 106 110 106 110 126" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="100" y1="113" x2="100" y2="138" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>`,
+pix:`<svg viewBox="0 0 200 200"><rect x="40" y="50" width="120" height="100" rx="14" fill="#009739" stroke="white" stroke-width="3"/><text x="100" y="112" text-anchor="middle" font-size="44" fill="white" font-weight="bold">PIX</text><circle cx="148" cy="56" r="14" fill="#FFD700"/><text x="148" y="62" text-anchor="middle" font-size="14" fill="#b8860b" font-weight="bold">$</text></svg>`
+};
+
+// ========== PAGES ==========
+const pages=[
+// CAPA (0)
+{t:"theme-brasil",svg:"shield",title:"🛡️ CyberEscudo Aventuras",sub:"O Guia Definitivo de Segurança Online! 🇧🇷",text:"Um livro divertido para pequenos heróis brasileiros!\nAprenda brincando! 🌟",anim:"bounce-in",type:"cover"},
+// INTRO (1-5)
+{t:"theme-praia",svg:"globe",title:"🌎 Bem-Vindo à Internet!",text:"A internet é como uma cidade enorme onde você pode aprender, brincar e conversar com pessoas do mundo todo!",tip:"Mas assim como na rua, existem regras para ficar seguro! 🚦",anim:"slide-up"},
+{t:"theme-verde",svg:"shield",title:"Conheça o Escudinho! 🛡️",text:"Eu sou o Escudinho, seu amigo digital! Vou te ensinar como se proteger na internet. Pronto para a aventura?",tip:"A cada lição, você ganha ⭐ estrelas! Vamos nessa! 🚀",anim:"float"},
+{t:"theme-tropica",svg:"book",title:"Como Funciona 📖",text:"Leia cada página com a mamãe ou o papai!\nResponda os quizzes e ganhe estrelas ⭐\nJogue os jogos e vire um CyberHerói! 🦸",tip:"Use as setas para virar a página. Bora! ➡️",anim:"slide-up"},
+{t:"theme-sertao",svg:"family",title:"👨‍👩‍👧 Seu Time de Proteção",text:"Seus pais, avós, tios e professores são seu TIME DE PROTEÇÃO! Sempre conte para eles se algo parecer estranho na internet.",tip:"Regra número 1: Se parecer esquisito, CONTA PRA UM ADULTO! 🗣️",anim:"float"},
+{t:"theme-azul",svg:"family",title:"🇧🇷 Perigos no Brasil",text:"No Brasil, muitas crianças usam celular desde cedo. Por isso, é MUITO importante saber se proteger!\n\nA SaferNet Brasil ajuda a proteger crianças na internet!",tip:"Se precisar de ajuda: Disque 100 (Direitos Humanos) ou acesse safernet.org.br 📞",anim:"slide-up"},
+
+// CAP 1: ESTRANHOS (6-14)
+{t:"theme-coral",title:"📕 Capítulo 1",sub:"Cuidado com Estranhos Online!",text:"Vamos aprender sobre pessoas desconhecidas na internet...",anim:"bounce-in",type:"chapter",badge:{icon:"🎭",name:"Detetive de Estranhos",desc:"Você sabe identificar estranhos online!"}},
+{t:"theme-noite",svg:"stranger",title:"🎭 Quem é Essa Pessoa?",text:"Na internet, as pessoas podem FINGIR ser qualquer um! Um adulto pode dizer que é criança. Você não vê o rosto de verdade.",tip:"Nem todo mundo na internet é quem diz ser! Cuidado! ⚠️",anim:"slide-up"},
+{t:"theme-coral",svg:"chat",title:"💬 'Oi, quer ser meu amigo?'",text:"Às vezes, estranhos falam coisas legais para te enganar:\n'Você é tão legal!'\n'Tenho um presente pra você!'\n'Vou te dar Robux de graça!'",tip:"Amigos de verdade NÃO pedem segredo dos pais! 🚫",anim:"slide-up"},
+{t:"theme-noite",svg:"warning",title:"⚠️ Sinais de Perigo!",text:"Fique atento se alguém:\n• Perguntar onde você mora\n• Quiser te encontrar pessoalmente\n• Disser 'Não conta pros seus pais'\n• Pedir fotos suas\n• Oferecer dinheiro ou presentes",tip:"São SINAIS DE PERIGO! 🚩 Avisa um adulto NA HORA!",anim:"pulse"},
+{t:"theme-verde",svg:"family",title:"✅ O Que Fazer!",text:"Se um estranho falar com você:\n1. NÃO responda! 🚫\n2. CONTA pro papai ou mamãe! 🗣️\n3. BLOQUEIA a pessoa! 🛑\n4. Não tenha medo — você NÃO fez nada errado!",tip:"Você NUNCA está em apuros por contar! Seus pais vão ficar ORGULHOSOS! 💪",anim:"slide-up"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz!",quizQ:"Um estranho na internet diz 'Vamos nos encontrar no parque!' O que você faz?",quizA:[{t:"Diz 'Sim! Que legal!'",c:false},{t:"Conta pro papai ou mamãe na hora!",c:true},{t:"Pergunta onde é o parque",c:false},{t:"Ignora e continua jogando",c:false}],quizExp:"SEMPRE avisa um adulto se alguém quiser te encontrar! 🛡️"},
+{t:"theme-roxo",type:"quiz",title:"🧩 Quem é Seguro?",quizQ:"Com quem é seguro conversar na internet?",quizA:[{t:"Alguém que diz ter 9 anos",c:false},{t:"Seu melhor amigo da escola",c:true},{t:"Um estranho que manda presente",c:false},{t:"Alguém que diz 'Não conta pra ninguém'",c:false}],quizExp:"Só converse com pessoas que você CONHECE na vida real! 👫"},
+{t:"theme-azul",svg:"shield",title:"🌟 Regras de Ouro!",text:"Lembre dessas 3 regras:\n🔴 Nunca fale com estranhos online\n🔴 Nunca encontre alguém da internet\n🔴 Sempre avise um adulto de confiança",tip:"Fala comigo: 'Eu não converso com estranhos na internet!' 🗣️",anim:"float"},
+{t:"theme-amarelo",type:"tapgame",title:"🎮 Toque nas Escolhas Seguras!",gameData:{items:[{emoji:"👨‍👩‍👧",label:"Minha família",safe:true},{emoji:"🎭",label:"Estranho",safe:false},{emoji:"👩‍🏫",label:"Minha professora",safe:true},{emoji:"🤖",label:"Pessoa desconhecida",safe:false},{emoji:"👦",label:"Amigo da escola",safe:true},{emoji:"🕵️",label:"Pessoa secreta",safe:false}]}},
+
+// CAP 2: SENHAS (15-22)
+{t:"theme-roxo",title:"📕 Capítulo 2",sub:"Poder das Senhas! 🔐",text:"Vamos aprender a criar senhas SUPER FORTES!",anim:"bounce-in",type:"chapter",badge:{icon:"🔐",name:"Mestre das Senhas",desc:"Você sabe criar senhas fortes!"}},
+{t:"theme-roxo",svg:"lock",title:"🔑 O Que é Senha?",text:"A senha é como uma CHAVE SECRETA para suas coisas! Ela protege seus jogos, mensagens e contas dos vilões digitais.",tip:"Sua senha é seu SUPERPODER secreto! 💪",anim:"slide-up"},
+{t:"theme-azul",svg:"lock",title:"💪 Senha Forte vs Fraca",text:"❌ FRACA: 'senha123' ou '1234'\n✅ FORTE: 'Tuc@no#Amarelo77!'\n\nSenhas fortes são longas e têm letras, números e símbolos!",tip:"Crie algo engraçado que SÓ VOCÊ lembre: 'MeuG@to$Come3Pizza!'",anim:"slide-up"},
+{t:"theme-noite",svg:"warning",title:"🚫 Nunca Compartilhe!",text:"Sua senha é como sua ESCOVA DE DENTES — você não empresta!\n\nNem pra amigos.\nNem pra coleguinhas.\nSÓ pros seus pais!",tip:"Se alguém pedir sua senha, diz NÃO e conta pro adulto! 🛡️",anim:"pulse"},
+{t:"theme-verde",svg:"shield",title:"🛡️ Dicas de Senha!",text:"✨ Use uma frase divertida: 'MeuPapagaio@Voa5!'\n✨ Coloque números e símbolos\n✨ Faça LONGA (8 ou mais letras)\n✨ Nunca use seu nome ou data de aniversário!",tip:"Contas diferentes = senhas diferentes!",anim:"float"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz da Senha!",quizQ:"Qual é a senha MAIS FORTE?",quizA:[{t:"Fofinho (nome do gato)",c:false},{t:"123456",c:false},{t:"Tuc@no!Azul42",c:true},{t:"senha",c:false}],quizExp:"Tuc@no!Azul42 é forte porque tem símbolos, números e é longa! 🦜"},
+{t:"theme-coral",type:"quiz",title:"🧩 Verdade ou Mentira?",quizQ:"Pode compartilhar sua senha com seu melhor amigo?",quizA:[{t:"VERDADE — melhores amigos podem!",c:false},{t:"MENTIRA — só os pais podem saber!",c:true}],quizExp:"Só mamãe e papai podem saber sua senha. Amigos podem contar sem querer! 🤫"},
+{t:"theme-amarelo",type:"tapgame",title:"🎮 Toque nas Senhas Fortes!",gameData:{items:[{emoji:"🔐",label:"T!gre$Pul@99",safe:true},{emoji:"❌",label:"123456",safe:false},{emoji:"🔐",label:"P@pagaio&42!",safe:true},{emoji:"❌",label:"senha",safe:false},{emoji:"🔐",label:"C@choRr0#F3liz",safe:true},{emoji:"❌",label:"abcdef",safe:false}]}},
+
+// CAP 3: INFO PESSOAL (23-31)
+{t:"theme-verde",title:"📕 Capítulo 3",sub:"Mantenha em Segredo! 🤫",text:"Algumas coisas sobre você devem ficar em SEGREDO na internet!",anim:"bounce-in",type:"chapter",badge:{icon:"🤫",name:"Guardião da Privacidade",desc:"Você sabe o que manter em segredo!"}},
+{t:"theme-verde",svg:"fingerprint",title:"🤫 O Que é Info Pessoal?",text:"Informação pessoal é tudo que diz QUEM você é e ONDE você está:\n\n📛 Seu nome completo\n🏠 Seu endereço\n🏫 Sua escola\n📞 Telefone\n📱 Seu CPF",tip:"Essas infos são como um tesouro — guarde no cofre! 🔒",anim:"slide-up"},
+{t:"theme-mata",svg:"map",title:"📍 Por Que Guardar Segredo?",text:"Se pessoas más souberem onde você mora ou estuda, podem te encontrar na vida real! Isso é perigoso demais!",tip:"Nunca digite seu endereço ou nome da escola em nenhum lugar online! 🚫",anim:"slide-up"},
+{t:"theme-teal",svg:"camera",title:"📸 Fotos Contam Segredos!",text:"Sabia que as fotos podem mostrar:\n• O uniforme da sua escola 🏫\n• O número da sua casa 🏠\n• O nome da sua rua 🛣️\n• Onde você está agora 📍",tip:"Sempre confira suas fotos antes de enviar! Peça ajuda de um adulto! 🔍",anim:"slide-up"},
+{t:"theme-noite",svg:"warning",title:"🆘 Perguntas Traiçoeiras!",text:"Às vezes, sites ou jogos pedem suas infos:\n'Coloque seu nome pra ganhar!'\n'Onde você mora?'\n'Qual sua escola?'\n'Qual seu CPF?'",tip:"PARE! Pergunte pro papai ou mamãe antes de digitar QUALQUER coisa! ✋",anim:"pulse"},
+{t:"theme-azul",svg:"shield",title:"✅ O Jeito Seguro!",text:"Quando um site pedir informação:\n1. PARE e pense ✋\n2. PERGUNTE a um adulto 🗣️\n3. Use um APELIDO 🦸\n4. Nunca dê seu endereço real!",tip:"Crie um apelido legal tipo 'TucanoBR2018'! 🦜",anim:"float"},
+{t:"theme-roxo",type:"quiz",title:"🧩 Quiz da Privacidade!",quizQ:"O que é seguro compartilhar na internet?",quizA:[{t:"Seu endereço de casa",c:false},{t:"Sua cor favorita",c:true},{t:"O nome da sua escola",c:false},{t:"Seu telefone",c:false}],quizExp:"Sua cor favorita é segura! Não diz onde te encontrar! 🎨"},
+{t:"theme-coral",type:"quiz",title:"🧩 O Que Você Faria?",quizQ:"Um jogo pede seu nome real e endereço para mandar um 'prêmio'. O que fazer?",quizA:[{t:"Digito tudo! Prêmio grátis!",c:false},{t:"Pergunto pro papai ou mamãe primeiro!",c:true},{t:"Peço pra um amigo digitar",c:false}],quizExp:"NUNCA coloque infos reais pra ganhar prêmio. É golpe! Pergunte a um adulto! 🎁➡️🚫"},
+{t:"theme-amarelo",type:"tapgame",title:"🎮 Seguro ou Perigoso?",gameData:{items:[{emoji:"🎨",label:"Cor favorita",safe:true},{emoji:"🏠",label:"Endereço",safe:false},{emoji:"🐕",label:"Animal favorito",safe:true},{emoji:"📞",label:"Telefone",safe:false},{emoji:"🍕",label:"Comida favorita",safe:true},{emoji:"🏫",label:"Nome da escola",safe:false}]}},
+
+// CAP 4: CYBERBULLYING (32-40)
+{t:"theme-rosa",title:"📕 Capítulo 4",sub:"Seja Gentil Online! 💚",text:"A internet precisa ser um lugar FELIZ para todo mundo!",anim:"bounce-in",type:"chapter",badge:{icon:"💚",name:"Herói da Gentileza",desc:"Você espalha gentileza online!"}},
+{t:"theme-rosa",svg:"heart",title:"💔 O Que é Cyberbullying?",text:"Cyberbullying é quando alguém é MALDOSO com você na internet:\n• Falar palavrões e ofensas\n• Compartilhar fotos constrangedoras\n• Te excluir de grupos de propósito\n• Criar perfis falsos pra te zoar",tip:"Ser maldoso na internet é tão ruim quanto na vida real! 😢",anim:"slide-up"},
+{t:"theme-noite",svg:"warning",title:"📢 Palavras Machucam!",text:"Mesmo sem ver o rosto da pessoa, suas palavras importam! Digitar algo maldoso pode fazer alguém chorar de verdade.",tip:"Antes de digitar, pense: 'Isso vai fazer alguém sorrir ou chorar?' 🤔",anim:"slide-up"},
+{t:"theme-coral",svg:"warning",title:"😢 Se Forem Maldosos Com Você",text:"Se alguém fizer bullying online:\n1. NÃO responda! 🚫\n2. Faça um PRINT da tela 📸\n3. CONTA pro papai, mamãe ou professor 🗣️\n4. BLOQUEIA a pessoa 🛑",tip:"NÃO é sua culpa e você NÃO está sozinho! Você é CORAJOSO por contar! 💪",anim:"pulse"},
+{t:"theme-verde",svg:"heart",title:"💚 Seja Um Herói Gentil!",text:"VOCÊ pode melhorar a internet!\n✨ Fale coisas legais pros amigos\n✨ Defenda quem está sendo zoado\n✨ Denuncie comentários maldosos\n✨ Inclua todo mundo!",tip:"Uma mensagem gentil pode alegrar o dia de alguém! 🌈",anim:"float"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz da Gentileza!",quizQ:"Alguém fez um comentário maldoso sobre seu amigo num grupo. O que você faz?",quizA:[{t:"Curte o comentário",c:false},{t:"Escreve algo pior",c:false},{t:"Apoia seu amigo e conta pra um adulto!",c:true},{t:"Ignora completamente",c:false}],quizExp:"Defenda seus amigos! Conte pra um adulto e mostre que você se importa! 💚"},
+{t:"theme-roxo",type:"quiz",title:"🧩 Gentil ou Maldoso?",quizQ:"Qual mensagem é gentil de enviar?",quizA:[{t:"Haha você é feio!",c:false},{t:"Adorei seu desenho! 🎨",c:true},{t:"Ninguém gosta de você",c:false},{t:"Você é estranho",c:false}],quizExp:"Elogios fazem as pessoas felizes! Espalhe amor, não ódio! 💖"},
+{t:"theme-azul",svg:"heart",title:"💛 A Regra de Ouro Online",text:"Trate os outros como VOCÊ gostaria de ser tratado!\n\nVocê ia gostar que dissessem ISSO pra você? Se não, não digite!",tip:"Seja o motivo do sorriso de alguém hoje! 😊🌟",anim:"float"},
+{t:"theme-festa",type:"tapgame",title:"🎮 Gentil ou Maldoso?",gameData:{items:[{emoji:"😊",label:"'Você é demais!'",safe:true},{emoji:"😠",label:"'Você é feio!'",safe:false},{emoji:"💚",label:"'Parabéns!'",safe:true},{emoji:"👎",label:"'Ninguém te quer'",safe:false},{emoji:"🌟",label:"'Eu acredito em você!'",safe:true},{emoji:"😢",label:"'Vai embora!'",safe:false}]}},
+
+// CAP 5: CONTEÚDO ASSUSTADOR (41-48)
+{t:"theme-noite",title:"📕 Capítulo 5",sub:"Coisas Assustadoras Online! 👻",text:"Às vezes você pode ver coisas que dão medo. Vamos aprender o que fazer!",anim:"bounce-in",type:"chapter",badge:{icon:"👻",name:"Navegador Corajoso",desc:"Você sabe lidar com conteúdo assustador!"}},
+{t:"theme-noite",svg:"eye",title:"👀 Eita, O Que é Isso?!",text:"Às vezes, imagens, vídeos ou histórias assustadoras aparecem do nada! Isso pode acontecer com QUALQUER pessoa.",tip:"Ver coisas assustadoras NÃO é sua culpa! 🤗",anim:"slide-up"},
+{t:"theme-noite",svg:"warning",title:"🙈 O Que Fazer!",text:"Se você vir algo assustador:\n1. FECHA a tela! 💻❌\n2. SAI de perto do aparelho 🚶\n3. CONTA pro papai ou mamãe 🗣️\n4. Respira fundo 🌬️",tip:"Tudo bem sentir medo. Seus pais vão te ajudar a ficar melhor! 💕",anim:"pulse"},
+{t:"theme-verde",svg:"family",title:"🗣️ Converse Sobre Isso!",text:"Não guarde sentimentos de medo dentro de você! Converse com mamãe, papai ou outro adulto de confiança.\n\nEles não vão brigar. Eles querem te ajudar!",tip:"Crianças corajosas falam sobre o que sentem! Você é muito corajoso! 🦁",anim:"float"},
+{t:"theme-azul",svg:"shield",title:"🛡️ Zonas Seguras!",text:"Peça pros seus pais configurarem:\n✨ YouTube Kids em vez do YouTube normal\n✨ Busca segura no Google\n✨ Controle dos pais no celular\n✨ Só apps aprovados pela família",tip:"Zona segura = diversão sem preocupação! 😊",anim:"slide-up"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz do Corajoso!",quizQ:"Um vídeo assustador apareceu no seu tablet. O que você faz PRIMEIRO?",quizA:[{t:"Continuo vendo pra saber o que acontece",c:false},{t:"Fecho ou tampo a tela na hora!",c:true},{t:"Mostro pro meu amigo",c:false},{t:"Procuro mais vídeos assim",c:false}],quizExp:"Fecha na hora! Depois conta pra um adulto. Você não precisa ver coisas assustadoras! 🙈"},
+{t:"theme-coral",type:"quiz",title:"🧩 Verdade ou Mentira?",quizQ:"É SUA culpa se uma imagem assustadora aparece enquanto você navega.",quizA:[{t:"VERDADE — eu deveria ter mais cuidado",c:false},{t:"MENTIRA — NÃO é minha culpa!",c:true}],quizExp:"NUNCA é sua culpa! Pop-ups e conteúdo assustador aparecem pra qualquer um. Fecha e conta pro adulto! 💕"},
+{t:"theme-praia",svg:"heart",title:"Lembre-se! 💛",text:"A internet tem MUITA coisa divertida e legal! Algumas coisas assustadoras não estragam toda a diversão.\n\nCom ajuda dos seus pais, você pode curtir a internet com segurança!",tip:"Você não está sozinho. Seu Time de Proteção tá aqui por você! 🦸‍♂️🦸‍♀️",anim:"float"},
+
+// CAP 6: LINKS E CLIQUES (49-55)
+{t:"theme-azul",title:"📕 Capítulo 6",sub:"Não Clique Nisso! 🖱️",text:"Alguns links e botões na internet são ARMADILHAS!",anim:"bounce-in",type:"chapter",badge:{icon:"🖱️",name:"Detetive de Links",desc:"Você sabe quais links são seguros!"}},
+{t:"theme-azul",svg:"warning",title:"🪤 Links São Armadilhas!",text:"Links perigosos parecem legais:\n'VOCÊ GANHOU UM PRÊMIO! CLIQUE AQUI!'\n'JOGO GRÁTIS! BAIXE AGORA!'\n'ROBUX GRÁTIS! SÓ CLICAR!'",tip:"Se parece bom demais pra ser verdade, provavelmente É golpe! 🚫",anim:"slide-up"},
+{t:"theme-noite",svg:"robot",title:"🤖 O Que Acontece se Clicar?",text:"Links perigosos podem:\n😈 Colocar vírus no seu aparelho\n😈 Roubar suas informações\n😈 Mostrar coisas ruins\n😈 Gastar dinheiro dos seus pais!",tip:"Um vírus é como uma gripe do celular — deixa tudo doente! 🤒",anim:"pulse"},
+{t:"theme-verde",svg:"shield",title:"✅ Regras Seguras de Click!",text:"Antes de clicar em QUALQUER coisa:\n1. Pense: 'Sei pra onde isso leva?' 🤔\n2. Procure erros de escrita ⚠️\n3. Pergunte a um adulto na dúvida! 🗣️\n4. Fique nos sites confiáveis! 🌟",tip:"Na dúvida, NÃO clique! Pergunte a um adulto! ✋",anim:"float"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz do Clique!",quizQ:"Um pop-up diz 'Você GANHOU um celular GRÁTIS! Clique agora!' O que você faz?",quizA:[{t:"Clica! Celular grátis!",c:false},{t:"Fecha e conta pro papai ou mamãe!",c:true},{t:"Clica pra ver se é verdade",c:false},{t:"Manda pra um amigo",c:false}],quizExp:"É GOLPE! Prêmios de verdade não vêm de pop-ups. Fecha! 🚫📱"},
+{t:"theme-roxo",type:"quiz",title:"🧩 Seguro ou Suspeito?",quizQ:"Qual link é mais provável de ser seguro?",quizA:[{t:"JOG0-GRAT1S.sitestranho.biz",c:false},{t:"youtube.com/kids",c:true},{t:"clique-aqui-pra-ganhar.com",c:false},{t:"vc-ganhou-1000reais.net",c:false}],quizExp:"Sites conhecidos como YouTube Kids são seguros! Nomes estranhos com erros são armadilhas! 🕵️"},
+{t:"theme-amarelo",type:"tapgame",title:"🎮 Clique Seguro ou Golpe?",gameData:{items:[{emoji:"✅",label:"youtube.com/kids",safe:true},{emoji:"⚠️",label:"PRÊMIO-GR4TIS.biz",safe:false},{emoji:"✅",label:"discoverykids.com",safe:true},{emoji:"⚠️",label:"Clique-4-Dinheiro.net",safe:false},{emoji:"✅",label:"turmadamonica.com.br",safe:true},{emoji:"⚠️",label:"GANHE-UM-CARRO.com",safe:false}]}},
+
+// CAP 7: GOLPES PIX E WHATSAPP (56-63)
+{t:"theme-laranja",title:"📕 Capítulo 7",sub:"Golpes no WhatsApp e PIX! 📱",text:"No Brasil, golpistas adoram usar WhatsApp e PIX. Vamos aprender a identificar!",anim:"bounce-in",type:"chapter",badge:{icon:"📱",name:"Anti-Golpe",desc:"Você conhece os golpes brasileiros!"}},
+{t:"theme-laranja",svg:"pix",title:"💰 Golpes do PIX!",text:"No Brasil, criminosos inventam golpes com PIX:\n'Faça PIX e ganhe o dobro de volta!'\n'PIX errado — me devolve!'\n'Promoção exclusiva — pague via PIX!'",tip:"NUNCA faça PIX pra estranhos! Não existe 'dinheiro de volta em dobro'! 🚫",anim:"slide-up"},
+{t:"theme-noite",svg:"phone",title:"📱 Golpe do WhatsApp!",text:"Golpistas CLONAM o WhatsApp dos seus pais e pedem dinheiro! Também mandam:\n• Links falsos de bancos\n• 'Promoções' falsas de lojas\n• Pedidos de código de verificação",tip:"Se alguém pedir código que chegou por SMS, é GOLPE! Nunca passe código pra ninguém! 🔐",anim:"pulse"},
+{t:"theme-verde",svg:"shield",title:"✅ Como Se Proteger!",text:"1. Nunca passe códigos SMS pra ninguém 🔐\n2. Desconfie de 'ofertas imperdíveis' 🚫\n3. Se um familiar pedir PIX, LIGUE pra confirmar 📞\n4. Nunca clique em links pelo WhatsApp de desconhecidos",tip:"Na dúvida, pergunta pro adulto ANTES de fazer qualquer coisa! 🗣️",anim:"float"},
+{t:"theme-azul",svg:"warning",title:"⚠️ Perfis Falsos!",text:"No Brasil, golpistas criam perfis falsos no:\n• WhatsApp (com foto de parente)\n• Instagram (com ofertas falsas)\n• Facebook (pedindo dados)\n• Sites de jogos (prometendo moedas grátis)",tip:"Se parece suspeito, DESCONFIE! Confirme com a pessoa de verdade por telefone! 📱",anim:"slide-up"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz do Golpe!",quizQ:"Alguém manda no WhatsApp: 'Oi mãe, troquei de número. Me manda um PIX urgente!' O que fazer?",quizA:[{t:"Manda o PIX — minha mãe precisa!",c:false},{t:"Liga pro número antigo pra confirmar!",c:true},{t:"Responde perguntando quanto",c:false}],quizExp:"GOLPE clássico no Brasil! Sempre LIGUE pro número antigo da pessoa antes de mandar dinheiro! 📞"},
+{t:"theme-roxo",type:"quiz",title:"🧩 PIX Seguro?",quizQ:"Um site promete: 'Faça PIX de R$50 e receba R$500 de volta!' Isso é...",quizA:[{t:"Uma oportunidade incrível!",c:false},{t:"Um GOLPE! Ninguém dá dinheiro de graça!",c:true},{t:"Arrisco R$50 pra ver",c:false}],quizExp:"GOLPE total! Ninguém devolve 10x o valor. Dinheiro fácil na internet NÃO EXISTE! 💰🚫"},
+{t:"theme-amarelo",type:"tapgame",title:"🎮 Golpe ou Verdade?",gameData:{items:[{emoji:"✅",label:"Ligar pra confirmar",safe:true},{emoji:"⚠️",label:"PIX 'em dobro'",safe:false},{emoji:"✅",label:"Desconfiar de links",safe:true},{emoji:"⚠️",label:"Dar código SMS",safe:false},{emoji:"✅",label:"Perguntar ao adulto",safe:true},{emoji:"⚠️",label:"Clicar em promoção",safe:false}]}},
+
+// CAP 8: APPS E DOWNLOADS (64-70)
+{t:"theme-verde",title:"📕 Capítulo 8",sub:"Cuidado com Apps! 📲",text:"Nem todo app é seguro! Vamos aprender quais confiar!",anim:"bounce-in",type:"chapter",badge:{icon:"📲",name:"Inspetor de Apps",desc:"Você confere apps antes de baixar!"}},
+{t:"theme-verde",svg:"phone",title:"📲 Peça Permissão!",text:"SEMPRE peça pro papai ou mamãe antes de baixar QUALQUER app ou jogo! Mesmo se disser 'GRÁTIS!'",tip:"Alguns apps 'grátis' gastam dinheiro de verdade depois! 💰🚫",anim:"slide-up"},
+{t:"theme-noite",svg:"warning",title:"⚠️ Apps Falsos!",text:"Alguns apps fingem ser jogos legais mas:\n😈 Roubam suas fotos\n😈 Ouvem pelo microfone\n😈 Rastreiam onde você está\n😈 Mandam suas infos pra estranhos",tip:"Baixe APENAS da loja oficial com um adulto! 🏪",anim:"pulse"},
+{t:"theme-verde",svg:"shield",title:"✅ Regras de Download!",text:"1. Pergunte a um adulto PRIMEIRO! 🗣️\n2. Use a loja oficial (Play Store/App Store) 🏪\n3. Leia as avaliações ⭐\n4. Confira as permissões\n5. Se pedir demais, diga NÃO!",tip:"Um app de lanterna NÃO precisa dos seus contatos! 🔦❌📞",anim:"float"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz dos Apps!",quizQ:"Você achou um jogo legal online que diz 'Baixe grátis! Não precisa de adulto!' O que fazer?",quizA:[{t:"Baixa na hora!",c:false},{t:"Pergunta pro papai ou mamãe primeiro!",c:true},{t:"Baixa e mostra pro amigo",c:false}],quizExp:"SEMPRE pergunte a um adulto antes de baixar! Essa mensagem é uma armadilha! 🎣"},
+{t:"theme-amarelo",type:"tapgame",title:"🎮 Download: Seguro?",gameData:{items:[{emoji:"✅",label:"Adulto autorizou",safe:true},{emoji:"⚠️",label:"Site desconhecido",safe:false},{emoji:"✅",label:"Loja oficial",safe:true},{emoji:"⚠️",label:"Pop-up de download",safe:false},{emoji:"✅",label:"Boas avaliações",safe:true},{emoji:"⚠️",label:"'Não precisa de adulto'",safe:false}]}},
+
+// CAP 9: TEMPO DE TELA (71-76)
+{t:"theme-teal",title:"📕 Capítulo 9",sub:"Equilíbrio na Tela! ⏰",text:"Telas são legais, mas demais faz mal!",anim:"bounce-in",type:"chapter",badge:{icon:"⏰",name:"Mestre do Tempo",desc:"Você equilibra o tempo de tela!"}},
+{t:"theme-teal",svg:"clock",title:"⏰ Quanto é Demais?",text:"Seus olhos, cérebro e corpo precisam de pausas! Tela demais pode te deixar:\n😴 Cansado\n😫 Com dor de cabeça\n😤 Irritado\n😞 Sem vontade de brincar lá fora",tip:"Faça pausas a cada 30 minutos! Olhe longe e se alongue! 🧘",anim:"slide-up"},
+{t:"theme-verde",svg:"shield",title:"⚖️ Equilíbrio é Tudo!",text:"Formas legais de equilibrar:\n🌳 Brincar no parque\n📚 Ler um livro\n🎨 Desenhar e pintar\n⚽ Jogar futebol\n👫 Brincar com amigos\n🎵 Tocar um instrumento",tip:"Regra 20-20-20: A cada 20 min, olhe a 20 passos de distância por 20 segundos! 👀",anim:"float"},
+{t:"theme-azul",svg:"clock",title:"🌙 Nada de Tela Antes de Dormir!",text:"As telas enganam seu cérebro fazendo ele pensar que é dia! Pare de usar 1 hora antes de dormir pra ter um sono bom. 😴",tip:"Sono bom = dia melhor amanhã! Leia um livro antes de dormir! 📖✨",anim:"slide-up"},
+{t:"theme-roxo",type:"quiz",title:"🧩 Quiz do Tempo!",quizQ:"Você está jogando há 2 horas. O que fazer?",quizA:[{t:"Continuar! Está muito legal!",c:false},{t:"Fazer uma pausa e brincar lá fora!",c:true},{t:"Jogar mais 2 horas",c:false}],quizExp:"Pausas são importantes! Vá brincar lá fora e depois pode voltar! 🌳"},
+{t:"theme-amarelo",type:"tapgame",title:"🎮 Atividades de Pausa!",gameData:{items:[{emoji:"⚽",label:"Jogar bola",safe:true},{emoji:"📱",label:"Mais celular",safe:false},{emoji:"📚",label:"Ler um livro",safe:true},{emoji:"💻",label:"Mais vídeos",safe:false},{emoji:"🌳",label:"Brincar no parque",safe:true},{emoji:"🎮",label:"Outro videogame",safe:false}]}},
+
+// CAP 10: JOGOS ONLINE (77-83)
+{t:"theme-azul",title:"📕 Capítulo 10",sub:"Jogos Online com Segurança! 🎮",text:"Videogames são DEMAIS! Mas vamos jogar com segurança!",anim:"bounce-in",type:"chapter",badge:{icon:"🎮",name:"Gamer Seguro",desc:"Você joga com segurança!"}},
+{t:"theme-azul",svg:"gamepad",title:"🎮 Jogando com Outros!",text:"Muitos jogos deixam jogar com estranhos. Lembre:\n🚫 Não fale info pessoal no chat\n🚫 Não aceite amizade de desconhecidos\n✅ Silencie jogadores maldosos\n✅ Jogue com amigos da escola!",tip:"Seu personagem NÃO deve ter seu nome real! Use um apelido! 🦸",anim:"slide-up"},
+{t:"theme-noite",svg:"pix",title:"💰 Compras nos Jogos!",text:"Alguns jogos tentam fazer você gastar dinheiro REAL!\n'Compre essa skin! Só R$29,90!'\n'Oferta especial! Compre AGORA!'\n\nEsse é o dinheiro real dos seus pais!",tip:"NUNCA compre nada num jogo sem perguntar pro adulto! 💳🚫",anim:"pulse"},
+{t:"theme-verde",svg:"shield",title:"✅ Dicas de Jogo Seguro!",text:"1. Use apelido, não nome real\n2. Nunca fale info pessoal no chat\n3. Avise os pais se alguém for maldoso\n4. Faça pausas a cada 30 minutos!\n5. Peça antes de gastar dinheiro",tip:"Jogos devem ser DIVERTIDOS! Se não tá legal, faça uma pausa! 😊",anim:"float"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz do Gamer!",quizQ:"Alguém num jogo pergunta 'Em que escola você estuda?' O que responder?",quizA:[{t:"Fala o nome da escola",c:false},{t:"'Não falo isso!' e conta pro adulto",c:true},{t:"'Pede pro meu amigo, ele fala'",c:false}],quizExp:"NUNCA fale info pessoal em jogos! Diga que não compartilha isso e avise um adulto! 🛡️"},
+{t:"theme-amarelo",type:"tapgame",title:"🎮 Jogo: Seguro ou Arriscado?",gameData:{items:[{emoji:"✅",label:"Jogar com amigos",safe:true},{emoji:"⚠️",label:"Falar nome real",safe:false},{emoji:"✅",label:"Silenciar bullies",safe:true},{emoji:"⚠️",label:"Comprar sem pedir",safe:false},{emoji:"✅",label:"Fazer pausas",safe:true},{emoji:"⚠️",label:"Jogar a noite toda",safe:false}]}},
+
+// CAP 11: DISPOSITIVOS (84-89)
+{t:"theme-roxo",title:"📕 Capítulo 11",sub:"Proteja Seu Aparelho! 📡",text:"Vamos manter seu celular e tablet seguros!",anim:"bounce-in",type:"chapter",badge:{icon:"📡",name:"Protetor Tech",desc:"Você mantém seus aparelhos seguros!"}},
+{t:"theme-roxo",svg:"wifi",title:"📡 WiFi Público é Perigoso!",text:"WiFi grátis em shoppings, restaurantes e praças pode ser perigoso! Pessoas más podem espiar o que você faz.",tip:"Só use WiFi que seus pais dizem que é seguro! 🏠✅ | ☕❌",anim:"slide-up"},
+{t:"theme-noite",svg:"phone",title:"🔒 Tranque Seu Aparelho!",text:"Sempre tranque seu tablet e celular com senha ou digital! Isso impede outras pessoas de mexer nas suas coisas.",tip:"Não compartilhe a senha do aparelho com amigos! 🔐",anim:"slide-up"},
+{t:"theme-verde",svg:"shield",title:"✅ Regras do Aparelho!",text:"1. Tranque com senha 🔒\n2. Atualize quando pedir ⬆️\n3. Não use WiFi estranho 📡\n4. Conte pros pais se algo der errado 🗣️\n5. Nunca deixe o aparelho sozinho! 👀",tip:"Atualizações deixam o aparelho mais seguro! Sempre diga SIM pra atualizar! ✅",anim:"float"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz do Aparelho!",quizQ:"Você está no shopping. Deve conectar no WiFi grátis pra jogar?",quizA:[{t:"Sim! WiFi grátis é demais!",c:false},{t:"Só se o papai ou mamãe disser que pode!",c:true},{t:"Sim, todo mundo usa!",c:false}],quizExp:"WiFi público pode ser arriscado! Sempre pergunte a um adulto! 📡"},
+{t:"theme-amarelo",type:"tapgame",title:"🎮 Segurança do Aparelho!",gameData:{items:[{emoji:"✅",label:"Trancar com senha",safe:true},{emoji:"⚠️",label:"WiFi de estranho",safe:false},{emoji:"✅",label:"Atualizar apps",safe:true},{emoji:"⚠️",label:"Dar senha pro amigo",safe:false},{emoji:"✅",label:"Contar problemas",safe:true},{emoji:"⚠️",label:"Deixar sem cuidar",safe:false}]}},
+
+// CAP 12: LEIS BRASILEIRAS (90-93)
+{t:"theme-brasil",title:"📕 Capítulo 12",sub:"Leis que Te Protegem! 🇧🇷⚖️",text:"O Brasil tem leis para proteger crianças na internet!",anim:"bounce-in",type:"chapter",badge:{icon:"⚖️",name:"Cidadão Digital",desc:"Você conhece seus direitos!"}},
+{t:"theme-azul",svg:"shield",title:"⚖️ Suas Proteções!",text:"No Brasil você é protegido por:\n🇧🇷 ECA — Estatuto da Criança e do Adolescente\n🇧🇷 Marco Civil da Internet\n🇧🇷 Lei do Cyberbullying (2024)\n🇧🇷 SaferNet Brasil",tip:"Se alguém te ameaçar online, a LEI está do SEU lado! ⚖️",anim:"slide-up"},
+{t:"theme-verde",svg:"family",title:"📞 Onde Pedir Ajuda!",text:"Se você precisar de ajuda no Brasil:\n📞 Disque 100 — Direitos Humanos\n📞 Disque 180 — Violência\n🌐 SaferNet.org.br — Denúncia online\n📞 CVV: 188 — Apoio emocional\n🚔 Delegacia mais próxima",tip:"Denunciar é um ato de CORAGEM! Você pode salvar outras crianças! 💪",anim:"float"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz dos Direitos!",quizQ:"Alguém te ameaça pela internet no Brasil. Onde pedir ajuda?",quizA:[{t:"Não faço nada — é só internet",c:false},{t:"Disque 100 e conta pros pais!",c:true},{t:"Ameaço de volta",c:false}],quizExp:"O Disque 100 protege crianças e adolescentes! Sempre conte pros pais e denuncie! 📞"},
+
+// CAP 13: APARELHOS INTELIGENTES (94-97)
+{t:"theme-mata",title:"📕 Capítulo 13",sub:"Aparelhos Inteligentes! 🏠",text:"Alexa, TV inteligente e câmeras — estão em todo lugar!",anim:"bounce-in",type:"chapter",badge:{icon:"🏠",name:"Herói da Casa",desc:"Você sabe sobre aparelhos inteligentes!"}},
+{t:"theme-mata",svg:"robot",title:"🤖 Eles Escutam!",text:"Caixas de som inteligentes (Alexa, Google) e TVs smart estão sempre ouvindo esperando comandos. Cuidado com o que fala perto deles!",tip:"Não fale segredos ou informações pessoais perto de aparelhos inteligentes! 🤫",anim:"slide-up"},
+{t:"theme-noite",svg:"camera",title:"📹 Câmeras em Todo Lugar!",text:"Notebooks, tablets e celulares têm câmeras.\n\n⚠️ Alguns programas ruins podem ligar sua câmera SEM você saber!",tip:"Cubra a câmera com um adesivo quando não estiver usando! 📷🚫",anim:"pulse"},
+{t:"theme-teal",type:"quiz",title:"🧩 Quiz dos Aparelhos!",quizQ:"A Alexa está sempre ouvindo. O que você NÃO deve falar perto dela?",quizA:[{t:"'Toca minha música favorita'",c:false},{t:"Seu endereço e telefone",c:true},{t:"'Que horas são?'",c:false}],quizExp:"Nunca fale informações pessoais perto de aparelhos inteligentes! 🤖"},
+
+// FINAL (98-100)
+{t:"theme-tropica",title:"📕 Capítulo Final!",sub:"Você é um CyberHerói! 🦸🇧🇷",text:"Você aprendeu TUDO! Vamos revisar!",anim:"bounce-in",type:"chapter",badge:{icon:"🦸",name:"CyberHerói Brasileiro",desc:"Você completou o livro inteiro!"}},
+{t:"theme-tropica",svg:"shield",title:"🛡️ Juramento do CyberEscudo!",text:"Eu prometo:\n⭐ Nunca falar com estranhos online\n⭐ Manter minhas senhas em segredo\n⭐ Nunca compartilhar info pessoal\n⭐ Ser gentil com todo mundo\n⭐ Contar pro adulto se algo parecer errado\n⭐ Pensar antes de clicar!\n⭐ Equilibrar meu tempo de tela\n⭐ Desconfiar de golpes no WhatsApp e PIX",tip:"Fale em voz alta com seus pais! Você é um CyberHerói! 🦸‍♂️🦸‍♀️🇧🇷",anim:"pulse"},
+{t:"theme-festa",svg:"trophy",title:"🏆 Parabéns, CyberHerói! 🇧🇷",text:"Você terminou o livro INTEIRO!\nGanhou TODAS as estrelas! ⭐\nAgora você é um CyberHerói Brasileiro certificado!\n\n🎉🎊🥳\n\nMostre esse livro pros seus amigos e família e ajude TODO MUNDO a ficar seguro!",tip:"A internet é um lugar incrível quando você fica SEGURO! Vai lá, herói! 🚀🇧🇷",anim:"bounce-in",type:"finale"},
+{t:"theme-brasil",title:"🎓 Meu Certificado!",text:"",type:"certificate"}
+];
+
+// ========== RENDER ==========
+function renderPages(){
+  const c=document.getElementById('bookContainer');c.innerHTML='';
+  pages.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className=`page ${p.t||'theme-azul'} ${i===0?'active':''}`;
+    d.id=`page-${i}`;
+    let html=generateDecos();
+    html+='<div class="page-content">';
+    if(p.type==='cover'){
+      html+=`<div class="illust ${p.anim||'float'}">${SVG[p.svg]||''}</div>`;
+      html+=`<h1 class="page-title bounce-in">${p.title}</h1>`;
+      if(p.sub) html+=`<p class="page-subtitle">${p.sub}</p>`;
+      html+=`<p class="page-text">${nl(p.text)}</p>`;
+      html+=`<div style="margin-top:16px;padding:14px 22px;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.2);border-radius:18px;display:inline-block;backdrop-filter:blur(6px);">
+        <p style="font-size:12px;opacity:.7;margin-bottom:2px;">Criado por</p>
+        <p style="font-size:17px;font-weight:800;font-family:'Baloo 2',cursive;color:#FFD700;">Joas Antonio dos Santos</p>
+        <p style="font-size:12px;opacity:.8;margin-top:2px;">Fundador — Red Team Leaders</p>
+        <p style="margin-top:5px;"><a href="https://joasantonio.com/" target="_blank" style="color:#4ECDC4;text-decoration:none;font-weight:700;font-size:13px;">🌐 joasantonio.com</a></p>
+      </div>`;
+      html+=`<div style="margin-top:18px;font-size:19px;animation:pulse 2s infinite">Toque ▶ para começar! 🇧🇷</div>`;
+    } else if(p.type==='chapter'){
+      html+=`<div style="font-size:72px;margin-bottom:8px;" class="bounce-in">📕</div>`;
+      html+=`<h1 class="page-title bounce-in">${p.title}</h1>`;
+      if(p.sub) html+=`<h2 class="page-subtitle" style="font-size:clamp(20px,4vw,32px);margin-top:6px;">${p.sub}</h2>`;
+      html+=`<p class="page-text" style="margin-top:14px;">${nl(p.text)}</p>`;
+    } else if(p.type==='quiz'){
+      html+=`<h2 class="page-title slide-up">${p.title}</h2>`;
+      html+=`<p class="page-text" style="font-size:clamp(16px,2.8vw,22px);margin:14px 0;">${p.quizQ}</p>`;
+      html+=`<div class="quiz-container" id="quiz-${i}">`;
+      const L=['A','B','C','D'];
+      p.quizA.forEach((a,ai)=>{html+=`<div class="quiz-option" onclick="answerQuiz(${i},${ai},${a.c})"><span class="opt-letter">${L[ai]}</span>${a.t}</div>`;});
+      html+=`</div><div class="quiz-result" id="qr-${i}"></div>`;
+    } else if(p.type==='tapgame'){
+      html+=`<h2 class="page-title slide-up">${p.title}</h2>`;
+      html+=`<p class="page-text" style="margin-bottom:14px;">Toque nas escolhas SEGURAS! ✅ Fuja dos perigos! ⚠️</p>`;
+      html+=`<div class="tap-grid" id="game-${i}">`;
+      [...p.gameData.items].sort(()=>Math.random()-.5).forEach(item=>{
+        html+=`<div class="tap-card" onclick="tapCard(this,${item.safe},${i})" data-tapped="false"><div style="font-size:28px;">${item.emoji}</div><div class="tap-label">${item.label}</div></div>`;
+      });
+      html+=`</div><div class="quiz-result" id="gr-${i}"></div>`;
+    } else if(p.type==='finale'){
+      html+=`<div class="illust bounce-in">${SVG[p.svg]||''}</div>`;
+      html+=`<h1 class="page-title" style="font-size:clamp(28px,6vw,48px);">${p.title}</h1>`;
+      html+=`<p class="page-text">${nl(p.text)}</p>`;
+      if(p.tip) html+=`<div class="page-tip"><span class="tip-icon">🌟</span>${p.tip}</div>`;
+      html+=`<div style="margin-top:16px;padding:14px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.2);border-radius:16px;display:inline-block;">
+        <p style="font-size:12px;opacity:.7;">Criado com ❤️ por</p>
+        <p style="font-size:16px;font-weight:800;color:#FFD700;font-family:'Baloo 2',cursive;">Joas Antonio dos Santos</p>
+        <p style="font-size:12px;opacity:.7;">Fundador — Red Team Leaders</p>
+        <p style="margin-top:4px;"><a href="https://joasantonio.com/" target="_blank" style="color:#4ECDC4;text-decoration:none;font-weight:700;font-size:13px;">🌐 joasantonio.com</a></p>
+      </div>`;
+      html+=`<div style="margin-top:16px;font-size:50px;animation:float 2s ease-in-out infinite;">🦸‍♂️⭐🇧🇷</div>`;
+    } else if(p.type==='certificate'){
+      html+=`<div style="font-size:70px;margin-bottom:10px;" class="bounce-in">🎓</div>`;
+      html+=`<h1 class="page-title bounce-in">${p.title}</h1>`;
+      html+=`<p class="page-text" style="margin-bottom:20px;">Você completou todas as aventuras! 🎉<br>Digite seu nome para ganhar seu certificado oficial!</p>`;
+      html+=`<div style="max-width:360px;margin:0 auto;">
+        <input type="text" id="certNameKids" placeholder="Escreva seu nome aqui ✏️" style="width:100%;padding:14px 18px;border-radius:16px;border:3px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:white;font-family:'Baloo 2',cursive;font-size:18px;text-align:center;outline:none;" onfocus="this.style.borderColor='#FFD700'" onblur="this.style.borderColor='rgba(255,255,255,.3)'">
+        <button onclick="generateCertKids()" style="margin-top:16px;padding:14px 36px;border-radius:16px;border:none;background:linear-gradient(135deg,#009739,#FFD700);color:#002776;font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(0,151,57,.4);display:block;width:100%;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🎓 Gerar Certificado!</button>
+      </div>`;
+    } else {
+      if(p.svg) html+=`<div class="illust ${p.anim||'float'}">${SVG[p.svg]||''}</div>`;
+      html+=`<h2 class="page-title slide-up">${p.title}</h2>`;
+      if(p.sub) html+=`<p class="page-subtitle">${p.sub}</p>`;
+      html+=`<p class="page-text">${nl(p.text)}</p>`;
+      if(p.tip) html+=`<div class="page-tip slide-up"><span class="tip-icon">💡</span>${p.tip}</div>`;
+    }
+    html+='</div>';
+    d.innerHTML=html;c.appendChild(d);
+  });
+  buildTOC();updateNav();
+}
+
+function generateDecos(){
+  const e=['⭐','✨','🌟','💫','🦜','🌴','🇧🇷','⚽','🎉','💚','💛','🌺'];
+  let d='';
+  for(let i=0;i<5;i++){const em=e[Math.floor(Math.random()*e.length)];d+=`<div class="deco" style="left:${Math.random()*90+5}%;top:${Math.random()*90+5}%;font-size:${18+Math.random()*22}px;animation:float ${3+Math.random()*3}s ease-in-out infinite;animation-delay:${Math.random()*2}s">${em}</div>`;}
+  return d;
+}
+function nl(s){return s.replace(/\n/g,'<br>');}
+
+// NAV
+function goToPage(n){
+  if(n<0||n>=pages.length)return;
+  const cur=document.getElementById(`page-${currentPage}`);
+  const nxt=document.getElementById(`page-${n}`);
+  if(cur){cur.classList.remove('active');cur.classList.add(n>currentPage?'exit-left':'exit-right');setTimeout(()=>cur.classList.remove('exit-left','exit-right'),600);}
+  currentPage=n;nxt.classList.add('active');updateNav();
+  const p=pages[n];
+  if(p.type==='chapter'&&p.badge&&!earnedBadges.has(n)){earnedBadges.add(n);setTimeout(()=>showBadge(p.badge.icon,p.badge.name,p.badge.desc),800);}
+}
+function nextPage(){goToPage(currentPage+1);}
+function prevPage(){goToPage(currentPage-1);}
+function updateNav(){
+  document.getElementById('prevBtn').disabled=currentPage===0;
+  document.getElementById('nextBtn').disabled=currentPage===pages.length-1;
+  document.getElementById('pageIndicator').textContent=`${currentPage+1} / ${pages.length}`;
+  document.getElementById('progressBar').style.width=`${((currentPage+1)/pages.length)*100}%`;
+}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' ')nextPage();else if(e.key==='ArrowLeft')prevPage();});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?nextPage():prevPage();}},{passive:true});
+
+// QUIZ
+function answerQuiz(pi,ai,correct){
+  const q=document.getElementById(`quiz-${pi}`);const r=document.getElementById(`qr-${pi}`);
+  if(answeredQuizzes.has(pi))return;
+  const opts=q.querySelectorAll('.quiz-option');
+  opts[ai].classList.add(correct?'correct':'wrong');
+  if(correct){
+    answeredQuizzes.add(pi);addStars(3);
+    r.innerHTML='✅ Muito bem! Acertou! +3 ⭐';r.style.color='#6BCB77';
+    createBurst(opts[ai]);
+    opts.forEach((o,oi)=>{if(pages[pi].quizA[oi].c)o.classList.add('correct');o.style.pointerEvents='none';});
+  } else {
+    r.innerHTML='❌ Ops! Tente de novo! '+pages[pi].quizExp;r.style.color='#FF6B6B';
+    setTimeout(()=>{opts[ai].classList.remove('wrong');r.classList.remove('show');},1500);
+  }
+  r.classList.add('show');
+}
+
+// TAP
+function tapCard(el,safe,pi){
+  if(el.dataset.tapped==='true')return;el.dataset.tapped='true';
+  if(safe){el.classList.add('safe');addStars(1);createBurst(el);}
+  else{el.classList.add('danger');el.innerHTML='<div style="font-size:28px">⚠️</div><div class="tap-label">Perigo!</div>';}
+  const grid=document.getElementById(`game-${pi}`);
+  if([...grid.querySelectorAll('.tap-card')].every(c=>c.dataset.tapped==='true')){
+    const r=document.getElementById(`gr-${pi}`);r.innerHTML='🎉 Arrasou! Encontrou tudo!';r.style.color='#6BCB77';r.classList.add('show');
+  }
+}
+
+// STARS
+function addStars(n){
+  stars+=n;document.getElementById('starCount').textContent=stars;
+  const s=document.getElementById('scoreDisplay');s.style.animation='popCorrect .4s ease';setTimeout(()=>s.style.animation='',400);
+}
+function createBurst(el){
+  const r=el.getBoundingClientRect();
+  for(let i=0;i<6;i++){const s=document.createElement('div');s.className='star-burst';s.textContent='⭐';s.style.left=(r.left+r.width/2+Math.random()*60-30)+'px';s.style.top=(r.top+r.height/2+Math.random()*60-30)+'px';s.style.animationDelay=(i*.08)+'s';document.body.appendChild(s);setTimeout(()=>s.remove(),1000);}
+}
+
+// BADGE
+function showBadge(i,n,d){document.getElementById('badgeIcon').textContent=i;document.getElementById('badgeTitle').textContent=n;document.getElementById('badgeDesc').textContent=d;document.getElementById('badgePopup').classList.add('show');addStars(5);}
+function closeBadge(){document.getElementById('badgePopup').classList.remove('show');}
+
+// TOC
+function buildTOC(){
+  const list=document.getElementById('tocList');
+  const ch=[
+    {p:0,icon:"🇧🇷",name:"Capa"},
+    {p:1,icon:"🌎",name:"Bem-Vindo à Internet"},
+    {p:6,icon:"🎭",name:"Cap.1 Estranhos Online"},
+    {p:15,icon:"🔐",name:"Cap.2 Poder das Senhas"},
+    {p:23,icon:"🤫",name:"Cap.3 Mantenha em Segredo"},
+    {p:32,icon:"💚",name:"Cap.4 Seja Gentil Online"},
+    {p:41,icon:"👻",name:"Cap.5 Coisas Assustadoras"},
+    {p:49,icon:"🖱️",name:"Cap.6 Não Clique Nisso"},
+    {p:56,icon:"📱",name:"Cap.7 Golpes WhatsApp/PIX"},
+    {p:64,icon:"📲",name:"Cap.8 Cuidado com Apps"},
+    {p:71,icon:"⏰",name:"Cap.9 Equilíbrio na Tela"},
+    {p:77,icon:"🎮",name:"Cap.10 Jogos Online"},
+    {p:84,icon:"📡",name:"Cap.11 Proteja Seu Aparelho"},
+    {p:90,icon:"⚖️",name:"Cap.12 Leis Brasileiras"},
+    {p:94,icon:"🏠",name:"Cap.13 Aparelhos Inteligentes"},
+    {p:98,icon:"🦸",name:"Final: CyberHerói Brasileiro!"},
+    {p:101,icon:"🎓",name:"Certificado"}
+  ];
+  list.innerHTML=ch.map(c=>`<div class="toc-chapter" onclick="goToPage(${c.p});toggleTOC();"><span class="ch-icon">${c.icon}</span>${c.name}<span style="margin-left:auto;opacity:.5;font-size:12px;">p.${c.p+1}</span></div>`).join('');
+}
+function toggleTOC(){document.getElementById('tocModal').classList.toggle('show');}
+
+// CERTIFICADO
+function generateCertKids(){
+  const name=document.getElementById('certNameKids').value.trim();
+  if(!name){document.getElementById('certNameKids').style.borderColor='#FF6B6B';return;}
+  const date=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('certKidsName').textContent=name;
+  document.getElementById('certKidsDate').textContent=date;
+  document.getElementById('certKidsOverlay').style.display='flex';
+}
+function printCertKids(){
+  const cert=document.getElementById('certKidsPrint');
+  const w=window.open('','','width=1000,height=700');
+  w.document.write('<!DOCTYPE html><html><head><title>Certificado CyberEscudo</title><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;font-family:Quicksand,sans-serif;}@media print{body{background:white;}.no-print{display:none!important;}}</style></head><body>');
+  w.document.write(cert.outerHTML);
+  w.document.write('<div class="no-print" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);"><button onclick="window.print()" style="padding:14px 40px;border:none;border-radius:14px;background:#009739;color:white;font-family:Baloo 2,cursive;font-size:18px;font-weight:700;cursor:pointer;">🖨️ Imprimir / Salvar PDF</button></div></body></html>');
+  w.document.close();
+}
+function closeCertKids(){document.getElementById('certKidsOverlay').style.display='none';}
+
+renderPages();
+</script>
+</body>
+</html>

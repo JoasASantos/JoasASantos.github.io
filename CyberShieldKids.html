@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberShield Adventures - Stay Safe Online!</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --coral:#FF6B6B; --teal:#4ECDC4; --sun:#FFE66D; --purple:#A78BFA;
+  --green:#6BCB77; --blue:#4D96FF; --pink:#FF85A1; --orange:#FF9F43;
+  --dark:#2D3436; --light:#FFF9F0; --soft-blue:#E8F4FD; --soft-pink:#FFF0F3;
+  --soft-green:#E8F8E8; --soft-purple:#F3EEFF; --soft-orange:#FFF3E0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Quicksand',sans-serif;background:#1a1a2e;overflow:hidden;height:100vh;width:100vw;display:flex;align-items:center;justify-content:center;user-select:none;}
+h1,h2,h3,.title-text{font-family:'Baloo 2',cursive;}
+
+.book-container{width:100vw;height:100vh;position:relative;overflow:hidden;}
+.page{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 30px;opacity:0;pointer-events:none;transition:opacity .6s ease, transform .6s ease;transform:scale(.95);overflow-y:auto;}
+.page.active{opacity:1;pointer-events:auto;transform:scale(1);}
+.page.exit-left{opacity:0;transform:translateX(-100%) scale(.9);}
+.page.exit-right{opacity:0;transform:translateX(100%) scale(.9);}
+
+/* Navigation */
+.nav-bar{position:fixed;bottom:0;left:0;right:0;height:70px;background:rgba(0,0,0,.3);backdrop-filter:blur(15px);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:1000;border-top:2px solid rgba(255,255,255,.1);}
+.nav-btn{background:none;border:none;cursor:pointer;font-size:40px;color:white;transition:all .3s;padding:8px 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.nav-btn:hover{background:rgba(255,255,255,.15);transform:scale(1.15);}
+.nav-btn:active{transform:scale(.95);}
+.nav-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
+.page-indicator{color:white;font-family:'Baloo 2',cursive;font-size:18px;background:rgba(255,255,255,.12);padding:6px 18px;border-radius:20px;}
+.progress-bar{position:fixed;top:0;left:0;height:5px;background:linear-gradient(90deg,var(--teal),var(--sun),var(--coral));z-index:1001;transition:width .4s ease;border-radius:0 3px 3px 0;}
+
+/* Stars / Score */
+.score-display{position:fixed;top:12px;right:16px;z-index:1001;background:rgba(0,0,0,.35);backdrop-filter:blur(10px);padding:8px 18px;border-radius:25px;color:var(--sun);font-family:'Baloo 2',cursive;font-size:18px;display:flex;align-items:center;gap:8px;border:2px solid rgba(255,230,109,.3);}
+
+/* TOC Button */
+.toc-btn{position:fixed;top:12px;left:16px;z-index:1001;background:rgba(0,0,0,.35);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.15);color:white;font-family:'Baloo 2',cursive;font-size:16px;padding:8px 18px;border-radius:25px;cursor:pointer;transition:all .3s;}
+.toc-btn:hover{background:rgba(255,255,255,.15);transform:scale(1.05);}
+
+/* TOC Modal */
+.toc-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:2000;display:none;align-items:center;justify-content:center;}
+.toc-modal.show{display:flex;}
+.toc-content{background:var(--light);border-radius:24px;padding:30px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;position:relative;}
+.toc-content h2{font-size:28px;color:var(--dark);margin-bottom:16px;text-align:center;}
+.toc-chapter{padding:10px 16px;margin:4px 0;border-radius:12px;cursor:pointer;font-family:'Baloo 2',cursive;font-size:16px;transition:all .2s;display:flex;align-items:center;gap:10px;}
+.toc-chapter:hover{background:var(--soft-blue);transform:translateX(5px);}
+.toc-chapter .ch-icon{font-size:24px;}
+.toc-close{position:absolute;top:12px;right:16px;font-size:28px;cursor:pointer;color:var(--dark);background:none;border:none;}
+
+/* Page Styles */
+.page-content{max-width:700px;width:100%;text-align:center;position:relative;}
+.page-title{font-size:clamp(28px,5vw,42px);margin-bottom:16px;line-height:1.2;}
+.page-subtitle{font-size:clamp(16px,3vw,22px);margin-bottom:12px;opacity:.85;font-weight:600;}
+.page-text{font-size:clamp(16px,2.8vw,22px);line-height:1.6;margin-bottom:16px;font-weight:500;}
+.page-tip{background:rgba(255,255,255,.2);border-radius:20px;padding:16px 24px;font-size:clamp(15px,2.5vw,20px);margin:12px 0;border:2px dashed rgba(255,255,255,.3);line-height:1.5;font-weight:600;}
+.page-tip .tip-icon{font-size:28px;display:block;margin-bottom:4px;}
+
+/* Illustration container */
+.illust{width:200px;height:200px;margin:0 auto 20px;position:relative;display:flex;align-items:center;justify-content:center;}
+.illust svg{width:100%;height:100%;filter:drop-shadow(0 8px 20px rgba(0,0,0,.15));}
+
+/* Quiz Styles */
+.quiz-container{width:100%;max-width:500px;margin:0 auto;}
+.quiz-option{background:rgba(255,255,255,.18);border:3px solid rgba(255,255,255,.25);border-radius:18px;padding:14px 22px;margin:10px 0;cursor:pointer;font-size:clamp(15px,2.5vw,20px);font-family:'Quicksand',sans-serif;font-weight:600;color:white;transition:all .3s;display:flex;align-items:center;gap:12px;text-align:left;}
+.quiz-option:hover{background:rgba(255,255,255,.28);transform:translateX(8px);border-color:rgba(255,255,255,.5);}
+.quiz-option.correct{background:rgba(107,203,119,.5);border-color:var(--green);animation:popCorrect .5s ease;}
+.quiz-option.wrong{background:rgba(255,107,107,.4);border-color:var(--coral);animation:shake .5s ease;}
+.quiz-option .opt-letter{background:rgba(255,255,255,.2);width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-size:18px;flex-shrink:0;}
+.quiz-result{font-size:24px;margin-top:16px;font-family:'Baloo 2',cursive;opacity:0;transition:opacity .3s;}
+.quiz-result.show{opacity:1;}
+
+/* Mini Game Styles */
+.game-area{width:100%;max-width:500px;margin:0 auto;position:relative;}
+.drag-item{padding:12px 20px;background:rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.3);border-radius:14px;margin:8px;cursor:grab;font-weight:600;font-size:17px;display:inline-block;transition:all .3s;user-select:none;}
+.drag-item:active{cursor:grabbing;transform:scale(1.08);}
+.drop-zone{min-height:60px;border:3px dashed rgba(255,255,255,.3);border-radius:16px;padding:12px;margin:10px 0;transition:all .3s;}
+.drop-zone.over{border-color:var(--sun);background:rgba(255,230,109,.15);}
+.drop-zone.filled{border-style:solid;border-color:var(--green);background:rgba(107,203,119,.2);}
+
+/* Tap game */
+.tap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:350px;margin:0 auto;}
+.tap-card{aspect-ratio:1;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:40px;cursor:pointer;transition:all .3s;border:3px solid rgba(255,255,255,.2);background:rgba(255,255,255,.15);}
+.tap-card:hover{transform:scale(1.06);}
+.tap-card.safe{background:rgba(107,203,119,.5);border-color:var(--green);animation:popCorrect .4s ease;}
+.tap-card.danger{background:rgba(255,107,107,.5);border-color:var(--coral);animation:shake .4s ease;}
+
+/* Animations */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@keyframes popCorrect{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+@keyframes sparkle{0%,100%{opacity:0;transform:scale(0) rotate(0deg)}50%{opacity:1;transform:scale(1) rotate(180deg)}}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounceIn{0%{opacity:0;transform:scale(.3)}50%{transform:scale(1.08)}70%{transform:scale(.95)}100%{opacity:1;transform:scale(1)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+@keyframes starBurst{0%{opacity:1;transform:scale(0) rotate(0)}100%{opacity:0;transform:scale(2) rotate(180deg)}}
+@keyframes rainbowBg{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+
+.float{animation:float 3s ease-in-out infinite;}
+.pulse{animation:pulse 2s ease-in-out infinite;}
+.wiggle{animation:wiggle 1s ease-in-out infinite;}
+.slide-up{animation:slideUp .8s ease both;}
+.bounce-in{animation:bounceIn .8s ease both;}
+
+/* Star burst effect */
+.star-burst{position:fixed;pointer-events:none;z-index:3000;font-size:30px;animation:starBurst .8s ease forwards;}
+
+/* Badge / Achievement */
+.badge-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:linear-gradient(135deg,var(--sun),var(--orange));border-radius:24px;padding:30px 40px;z-index:3000;text-align:center;transition:transform .5s cubic-bezier(.68,-.55,.27,1.55);box-shadow:0 20px 60px rgba(0,0,0,.4);}
+.badge-popup.show{transform:translate(-50%,-50%) scale(1);}
+.badge-popup h3{font-family:'Baloo 2',cursive;font-size:28px;color:var(--dark);}
+.badge-popup p{font-size:18px;color:var(--dark);opacity:.8;margin-top:4px;}
+.badge-popup .badge-icon{font-size:60px;display:block;margin-bottom:8px;}
+.badge-close{margin-top:14px;padding:8px 28px;border:none;border-radius:14px;background:var(--dark);color:white;font-family:'Baloo 2',cursive;font-size:18px;cursor:pointer;}
+
+/* Specific page themes */
+.theme-coral{background:linear-gradient(135deg,#FF6B6B,#ee5a24);}
+.theme-teal{background:linear-gradient(135deg,#4ECDC4,#0abde3);}
+.theme-purple{background:linear-gradient(135deg,#A78BFA,#6c5ce7);}
+.theme-green{background:linear-gradient(135deg,#6BCB77,#1dd1a1);}
+.theme-blue{background:linear-gradient(135deg,#4D96FF,#0984e3);}
+.theme-pink{background:linear-gradient(135deg,#FF85A1,#fd79a8);}
+.theme-orange{background:linear-gradient(135deg,#FF9F43,#e17055);}
+.theme-sun{background:linear-gradient(135deg,#FFE66D,#fdcb6e);}
+.theme-dark{background:linear-gradient(135deg,#2D3436,#636e72);}
+.theme-rainbow{background:linear-gradient(135deg,#FF6B6B,#FFE66D,#6BCB77,#4D96FF,#A78BFA);background-size:400% 400%;animation:rainbowBg 6s ease infinite;}
+.theme-night{background:linear-gradient(135deg,#0c0c1d,#1a1a3e,#2d2b55);}
+.theme-forest{background:linear-gradient(135deg,#2d5016,#4a7c23,#6BCB77);}
+.theme-ocean{background:linear-gradient(135deg,#006994,#0abde3,#48dbfb);}
+.theme-sunset{background:linear-gradient(135deg,#e17055,#fdcb6e,#fd79a8);}
+.theme-candy{background:linear-gradient(135deg,#fd79a8,#a29bfe,#81ecec);}
+
+.page{color:white;text-shadow:0 1px 3px rgba(0,0,0,.2);}
+.page.theme-sun{color:var(--dark);text-shadow:none;}
+.page.theme-sun .quiz-option,.page.theme-sun .drag-item{color:var(--dark);}
+
+/* Decorative elements */
+.deco{position:absolute;pointer-events:none;opacity:.15;font-size:40px;}
+
+/* Responsive */
+@media(max-width:600px){
+  .page{padding:60px 20px 90px;}
+  .illust{width:150px;height:150px;}
+  .nav-bar{height:60px;}
+  .page-title{font-size:26px;}
+}
+@media(min-width:1200px){
+  .page-content{max-width:800px;}
+  .illust{width:240px;height:240px;}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="score-display" id="scoreDisplay">⭐ <span id="starCount">0</span></div>
+<button class="toc-btn" id="tocBtn" onclick="toggleTOC()">📖 Chapters</button>
+
+<div class="toc-modal" id="tocModal">
+  <div class="toc-content" id="tocContent">
+    <button class="toc-close" onclick="toggleTOC()">✕</button>
+    <h2>📖 Table of Contents</h2>
+    <div id="tocList"></div>
+  </div>
+</div>
+
+<div class="badge-popup" id="badgePopup">
+  <span class="badge-icon" id="badgeIcon">🏆</span>
+  <h3 id="badgeTitle">Badge Earned!</h3>
+  <p id="badgeDesc">You're amazing!</p>
+  <button class="badge-close" onclick="closeBadge()">Yay! 🎉</button>
+</div>
+
+<div class="book-container" id="bookContainer"></div>
+
+<nav class="nav-bar">
+  <button class="nav-btn" id="prevBtn" onclick="prevPage()">◀</button>
+  <span class="page-indicator" id="pageIndicator">1 / 100</span>
+  <button class="nav-btn" id="nextBtn" onclick="nextPage()">▶</button>
+</nav>
+
+<div id="certKidsOverlay" style="position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:3000;display:none;align-items:center;justify-content:center;">
+<div style="background:white;border-radius:24px;max-width:680px;width:94%;max-height:92vh;overflow-y:auto;position:relative;">
+<button onclick="closeCertKids()" style="position:absolute;top:10px;right:14px;background:none;border:none;font-size:26px;cursor:pointer;color:#666;z-index:5;">✕</button>
+<div id="certKidsPrint" style="background:white;padding:36px;text-align:center;position:relative;overflow:hidden;border-radius:24px;">
+<div style="position:absolute;inset:10px;border:4px solid #4ECDC4;border-radius:16px;pointer-events:none;"></div>
+<div style="position:absolute;inset:18px;border:2px dashed #FFE66D;border-radius:12px;pointer-events:none;"></div>
+<div style="position:relative;z-index:2;">
+<div style="font-size:50px;margin-bottom:4px;">🛡️⭐</div>
+<h1 style="font-family:'Baloo 2',cursive;font-size:30px;font-weight:800;color:#4ECDC4;margin-bottom:0;">CyberShield</h1>
+<p style="font-family:'Quicksand',sans-serif;font-size:12px;letter-spacing:3px;color:#888;text-transform:uppercase;margin-bottom:18px;">Adventures · Stay Safe Online!</p>
+<p style="font-family:'Quicksand',sans-serif;font-size:14px;color:#666;margin-bottom:6px;">This certifies that</p>
+<h2 id="certKidsName" style="font-family:'Baloo 2',cursive;font-size:clamp(24px,5vw,38px);font-weight:800;color:#2D3436;margin:8px 0;padding:10px 0;border-top:3px solid #FFE66D;border-bottom:3px solid #FFE66D;">Name</h2>
+<p style="font-family:'Quicksand',sans-serif;font-size:15px;color:#444;line-height:1.7;max-width:460px;margin:14px auto;">has successfully completed <strong>CyberShield Adventures</strong> and is now an official <strong style="color:#4ECDC4;">CyberShield Hero</strong>! 🦸‍♂️⭐</p>
+<div style="font-size:40px;margin:14px 0;">🏆⭐🛡️</div>
+<div style="display:flex;justify-content:center;gap:36px;margin:16px 0;flex-wrap:wrap;">
+<div><p style="font-family:'Baloo 2',cursive;font-weight:700;font-size:14px;color:#4ECDC4;">CyberHero 🦸</p><p style="font-size:11px;color:#888;">Level Achieved</p></div>
+<div><p id="certKidsDate" style="font-family:'Baloo 2',cursive;font-weight:700;font-size:14px;color:#4ECDC4;">Date</p><p style="font-size:11px;color:#888;">Date of Completion</p></div>
+</div>
+<div style="margin-top:12px;padding-top:12px;border-top:2px solid #eee;">
+<p style="font-size:11px;color:#888;">Created by <strong style="color:#2D3436;">Joas Antonio dos Santos</strong> · Founder Red Team Leaders</p>
+<p style="font-size:10px;color:#aaa;margin-top:2px;">joasantonio.com</p>
+</div>
+</div>
+</div>
+<div style="text-align:center;padding:10px 20px 18px;">
+<button onclick="printCertKids()" style="padding:12px 34px;border:none;border-radius:14px;background:#4ECDC4;color:white;font-family:'Baloo 2',cursive;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(78,205,196,.3);">🖨️ Print / Save as PDF</button>
+</div>
+</div>
+</div>
+
+<script>
+// ========== DATA ==========
+let currentPage = 0;
+let stars = 0;
+let answeredQuizzes = new Set();
+let earnedBadges = new Set();
+
+const THEMES = ['theme-coral','theme-teal','theme-purple','theme-green','theme-blue','theme-pink','theme-orange','theme-sun','theme-dark','theme-rainbow','theme-night','theme-forest','theme-ocean','theme-sunset','theme-candy'];
+
+// SVG illustrations as functions
+const SVG = {
+  shield: `<svg viewBox="0 0 200 200"><defs><linearGradient id="sg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#4ECDC4"/><stop offset="100%" stop-color="#0abde3"/></linearGradient></defs><path d="M100 20 L170 55 L170 110 C170 150 140 180 100 195 C60 180 30 150 30 110 L30 55 Z" fill="url(#sg1)" stroke="white" stroke-width="4"/><circle cx="100" cy="105" r="30" fill="white" opacity=".3"/><text x="100" y="115" text-anchor="middle" font-size="36" fill="white">🛡️</text><circle cx="65" cy="80" r="8" fill="white"/><circle cx="135" cy="80" r="8" fill="white"/><path d="M80 135 Q100 155 120 135" stroke="white" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
+  computer: `<svg viewBox="0 0 200 200"><rect x="30" y="30" width="140" height="100" rx="10" fill="#2D3436" stroke="white" stroke-width="3"/><rect x="40" y="40" width="120" height="75" rx="5" fill="#4D96FF"/><rect x="70" y="140" width="60" height="10" rx="3" fill="#636e72"/><rect x="55" y="150" width="90" height="8" rx="4" fill="#636e72"/><circle cx="100" cy="75" r="20" fill="white" opacity=".3"/><text x="100" y="83" text-anchor="middle" font-size="24">😊</text></svg>`,
+  stranger: `<svg viewBox="0 0 200 200"><circle cx="100" cy="70" r="40" fill="#636e72"/><rect x="65" y="110" width="70" height="70" rx="10" fill="#636e72"/><circle cx="85" cy="65" r="6" fill="white"/><circle cx="115" cy="65" r="6" fill="white"/><text x="100" y="90" text-anchor="middle" font-size="20" fill="white">?</text><text x="100" y="50" text-anchor="middle" font-size="30">🎭</text></svg>`,
+  lock: `<svg viewBox="0 0 200 200"><rect x="50" y="90" width="100" height="80" rx="12" fill="#FFE66D" stroke="#e17055" stroke-width="3"/><path d="M70 90 V65 C70 40 130 40 130 65 V90" fill="none" stroke="#e17055" stroke-width="8" stroke-linecap="round"/><circle cx="100" cy="125" r="12" fill="#e17055"/><rect x="96" y="125" width="8" height="20" rx="3" fill="#e17055"/></svg>`,
+  heart: `<svg viewBox="0 0 200 200"><path d="M100 170 C30 120 10 80 40 50 C60 30 90 40 100 65 C110 40 140 30 160 50 C190 80 170 120 100 170Z" fill="#FF85A1" stroke="white" stroke-width="3"/><text x="100" y="115" text-anchor="middle" font-size="40">💕</text></svg>`,
+  warning: `<svg viewBox="0 0 200 200"><path d="M100 30 L180 170 L20 170 Z" fill="#FFE66D" stroke="#e17055" stroke-width="3"/><text x="100" y="130" text-anchor="middle" font-size="50" fill="#e17055">!</text></svg>`,
+  phone: `<svg viewBox="0 0 200 200"><rect x="60" y="20" width="80" height="160" rx="14" fill="#2D3436" stroke="white" stroke-width="3"/><rect x="68" y="40" width="64" height="110" rx="4" fill="#A78BFA"/><circle cx="100" cy="165" r="8" fill="#636e72"/><text x="100" y="100" text-anchor="middle" font-size="36">📱</text></svg>`,
+  eye: `<svg viewBox="0 0 200 200"><ellipse cx="100" cy="100" rx="70" ry="45" fill="white" stroke="#4D96FF" stroke-width="3"/><circle cx="100" cy="100" r="25" fill="#4D96FF"/><circle cx="100" cy="100" r="12" fill="#2D3436"/><circle cx="110" cy="92" r="6" fill="white" opacity=".6"/></svg>`,
+  trophy: `<svg viewBox="0 0 200 200"><rect x="80" y="130" width="40" height="30" rx="3" fill="#e17055"/><rect x="70" y="155" width="60" height="15" rx="5" fill="#e17055"/><path d="M60 50 L60 100 C60 130 100 145 100 145 C100 145 140 130 140 100 L140 50 Z" fill="#FFE66D" stroke="#e17055" stroke-width="3"/><path d="M60 65 C40 65 30 85 40 100 C45 108 55 105 60 100" fill="#FFE66D" stroke="#e17055" stroke-width="3"/><path d="M140 65 C160 65 170 85 160 100 C155 108 145 105 140 100" fill="#FFE66D" stroke="#e17055" stroke-width="3"/><text x="100" y="105" text-anchor="middle" font-size="36">⭐</text></svg>`,
+  globe: `<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="70" fill="#4D96FF" stroke="white" stroke-width="3"/><ellipse cx="100" cy="100" rx="35" ry="70" fill="none" stroke="white" stroke-width="2" opacity=".4"/><line x1="30" y1="100" x2="170" y2="100" stroke="white" stroke-width="2" opacity=".4"/><ellipse cx="100" cy="70" rx="55" ry="15" fill="none" stroke="white" stroke-width="2" opacity=".3"/><ellipse cx="100" cy="130" rx="55" ry="15" fill="none" stroke="white" stroke-width="2" opacity=".3"/><text x="100" y="110" text-anchor="middle" font-size="36">🌍</text></svg>`,
+  robot: `<svg viewBox="0 0 200 200"><rect x="55" y="60" width="90" height="90" rx="15" fill="#636e72" stroke="white" stroke-width="3"/><rect x="40" y="90" width="15" height="30" rx="5" fill="#636e72"/><rect x="145" y="90" width="15" height="30" rx="5" fill="#636e72"/><circle cx="82" cy="95" r="12" fill="#FF6B6B"/><circle cx="118" cy="95" r="12" fill="#FF6B6B"/><rect x="78" y="120" width="44" height="10" rx="5" fill="white" opacity=".5"/><line x1="100" y1="35" x2="100" y2="60" stroke="#636e72" stroke-width="4"/><circle cx="100" cy="30" r="8" fill="#FFE66D"/></svg>`,
+  book: `<svg viewBox="0 0 200 200"><path d="M30 40 C30 40 100 30 100 50 L100 170 C100 150 30 160 30 160Z" fill="#4ECDC4" stroke="white" stroke-width="2"/><path d="M170 40 C170 40 100 30 100 50 L100 170 C100 150 170 160 170 160Z" fill="#0abde3" stroke="white" stroke-width="2"/><line x1="50" y1="70" x2="85" y2="65" stroke="white" stroke-width="2" opacity=".5"/><line x1="50" y1="90" x2="85" y2="85" stroke="white" stroke-width="2" opacity=".5"/><line x1="50" y1="110" x2="85" y2="105" stroke="white" stroke-width="2" opacity=".5"/><line x1="115" y1="65" x2="150" y2="70" stroke="white" stroke-width="2" opacity=".5"/><line x1="115" y1="85" x2="150" y2="90" stroke="white" stroke-width="2" opacity=".5"/></svg>`,
+  camera: `<svg viewBox="0 0 200 200"><rect x="35" y="65" width="130" height="90" rx="14" fill="#636e72" stroke="white" stroke-width="3"/><circle cx="100" cy="110" r="28" fill="#2D3436" stroke="white" stroke-width="3"/><circle cx="100" cy="110" r="18" fill="#4D96FF"/><circle cx="107" cy="103" r="5" fill="white" opacity=".5"/><rect x="75" y="55" width="40" height="15" rx="5" fill="#636e72" stroke="white" stroke-width="2"/><circle cx="145" cy="80" r="6" fill="#FF6B6B"/></svg>`,
+  map: `<svg viewBox="0 0 200 200"><path d="M40 40 L100 30 L160 40 L160 160 L100 170 L40 160Z" fill="#6BCB77" stroke="white" stroke-width="2"/><line x1="100" y1="30" x2="100" y2="170" stroke="white" stroke-width="2" opacity=".4"/><circle cx="80" cy="90" r="15" fill="#FF6B6B" opacity=".7"/><circle cx="120" cy="70" r="10" fill="#4D96FF" opacity=".7"/><text x="80" y="96" text-anchor="middle" font-size="16" fill="white">📍</text></svg>`,
+  coin: `<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="60" fill="#FFE66D" stroke="#e17055" stroke-width="4"/><circle cx="100" cy="100" r="48" fill="none" stroke="#e17055" stroke-width="2" opacity=".4"/><text x="100" y="115" text-anchor="middle" font-size="45" fill="#e17055" font-family="'Baloo 2',cursive">$</text></svg>`,
+  wifi: `<svg viewBox="0 0 200 200"><circle cx="100" cy="150" r="10" fill="white"/><path d="M70 130 C70 115 130 115 130 130" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/><path d="M50 110 C50 85 150 85 150 110" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/><path d="M30 90 C30 55 170 55 170 90" fill="none" stroke="white" stroke-width="6" stroke-linecap="round"/></svg>`,
+  gamepad: `<svg viewBox="0 0 200 200"><rect x="30" y="65" width="140" height="80" rx="25" fill="#636e72" stroke="white" stroke-width="3"/><circle cx="70" cy="100" r="15" fill="#2D3436"/><rect x="62" y="93" width="16" height="14" rx="2" fill="#4D96FF"/><circle cx="130" cy="100" r="8" fill="#FF6B6B"/><circle cx="150" cy="100" r="8" fill="#6BCB77"/><circle cx="140" cy="85" r="8" fill="#FFE66D"/><circle cx="140" cy="115" r="8" fill="#4D96FF"/></svg>`,
+  megaphone: `<svg viewBox="0 0 200 200"><path d="M50 80 L50 130 L80 130 L140 170 L140 40 L80 80Z" fill="#FF9F43" stroke="white" stroke-width="3"/><rect x="140" y="85" width="30" height="40" rx="8" fill="#e17055"/><line x1="175" y1="90" x2="190" y2="80" stroke="#e17055" stroke-width="3" stroke-linecap="round"/><line x1="175" y1="105" x2="195" y2="105" stroke="#e17055" stroke-width="3" stroke-linecap="round"/><line x1="175" y1="120" x2="190" y2="130" stroke="#e17055" stroke-width="3" stroke-linecap="round"/></svg>`,
+  clock: `<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="65" fill="white" stroke="#4D96FF" stroke-width="4"/><circle cx="100" cy="100" r="5" fill="#2D3436"/><line x1="100" y1="100" x2="100" y2="55" stroke="#2D3436" stroke-width="4" stroke-linecap="round"/><line x1="100" y1="100" x2="135" y2="100" stroke="#FF6B6B" stroke-width="3" stroke-linecap="round"/><text x="100" y="25" text-anchor="middle" font-size="18" fill="#2D3436">12</text><text x="168" y="106" text-anchor="middle" font-size="18" fill="#2D3436">3</text><text x="100" y="185" text-anchor="middle" font-size="18" fill="#2D3436">6</text><text x="32" y="106" text-anchor="middle" font-size="18" fill="#2D3436">9</text></svg>`,
+  email: `<svg viewBox="0 0 200 200"><rect x="30" y="55" width="140" height="100" rx="10" fill="white" stroke="#4D96FF" stroke-width="3"/><path d="M30 65 L100 115 L170 65" fill="none" stroke="#4D96FF" stroke-width="3"/><circle cx="150" cy="60" r="18" fill="#FF6B6B"/><text x="150" y="66" text-anchor="middle" font-size="16" fill="white" font-weight="bold">!</text></svg>`,
+  fingerprint: `<svg viewBox="0 0 200 200"><circle cx="100" cy="100" r="60" fill="none" stroke="white" stroke-width="2" opacity=".3"/><path d="M70 120 C70 80 130 80 130 120" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M80 125 C80 95 120 95 120 125" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/><path d="M90 128 C90 108 110 108 110 128" fill="none" stroke="white" stroke-width="4" stroke-linecap="round"/><line x1="100" y1="115" x2="100" y2="140" stroke="white" stroke-width="4" stroke-linecap="round"/></svg>`,
+  chat: `<svg viewBox="0 0 200 200"><rect x="30" y="40" width="120" height="70" rx="15" fill="white" opacity=".9"/><polygon points="50,110 70,110 55,130" fill="white" opacity=".9"/><circle cx="60" cy="75" r="6" fill="#4ECDC4"/><circle cx="85" cy="75" r="6" fill="#4ECDC4"/><circle cx="110" cy="75" r="6" fill="#4ECDC4"/><rect x="70" y="100" width="110" height="60" rx="15" fill="#4ECDC4"/><polygon points="150,160 140,160 155,178" fill="#4ECDC4"/><text x="125" y="136" text-anchor="middle" font-size="20" fill="white">Hi! 👋</text></svg>`,
+  family: `<svg viewBox="0 0 200 200"><circle cx="70" cy="60" r="22" fill="#4D96FF"/><rect x="52" y="85" width="36" height="50" rx="8" fill="#4D96FF"/><circle cx="130" cy="60" r="22" fill="#FF85A1"/><rect x="112" y="85" width="36" height="50" rx="8" fill="#FF85A1"/><circle cx="100" cy="95" r="16" fill="#FFE66D"/><rect x="88" y="112" width="24" height="35" rx="6" fill="#FFE66D"/><text x="70" y="67" text-anchor="middle" font-size="18">😊</text><text x="130" y="67" text-anchor="middle" font-size="18">😊</text><text x="100" y="101" text-anchor="middle" font-size="14">😄</text></svg>`
+};
+
+// ========== PAGE DATA ==========
+const pages = [
+// COVER
+{t:"theme-night", svg:"shield", title:"🛡️ CyberShield Adventures", sub:"The Ultimate Guide to Staying Safe Online!", text:"A fun storybook for brave little heroes!\nBy kids, for kids 🌟", anim:"bounce-in", type:"cover", author:true},
+
+// INTRO PAGES 2-5
+{t:"theme-ocean", svg:"globe", title:"🌍 Welcome to the Internet!", text:"The internet is like a HUGE playground where you can learn, play, and talk to people!", tip:"But just like a real playground, there are rules to keep you safe! 🎯", anim:"slide-up"},
+{t:"theme-teal", svg:"shield", title:"Meet Shield! 🛡️", text:"I'm Shield, your cyber buddy! I'll teach you how to stay safe online. Ready for an adventure?", tip:"Every time you learn something new, you earn ⭐ stars!", anim:"float"},
+{t:"theme-candy", svg:"book", title:"How This Book Works 📖", text:"Read each page with Mom or Dad!\nAnswer quizzes to earn stars ⭐\nPlay games to become a CyberHero! 🦸", tip:"Tap the arrows to turn pages. Let's go! ➡️", anim:"slide-up"},
+{t:"theme-sunset", svg:"family", title:"👨‍👩‍👧 Your Safety Team", text:"Your parents, teachers, and trusted grown-ups are your SAFETY TEAM! Always tell them if something feels wrong online.", tip:"Rule #1: If it feels weird, TELL A GROWN-UP! 🗣️", anim:"float"},
+
+// CH 1: STRANGER DANGER (6-14)
+{t:"theme-coral", title:"📕 Chapter 1", sub:"Stranger Danger Online!", text:"Let's learn about people you don't know on the internet...", anim:"bounce-in", type:"chapter", badge:{icon:"🎭", name:"Stranger Spotter", desc:"You can spot online strangers!"}},
+{t:"theme-dark", svg:"stranger", title:"🎭 Who Are They Really?", text:"Online, people can PRETEND to be anyone! A grown-up could say they're a kid. You can't see their real face.", tip:"Not everyone online is who they say they are!", anim:"slide-up"},
+{t:"theme-coral", svg:"chat", title:"💬 'Hey, wanna be friends?'", text:"Sometimes strangers say nice things to trick you. They might say: 'You're so cool!' or 'I have a gift for you!'", tip:"Real friends don't ask you to keep secrets from Mom and Dad! 🚫", anim:"slide-up"},
+{t:"theme-dark", svg:"warning", title:"⚠️ Danger Signs!", text:"Watch out if someone:\n• Asks where you live\n• Wants to meet in person\n• Says 'Don't tell your parents'\n• Asks for photos of you", tip:"These are RED FLAGS! 🚩 Tell a grown-up RIGHT AWAY!", anim:"pulse"},
+{t:"theme-green", svg:"family", title:"✅ What To Do!", text:"If a stranger talks to you online:\n1. DON'T reply! 🚫\n2. TELL a parent right away! 🗣️\n3. BLOCK them! 🛑", tip:"You are NEVER in trouble for telling! Your parents will be PROUD of you! 💪", anim:"slide-up"},
+{t:"theme-teal", type:"quiz", title:"🧩 Quiz Time!", quizQ:"A stranger online says 'Let's meet at the park!' What do you do?", quizA:[{t:"Say 'Yes! Sounds fun!'",c:false},{t:"Tell Mom or Dad right away!",c:true},{t:"Ask them where the park is",c:false},{t:"Ignore it and keep playing",c:false}], quizExp:"ALWAYS tell a grown-up if someone wants to meet you! 🛡️"},
+{t:"theme-purple", type:"quiz", title:"🧩 Quick Check!", quizQ:"Who is safe to talk to online?", quizA:[{t:"Someone who says they're 8 years old",c:false},{t:"Your best friend from school",c:true},{t:"A stranger who sends you a gift",c:false},{t:"Someone who says 'Don't tell anyone'",c:false}], quizExp:"Only talk to people you KNOW in real life! 👫"},
+{t:"theme-blue", svg:"shield", title:"🌟 Stranger Danger Rules!", text:"Remember these 3 rules:\n🔴 Never share personal info\n🔴 Never meet someone from online\n🔴 Always tell a grown-up", tip:"Say it with me: 'I don't talk to strangers online!' 🗣️", anim:"float"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Tap the Safe Choices!", gameData:{items:[{emoji:"👨‍👩‍👧",label:"My family",safe:true},{emoji:"🎭",label:"Stranger",safe:false},{emoji:"👩‍🏫",label:"My teacher",safe:true},{emoji:"🤖",label:"Unknown person",safe:false},{emoji:"👦",label:"School friend",safe:true},{emoji:"🕵️",label:"Secret person",safe:false}]}},
+
+// CH 2: PASSWORD POWER (15-22)
+{t:"theme-purple", title:"📕 Chapter 2", sub:"Password Power! 🔐", text:"Let's learn how to make SUPER STRONG passwords!", anim:"bounce-in", type:"chapter", badge:{icon:"🔐", name:"Password Pro", desc:"You know how to make strong passwords!"}},
+{t:"theme-purple", svg:"lock", title:"🔑 What's a Password?", text:"A password is like a SECRET KEY to your stuff! It keeps your games, messages, and accounts safe from bad guys.", tip:"Your password is YOUR secret superpower! 💪", anim:"slide-up"},
+{t:"theme-blue", svg:"lock", title:"💪 Strong vs Weak Passwords", text:"❌ WEAK: 'password123' or '1234'\n✅ STRONG: 'PurpleDino$aurus7!'\n\nStrong passwords are long and have letters, numbers, and symbols!", tip:"Make it silly and fun so YOU remember it, but nobody can guess it!", anim:"slide-up"},
+{t:"theme-dark", svg:"warning", title:"🚫 Never Share Passwords!", text:"Your password is like your TOOTHBRUSH - you don't share it!\n\nNot with friends.\nNot with classmates.\nONLY with parents!", tip:"If someone asks for your password, say NO and tell a grown-up! 🛡️", anim:"pulse"},
+{t:"theme-green", svg:"shield", title:"🛡️ Password Tips!", text:"✨ Use a fun phrase: 'MyDog8Cookies!'\n✨ Add numbers and symbols\n✨ Make it LONG (8+ characters)\n✨ Never use your name or birthday", tip:"Different accounts = different passwords!", anim:"float"},
+{t:"theme-teal", type:"quiz", title:"🧩 Password Quiz!", quizQ:"Which is the STRONGEST password?", quizA:[{t:"Fluffy (my cat's name)",c:false},{t:"123456",c:false},{t:"Cr@zy!Unicorn42",c:true},{t:"password",c:false}], quizExp:"Cr@zy!Unicorn42 is strong because it has symbols, numbers, and is long! 🦄"},
+{t:"theme-coral", type:"quiz", title:"🧩 True or False?", quizQ:"It's okay to share your password with your best friend.", quizA:[{t:"TRUE - best friends are safe!",c:false},{t:"FALSE - only share with parents!",c:true}], quizExp:"Only Mom and Dad should know your password. Friends might accidentally share it! 🤫"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Tap the Strong Passwords!", gameData:{items:[{emoji:"🔐",label:"T!ger$Jump99",safe:true},{emoji:"❌",label:"123456",safe:false},{emoji:"🔐",label:"My!D0g#Fl1es",safe:true},{emoji:"❌",label:"password",safe:false},{emoji:"🔐",label:"R@inbow&42!",safe:true},{emoji:"❌",label:"abcdef",safe:false}]}},
+
+// CH 3: PERSONAL INFO (23-31)
+{t:"theme-green", title:"📕 Chapter 3", sub:"Keep It Private! 🤫", text:"Some things about you should stay SECRET online!", anim:"bounce-in", type:"chapter", badge:{icon:"🤫", name:"Privacy Master", desc:"You know what to keep private!"}},
+{t:"theme-green", svg:"fingerprint", title:"🤫 What's Personal Info?", text:"Personal info is stuff that tells people WHO you are and WHERE you are:\n\n📛 Your full name\n🏠 Your address\n🏫 Your school\n📞 Phone number", tip:"This info is like a treasure - keep it in a safe! 🔒", anim:"slide-up"},
+{t:"theme-forest", svg:"map", title:"📍 Why Keep It Secret?", text:"If bad people know where you live or go to school, they could find you in real life! That's scary and dangerous.", tip:"Never type your address or school name anywhere online! 🚫", anim:"slide-up"},
+{t:"theme-teal", svg:"camera", title:"📸 Photos Tell Secrets!", text:"Did you know photos can show:\n• Your school uniform 🏫\n• Your house number 🏠\n• Your street name 🛣️\n• Where you are right now 📍", tip:"Always check your photos before sharing! Ask a grown-up to help! 🔍", anim:"slide-up"},
+{t:"theme-dark", svg:"warning", title:"🆘 Tricky Questions!", text:"Sometimes websites or games ask for your info. They might say:\n'Enter your name to win!'\n'Where do you live?'\n'What school do you go to?'", tip:"STOP! Ask Mom or Dad before typing ANY info! ✋", anim:"pulse"},
+{t:"theme-blue", svg:"shield", title:"✅ The Safe Way!", text:"When a website asks for info:\n1. STOP and think ✋\n2. ASK a parent 🗣️\n3. Use a NICKNAME instead 🦸\n4. Never give your real address!", tip:"You can make up a cool username like 'StarNinja2018'! 🌟", anim:"float"},
+{t:"theme-purple", type:"quiz", title:"🧩 Privacy Quiz!", quizQ:"Which is safe to share online?", quizA:[{t:"Your home address",c:false},{t:"Your favorite color",c:true},{t:"Your school name",c:false},{t:"Your phone number",c:false}], quizExp:"Your favorite color is safe! It doesn't tell anyone where to find you! 🎨"},
+{t:"theme-coral", type:"quiz", title:"🧩 What Would You Do?", quizQ:"A game asks for your real name and address to send a 'prize'. What do you do?", quizA:[{t:"Type it in! Free prize!",c:false},{t:"Tell Mom or Dad first!",c:true},{t:"Ask a friend to type theirs",c:false}], quizExp:"NEVER enter your real info for a prize. It's probably a trick! Ask a parent! 🎁➡️🚫"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Safe or Not Safe to Share?", gameData:{items:[{emoji:"🎨",label:"Favorite color",safe:true},{emoji:"🏠",label:"Home address",safe:false},{emoji:"🐕",label:"Favorite animal",safe:true},{emoji:"📞",label:"Phone number",safe:false},{emoji:"🍕",label:"Favorite food",safe:true},{emoji:"🏫",label:"School name",safe:false}]}},
+
+// CH 4: CYBERBULLYING (32-40)
+{t:"theme-pink", title:"📕 Chapter 4", sub:"Be Kind Online! 💕", text:"The internet should be a HAPPY place for everyone!", anim:"bounce-in", type:"chapter", badge:{icon:"💕", name:"Kindness Hero", desc:"You spread kindness online!"}},
+{t:"theme-pink", svg:"heart", title:"💔 What is Cyberbullying?", text:"Cyberbullying is when someone is MEAN to you on the internet. They might:\n• Say hurtful words\n• Share embarrassing photos\n• Leave you out on purpose", tip:"Being mean online is just as bad as being mean in person! 😢", anim:"slide-up"},
+{t:"theme-dark", svg:"megaphone", title:"📢 Words Can Hurt!", text:"Even though you can't see someone's face online, your words still matter! Typing something mean can make someone cry just like saying it.", tip:"Before you type, think: 'Would this make someone smile or cry?' 🤔", anim:"slide-up"},
+{t:"theme-coral", svg:"warning", title:"😢 If Someone is Mean to You", text:"If someone bullies you online:\n1. DON'T reply to them! 🚫\n2. Take a SCREENSHOT 📸\n3. TELL a parent or teacher 🗣️\n4. BLOCK the bully 🛑", tip:"It's NOT your fault and you're NOT alone! You are BRAVE for telling! 💪", anim:"pulse"},
+{t:"theme-green", svg:"heart", title:"💚 Be a Kindness Hero!", text:"YOU can make the internet better!\n✨ Say nice things to friends\n✨ Stand up for others\n✨ Report mean comments\n✨ Include everyone!", tip:"One kind message can make someone's whole day! 🌈", anim:"float"},
+{t:"theme-teal", type:"quiz", title:"🧩 Kindness Quiz!", quizQ:"Someone posts a mean comment about your friend. What do you do?", quizA:[{t:"Like the comment",c:false},{t:"Write something meaner",c:false},{t:"Tell an adult and support your friend",c:true},{t:"Ignore it completely",c:false}], quizExp:"Stand up for your friends! Tell a grown-up and let your friend know you care! 💕"},
+{t:"theme-purple", type:"quiz", title:"🧩 Think Before You Type!", quizQ:"Which message is kind to send?", quizA:[{t:"Haha you look funny!",c:false},{t:"Great job on your drawing! 🎨",c:true},{t:"Nobody likes you",c:false},{t:"You're so weird",c:false}], quizExp:"Compliments make people happy! Spread love, not hate! 💖"},
+{t:"theme-sun", svg:"heart", title:"💛 The Golden Rule Online", text:"Treat others the way YOU want to be treated!\n\nWould you want someone to say THAT to you? If not, don't type it!", tip:"Be the reason someone smiles today! 😊🌟", anim:"float"},
+{t:"theme-candy", type:"tapgame", title:"🎮 Kind or Unkind?", gameData:{items:[{emoji:"😊",label:"'You're awesome!'",safe:true},{emoji:"😠",label:"'You're ugly!'",safe:false},{emoji:"💕",label:"'Great job!'",safe:true},{emoji:"👎",label:"'No one likes you'",safe:false},{emoji:"🌟",label:"'I believe in you!'",safe:true},{emoji:"😢",label:"'Go away!'",safe:false}]}},
+
+// CH 5: SCARY CONTENT (41-48)
+{t:"theme-dark", title:"📕 Chapter 5", sub:"Scary Stuff Online! 👻", text:"Sometimes you might see things that scare you. Let's learn what to do!", anim:"bounce-in", type:"chapter", badge:{icon:"👻", name:"Brave Browser", desc:"You know what to do with scary content!"}},
+{t:"theme-night", svg:"eye", title:"👀 Uh Oh, What's That?!", text:"Sometimes scary pictures, videos, or stories pop up when you don't expect them! This can happen to ANYONE.", tip:"Seeing scary stuff is NOT your fault! 🤗", anim:"slide-up"},
+{t:"theme-dark", svg:"warning", title:"🙈 What To Do!", text:"If you see something scary:\n1. CLOSE the screen! 💻❌\n2. WALK AWAY from the device 🚶\n3. TELL a parent right away 🗣️\n4. Take deep breaths 🌬️", tip:"It's okay to feel scared. Your parents will help you feel better! 💕", anim:"pulse"},
+{t:"theme-green", svg:"family", title:"🗣️ Talk About It!", text:"Don't keep scary feelings inside! Talk to Mom, Dad, or another trusted grown-up.\n\nThey won't be mad. They want to help you!", tip:"Brave kids talk about their feelings! You're so brave! 🦁", anim:"float"},
+{t:"theme-blue", svg:"shield", title:"🛡️ Kid-Safe Zones!", text:"Ask your parents to set up safe areas:\n✨ Kid-friendly YouTube\n✨ Safe search on Google\n✨ Parental controls\n✨ Approved apps only", tip:"Safe zones = happy browsing! 😊", anim:"slide-up"},
+{t:"theme-teal", type:"quiz", title:"🧩 Brave Browser Quiz!", quizQ:"You see a scary video pop up on your tablet. What's the FIRST thing you do?", quizA:[{t:"Keep watching to see what happens",c:false},{t:"Close or cover the screen immediately!",c:true},{t:"Show it to your friend",c:false},{t:"Search for more videos like it",c:false}], quizExp:"Close it right away! Then tell a parent. You don't need to see scary things! 🙈"},
+{t:"theme-coral", type:"quiz", title:"🧩 True or False?", quizQ:"It's YOUR fault if a scary picture pops up while you're online.", quizA:[{t:"TRUE - I should have been more careful",c:false},{t:"FALSE - It's NOT my fault!",c:true}], quizExp:"It is NEVER your fault! Pop-ups and scary content can appear to anyone. Just close it and tell a grown-up! 💕"},
+{t:"theme-sun", svg:"heart", title:"Remember! 💛", text:"The internet has LOTS of fun, happy things! A few scary things don't ruin all the good stuff.\n\nWith your parents' help, you can enjoy the internet safely!", tip:"You're not alone. Your Safety Team has your back! 🦸‍♂️🦸‍♀️", anim:"float"},
+
+// CH 6: CLICKING LINKS (49-55)
+{t:"theme-blue", title:"📕 Chapter 6", sub:"Don't Click That! 🖱️", text:"Some links and buttons on the internet are TRAPS!", anim:"bounce-in", type:"chapter", badge:{icon:"🖱️", name:"Click Detective", desc:"You know which links are safe!"}},
+{t:"theme-blue", svg:"warning", title:"🪤 Links Can Be Traps!", text:"Bad links might look fun:\n'YOU WON A PRIZE! CLICK HERE!'\n'FREE GAME! DOWNLOAD NOW!'\n'See this CUTE puppy video!'", tip:"If it sounds too good to be true, it probably is! 🚫", anim:"slide-up"},
+{t:"theme-dark", svg:"robot", title:"🤖 What Happens If You Click?", text:"Bad links can:\n😈 Put viruses on your device\n😈 Steal your info\n😈 Show you bad stuff\n😈 Cost your parents money!", tip:"A virus is like a computer cold - it makes everything sick! 🤒", anim:"pulse"},
+{t:"theme-green", svg:"shield", title:"✅ The Safe Click Rules!", text:"Before clicking ANYTHING:\n1. Ask yourself: 'Do I know where this goes?' 🤔\n2. Look for weird spelling ⚠️\n3. Ask a parent if unsure! 🗣️\n4. Stick to trusted websites! 🌟", tip:"When in doubt, DON'T click! Ask a grown-up first! ✋", anim:"float"},
+{t:"theme-teal", type:"quiz", title:"🧩 Click Quiz!", quizQ:"A pop-up says 'You won a FREE iPhone! Click now!' What do you do?", quizA:[{t:"Click it! Free phone!",c:false},{t:"Close it and tell a parent!",c:true},{t:"Click to see if it's real",c:false},{t:"Share it with friends",c:false}], quizExp:"It's a TRICK! Real prizes don't come from pop-ups. Close it! 🚫📱"},
+{t:"theme-purple", type:"quiz", title:"🧩 Safe or Tricky?", quizQ:"Which link is most likely safe?", quizA:[{t:"FR33-GAM3Z.weird-site.biz",c:false},{t:"pbskids.org",c:true},{t:"click-here-for-money.com",c:false},{t:"u-won-1000000.net",c:false}], quizExp:"Trusted sites like PBS Kids are safe! Weird names with misspellings are usually traps! 🕵️"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Safe Click or Trap?", gameData:{items:[{emoji:"✅",label:"pbskids.org",safe:true},{emoji:"⚠️",label:"FREE-PR1ZE.biz",safe:false},{emoji:"✅",label:"youtube.com/kids",safe:true},{emoji:"⚠️",label:"Click-4-Money.net",safe:false},{emoji:"✅",label:"nationalgeographic.com",safe:true},{emoji:"⚠️",label:"U-WON-A-CAR.com",safe:false}]}},
+
+// CH 7: DOWNLOADS & APPS (56-62)
+{t:"theme-orange", title:"📕 Chapter 7", sub:"App Safety! 📱", text:"Not all apps and downloads are safe. Let's learn which ones to trust!", anim:"bounce-in", type:"chapter", badge:{icon:"📱", name:"App Inspector", desc:"You check apps before downloading!"}},
+{t:"theme-orange", svg:"phone", title:"📲 Ask Before You Download!", text:"ALWAYS ask Mom or Dad before downloading ANY app or game! Even if it says 'FREE!'", tip:"Some 'free' apps cost money later or steal your info! 💰🚫", anim:"slide-up"},
+{t:"theme-dark", svg:"warning", title:"⚠️ Fake Apps!", text:"Some apps pretend to be fun games but really:\n😈 Steal your photos\n😈 Listen through your microphone\n😈 Track where you are\n😈 Send your info to strangers", tip:"Only download from the OFFICIAL app store with a parent! 🏪", anim:"pulse"},
+{t:"theme-green", svg:"shield", title:"✅ Safe Download Rules!", text:"1. Ask a parent FIRST! 🗣️\n2. Use the official app store 🏪\n3. Read the reviews ⭐\n4. Check what permissions it wants\n5. If it asks for too much, say NO!", tip:"A flashlight app doesn't need your contacts! 🔦❌📞", anim:"float"},
+{t:"theme-teal", type:"quiz", title:"🧩 App Quiz!", quizQ:"You find a cool game online. It says 'Download free! No parents needed!' What do you do?", quizA:[{t:"Download it right away!",c:false},{t:"Ask Mom or Dad first!",c:true},{t:"Download it and show your friend",c:false}], quizExp:"ALWAYS ask a parent before downloading! That message is a trick! 🎣"},
+{t:"theme-purple", type:"quiz", title:"🧩 Permission Check!", quizQ:"A coloring app asks to use your camera, contacts, and location. Is that normal?", quizA:[{t:"Yes, all apps need that",c:false},{t:"No! A coloring app doesn't need all that!",c:true}], quizExp:"A coloring app should only need storage - not your camera and contacts! That's suspicious! 🕵️"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Download: Safe or Not?", gameData:{items:[{emoji:"✅",label:"Parent says okay",safe:true},{emoji:"⚠️",label:"Unknown website",safe:false},{emoji:"✅",label:"Official app store",safe:true},{emoji:"⚠️",label:"Pop-up download",safe:false},{emoji:"✅",label:"Has good reviews",safe:true},{emoji:"⚠️",label:"'No parents needed!'",safe:false}]}},
+
+// CH 8: SCREEN TIME (63-68)
+{t:"theme-teal", title:"📕 Chapter 8", sub:"Screen Time Balance! ⏰", text:"Screens are fun, but too much isn't healthy!", anim:"bounce-in", type:"chapter", badge:{icon:"⏰", name:"Time Manager", desc:"You balance screen time!"}},
+{t:"theme-teal", svg:"clock", title:"⏰ How Much is Too Much?", text:"Your eyes, brain, and body need breaks! Too much screen time can make you:\n😴 Tired\n😫 Headachey\n😤 Grumpy\n😞 Not want to play outside", tip:"Take breaks every 30 minutes! Look away and stretch! 🧘", anim:"slide-up"},
+{t:"theme-green", svg:"shield", title:"⚖️ Balance is Key!", text:"Great ways to balance:\n🌳 Play outside\n📚 Read a book\n🎨 Draw or paint\n👫 Play with friends\n🏃 Exercise and sports", tip:"The 20-20-20 rule: Every 20 min, look 20 feet away for 20 seconds! 👀", anim:"float"},
+{t:"theme-blue", svg:"clock", title:"🌙 No Screens Before Bed!", text:"Screens make your brain think it's daytime! Stop using screens 1 hour before bedtime so you can sleep well. 😴", tip:"Better sleep = better day tomorrow! Read a book instead! 📖✨", anim:"slide-up"},
+{t:"theme-purple", type:"quiz", title:"🧩 Screen Time Quiz!", quizQ:"You've been playing games for 2 hours. What should you do?", quizA:[{t:"Keep playing! It's SO fun!",c:false},{t:"Take a break and play outside!",c:true},{t:"Play for 2 more hours",c:false}], quizExp:"Breaks are important! Go play outside, then you can come back later! 🌳"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Screen Break Activities!", gameData:{items:[{emoji:"🌳",label:"Play outside",safe:true},{emoji:"📱",label:"More phone time",safe:false},{emoji:"📚",label:"Read a book",safe:true},{emoji:"💻",label:"Watch more videos",safe:false},{emoji:"⚽",label:"Play sports",safe:true},{emoji:"🎮",label:"Another video game",safe:false}]}},
+
+// CH 9: PHISHING (69-75)
+{t:"theme-coral", title:"📕 Chapter 9", sub:"Phishing - The Sneaky Trick! 🎣", text:"Bad people try to 'fish' for your info with fake messages!", anim:"bounce-in", type:"chapter", badge:{icon:"🎣", name:"Phishing Fighter", desc:"You can spot phishing tricks!"}},
+{t:"theme-coral", svg:"email", title:"🎣 What is Phishing?", text:"Phishing is when someone sends a FAKE message that looks real to trick you! Like a fake email from a game you play.", tip:"It's called 'phishing' because they're FISHING for your info! 🐟", anim:"slide-up"},
+{t:"theme-dark", svg:"warning", title:"⚠️ Phishing Signs!", text:"Watch for these clues:\n❌ 'Your account will be DELETED!'\n❌ Spelling mistakes everywhere\n❌ 'Click NOW or else!'\n❌ Asks for your password\n❌ From a weird email address", tip:"Real companies NEVER ask for your password in an email! 🚫", anim:"pulse"},
+{t:"theme-green", svg:"shield", title:"✅ Don't Take the Bait!", text:"If you get a suspicious message:\n1. DON'T click any links! 🚫\n2. DON'T reply! ✋\n3. SHOW a parent! 🗣️\n4. DELETE it! 🗑️", tip:"When in doubt, throw it out! 🗑️", anim:"float"},
+{t:"theme-teal", type:"quiz", title:"🧩 Phishing Quiz!", quizQ:"You get an email: 'Your Roblox account is HACKED! Click here NOW and type your password!' What do you do?", quizA:[{t:"Click and type my password quick!",c:false},{t:"Show it to Mom or Dad!",c:true},{t:"Forward it to a friend",c:false},{t:"Reply and ask if it's real",c:false}], quizExp:"That's a phishing email! Roblox would NEVER ask for your password by email! Show a parent! 🎣🚫"},
+{t:"theme-purple", type:"quiz", title:"🧩 Spot the Fake!", quizQ:"Which email looks like phishing?", quizA:[{t:"From: support@realgame.com - 'Here's your receipt'",c:false},{t:"From: g4me-supp0rt@weird.biz - 'UR ACCOUNT DELET3D CLICK NOW!!!'",c:true}], quizExp:"The second one has weird spelling, a strange address, and tries to scare you! Classic phishing! 🎣"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Real or Phishing?", gameData:{items:[{emoji:"✅",label:"Email from school",safe:true},{emoji:"🎣",label:"'U WON click NOW!'",safe:false},{emoji:"✅",label:"Mom's text message",safe:true},{emoji:"🎣",label:"'PASSWORD EXPIRED!'",safe:false},{emoji:"✅",label:"Library newsletter",safe:true},{emoji:"🎣",label:"'CLICK or LOSE account!'",safe:false}]}},
+
+// CH 10: SOCIAL MEDIA (76-82)
+{t:"theme-pink", title:"📕 Chapter 10", sub:"Social Media Smarts! 📱", text:"Let's learn about sharing on social media!", anim:"bounce-in", type:"chapter", badge:{icon:"📱", name:"Social Star", desc:"You're smart on social media!"}},
+{t:"theme-pink", svg:"camera", title:"📸 Think Before You Post!", text:"Once something is online, it's there FOREVER! Even if you delete it, someone might have already saved it.", tip:"The internet NEVER forgets! Think before you share! 🧠", anim:"slide-up"},
+{t:"theme-dark", svg:"eye", title:"👀 Who Can See It?", text:"When you post something, who sees it?\n• Your friends?\n• Your family?\n• Your teacher?\n• STRANGERS? 😱\n\nMake sure your posts are PRIVATE!", tip:"If you wouldn't show it to Grandma, don't post it! 👵", anim:"slide-up"},
+{t:"theme-green", svg:"shield", title:"✅ Safe Sharing Rules!", text:"1. Never post your location 📍❌\n2. No photos in school uniform 🏫❌\n3. Don't share when you're home alone 🏠❌\n4. Keep personal info out of posts!", tip:"Ask a parent before posting ANYTHING! 📱➡️👨‍👩‍👧", anim:"float"},
+{t:"theme-blue", svg:"family", title:"👥 Age Limits Are Important!", text:"Most social media is for ages 13+! That means apps like Instagram, TikTok, and Snapchat are NOT for kids yet.", tip:"There are fun kid-safe apps instead! Ask your parents about them! 🎉", anim:"slide-up"},
+{t:"theme-teal", type:"quiz", title:"🧩 Social Media Quiz!", quizQ:"You want to post a photo of your new house. Is this safe?", quizA:[{t:"Yes! My friends will love it!",c:false},{t:"No! It shows where I live!",c:true},{t:"Only if I tag my address",c:false}], quizExp:"Photos of your house show where you live! Keep that private! 🏠🔒"},
+{t:"theme-purple", type:"quiz", title:"🧩 Age Check!", quizQ:"You're 7 years old. Should you have your own TikTok account?", quizA:[{t:"Yes, everyone has one!",c:false},{t:"No, it's for ages 13 and up!",c:true},{t:"Yes, if I use a fake age",c:false}], quizExp:"TikTok is for teens 13+! Using a fake age is lying and breaks the rules. Wait until you're old enough! ⏰"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Safe to Post?", gameData:{items:[{emoji:"✅",label:"A pretty sunset",safe:true},{emoji:"⚠️",label:"Your home address",safe:false},{emoji:"✅",label:"Your artwork",safe:true},{emoji:"⚠️",label:"Photo in uniform",safe:false},{emoji:"✅",label:"A funny joke",safe:true},{emoji:"⚠️",label:"'Home alone today!'",safe:false}]}},
+
+// CH 11: GAMING SAFETY (83-88)
+{t:"theme-blue", title:"📕 Chapter 11", sub:"Game On, Stay Safe! 🎮", text:"Video games are FUN! But let's play it safe!", anim:"bounce-in", type:"chapter", badge:{icon:"🎮", name:"Safe Gamer", desc:"You game safely!"}},
+{t:"theme-blue", svg:"gamepad", title:"🎮 Gaming with Others!", text:"Many games let you play with strangers. Remember:\n🚫 Don't share personal info in chat\n🚫 Don't accept friend requests from strangers\n✅ Mute mean players\n✅ Play with real-life friends!", tip:"Your game character's name should NOT be your real name! 🦸", anim:"slide-up"},
+{t:"theme-dark", svg:"coin", title:"💰 In-Game Purchases!", text:"Some games try to make you spend REAL money!\n'Buy this cool skin! Only $9.99!'\n'Special deal! Act NOW!'\n\nThat's YOUR parents' real money!", tip:"NEVER buy anything in a game without asking a parent first! 💳🚫", anim:"pulse"},
+{t:"theme-green", svg:"shield", title:"✅ Safe Gaming Tips!", text:"1. Use a fun username, not your real name\n2. Never share personal info in game chat\n3. Tell parents if someone is mean\n4. Take breaks every 30 minutes!\n5. Ask before spending ANY money", tip:"Games should be FUN, not stressful! If it's not fun, take a break! 😊", anim:"float"},
+{t:"theme-teal", type:"quiz", title:"🧩 Gaming Quiz!", quizQ:"Someone in a game asks 'What school do you go to?' What do you say?", quizA:[{t:"Tell them your school name",c:false},{t:"'I don't share that!' and tell a parent",c:true},{t:"'Ask my friend, they'll tell you'",c:false}], quizExp:"NEVER share personal info in games! Tell them you don't share that, and tell a parent! 🛡️"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Gaming: Safe or Risky?", gameData:{items:[{emoji:"✅",label:"Play with school friends",safe:true},{emoji:"⚠️",label:"Share your real name",safe:false},{emoji:"✅",label:"Mute mean players",safe:true},{emoji:"⚠️",label:"Buy stuff without asking",safe:false},{emoji:"✅",label:"Take screen breaks",safe:true},{emoji:"⚠️",label:"Play all night long",safe:false}]}},
+
+// CH 12: WIFI & DEVICE SAFETY (89-93)
+{t:"theme-purple", title:"📕 Chapter 12", sub:"Device & WiFi Safety! 📡", text:"Let's keep your devices and connections safe!", anim:"bounce-in", type:"chapter", badge:{icon:"📡", name:"Tech Protector", desc:"You keep devices safe!"}},
+{t:"theme-purple", svg:"wifi", title:"📡 Public WiFi Warning!", text:"Free WiFi at restaurants and malls can be dangerous! Bad people can spy on what you do.", tip:"Only use WiFi that your parents say is safe! 🏠✅ | ☕❌", anim:"slide-up"},
+{t:"theme-dark", svg:"phone", title:"🔒 Lock Your Devices!", text:"Always lock your tablet and phone with a code or fingerprint! This stops other people from using your stuff.", tip:"Don't share your device passcode with friends! 🔐", anim:"slide-up"},
+{t:"theme-green", svg:"shield", title:"✅ Device Safety Rules!", text:"1. Lock your device 🔒\n2. Update when asked ⬆️\n3. Don't use random WiFi 📡\n4. Tell parents if something's wrong 🗣️\n5. Never leave devices unattended! 👀", tip:"Updates fix problems and keep you safe! Always say YES to updates! ✅", anim:"float"},
+{t:"theme-teal", type:"quiz", title:"🧩 Device Quiz!", quizQ:"You're at a coffee shop. Should you connect to their free WiFi to play games?", quizA:[{t:"Yes! Free WiFi is awesome!",c:false},{t:"Only if Mom or Dad says it's okay!",c:true},{t:"Yes, everyone else is using it!",c:false}], quizExp:"Public WiFi can be risky! Always check with a parent first! 📡"},
+{t:"theme-sun", type:"tapgame", title:"🎮 Device Safety Check!", gameData:{items:[{emoji:"✅",label:"Lock your tablet",safe:true},{emoji:"⚠️",label:"Random free WiFi",safe:false},{emoji:"✅",label:"Update your apps",safe:true},{emoji:"⚠️",label:"Share your passcode",safe:false},{emoji:"✅",label:"Tell parents about issues",safe:true},{emoji:"⚠️",label:"Leave phone unattended",safe:false}]}},
+
+// CH 13: SMART DEVICES (94-97)
+{t:"theme-forest", title:"📕 Chapter 13", sub:"Smart Devices Around You! 🏠", text:"Alexa, smart TVs, and cameras - they're everywhere!", anim:"bounce-in", type:"chapter", badge:{icon:"🏠", name:"Smart Home Hero", desc:"You know about smart devices!"}},
+{t:"theme-forest", svg:"robot", title:"🤖 Smart Devices Listen!", text:"Smart speakers (like Alexa) and smart TVs are always listening for commands. Be careful what you say near them!", tip:"Don't share secrets or personal info near smart devices! 🤫", anim:"slide-up"},
+{t:"theme-dark", svg:"camera", title:"📹 Cameras Everywhere!", text:"Laptops, tablets, and phones have cameras.\n\n⚠️ Some bad software can turn on your camera WITHOUT you knowing!", tip:"Cover your camera with a sticker when not using it! Put tape over laptop cameras! 📷🚫", anim:"pulse"},
+{t:"theme-teal", type:"quiz", title:"🧩 Smart Device Quiz!", quizQ:"Your smart speaker is always listening. What should you NOT say near it?", quizA:[{t:"'Play my favorite song'",c:false},{t:"Your home address and phone number",c:true},{t:"'What's the weather today?'",c:false}], quizExp:"Never say personal info near smart devices! They might record or store what you say! 🤖"},
+
+// FINAL CHAPTER: BECOMING A CYBERHERO (98-100)
+{t:"theme-rainbow", title:"📕 Final Chapter!", sub:"You're a CyberHero! 🦸", text:"You've learned SO much! Let's review everything!", anim:"bounce-in", type:"chapter", badge:{icon:"🦸", name:"CyberHero", desc:"You completed the entire book!"}},
+{t:"theme-rainbow", svg:"shield", title:"🛡️ Your CyberShield Pledge!", text:"I promise to:\n⭐ Never talk to strangers online\n⭐ Keep my passwords secret\n⭐ Never share personal info\n⭐ Be kind to everyone\n⭐ Tell a grown-up if something feels wrong\n⭐ Think before I click!\n⭐ Balance my screen time", tip:"Say it out loud with your parents! You're a CyberHero! 🦸‍♂️🦸‍♀️", anim:"pulse"},
+{t:"theme-sun", svg:"trophy", title:"🏆 Congratulations, CyberHero!", text:"You finished the WHOLE book!\nYou earned ALL the stars! ⭐\nYou are now a certified CyberShield Hero!\n\n🎉🎊🥳\n\nShow this to your friends and family and help THEM stay safe too!", tip:"The internet is an amazing place when you stay SAFE! Go be awesome! 🚀", anim:"bounce-in", type:"finale"},
+{t:"theme-rainbow", title:"🎓 My Certificate!", text:"", type:"certificate"}
+];
+
+// ========== RENDER ==========
+function renderPages(){
+  const container=document.getElementById('bookContainer');
+  container.innerHTML='';
+  pages.forEach((p,i)=>{
+    const div=document.createElement('div');
+    div.className=`page ${p.t||'theme-blue'} ${i===0?'active':''}`;
+    div.id=`page-${i}`;
+    div.dataset.index=i;
+    let html='';
+    // Decorative elements
+    html+=generateDecos();
+    html+='<div class="page-content">';
+
+    if(p.type==='cover'){
+      html+=`<div class="illust ${p.anim||'float'}">${SVG[p.svg]||''}</div>`;
+      html+=`<h1 class="page-title bounce-in">${p.title}</h1>`;
+      if(p.sub) html+=`<p class="page-subtitle">${p.sub}</p>`;
+      html+=`<p class="page-text">${nl2br(p.text)}</p>`;
+      html+=`<div style="margin-top:18px;padding:14px 24px;background:rgba(255,255,255,.13);border:2px solid rgba(255,255,255,.2);border-radius:18px;display:inline-block;backdrop-filter:blur(6px);">
+        <p style="font-size:13px;opacity:.75;margin-bottom:2px;">Created by</p>
+        <p style="font-size:18px;font-weight:800;font-family:'Baloo 2',cursive;color:#FFE66D;">Joas Antonio dos Santos</p>
+        <p style="font-size:13px;opacity:.8;margin-top:2px;">Founder — Red Team Leaders</p>
+        <p style="margin-top:6px;"><a href="https://joasantonio.com/" target="_blank" style="color:#4ECDC4;text-decoration:none;font-weight:700;font-size:14px;">🌐 joasantonio.com</a></p>
+      </div>`;
+      html+=`<div style="margin-top:20px;font-size:20px;animation:pulse 2s infinite">Tap ▶ to begin your adventure!</div>`;
+    } else if(p.type==='chapter'){
+      html+=`<div style="font-size:80px;margin-bottom:10px;" class="bounce-in">${p.title.match(/[\u{1F000}-\u{1FFFF}]/u)?.[0]||'📖'}</div>`;
+      html+=`<h1 class="page-title bounce-in">${p.title}</h1>`;
+      if(p.sub) html+=`<h2 class="page-subtitle" style="font-size:clamp(22px,4vw,34px);margin-top:8px;">${p.sub}</h2>`;
+      html+=`<p class="page-text" style="margin-top:16px;">${nl2br(p.text)}</p>`;
+    } else if(p.type==='quiz'){
+      html+=`<h2 class="page-title slide-up">${p.title}</h2>`;
+      html+=`<p class="page-text" style="font-size:clamp(17px,3vw,24px);margin:16px 0;">${p.quizQ}</p>`;
+      html+=`<div class="quiz-container" id="quiz-${i}">`;
+      const letters=['A','B','C','D'];
+      p.quizA.forEach((a,ai)=>{
+        html+=`<div class="quiz-option" onclick="answerQuiz(${i},${ai},${a.c})"><span class="opt-letter">${letters[ai]}</span>${a.t}</div>`;
+      });
+      html+=`</div>`;
+      html+=`<div class="quiz-result" id="qr-${i}"></div>`;
+    } else if(p.type==='tapgame'){
+      html+=`<h2 class="page-title slide-up">${p.title}</h2>`;
+      html+=`<p class="page-text" style="margin-bottom:16px;">Tap the SAFE ones! ✅ Avoid the dangers! ⚠️</p>`;
+      html+=`<div class="tap-grid" id="game-${i}">`;
+      // Shuffle items
+      const shuffled=[...p.gameData.items].sort(()=>Math.random()-.5);
+      shuffled.forEach((item,ii)=>{
+        html+=`<div class="tap-card" onclick="tapCard(this,${item.safe},${i})" data-tapped="false"><div style="font-size:28px;margin-bottom:4px;">${item.emoji}</div><div style="font-size:12px;font-weight:700;line-height:1.2;">${item.label}</div></div>`;
+      });
+      html+=`</div>`;
+      html+=`<div class="quiz-result" id="gr-${i}"></div>`;
+    } else if(p.type==='finale'){
+      html+=`<div class="illust bounce-in">${SVG[p.svg]||''}</div>`;
+      html+=`<h1 class="page-title" style="font-size:clamp(30px,6vw,50px);">${p.title}</h1>`;
+      html+=`<p class="page-text">${nl2br(p.text)}</p>`;
+      if(p.tip) html+=`<div class="page-tip"><span class="tip-icon">🌟</span>${p.tip}</div>`;
+      html+=`<div style="margin-top:20px;font-size:60px;animation:float 2s ease-in-out infinite;">🦸‍♂️⭐🦸‍♀️</div>`;
+    } else if(p.type==='certificate'){
+      html+=`<div style="font-size:70px;margin-bottom:10px;" class="bounce-in">🎓</div>`;
+      html+=`<h1 class="page-title bounce-in">${p.title}</h1>`;
+      html+=`<p class="page-text" style="margin-bottom:20px;">You completed ALL the adventures! 🎉<br>Type your name to get your official certificate!</p>`;
+      html+=`<div style="max-width:360px;margin:0 auto;">
+        <input type="text" id="certNameKids" placeholder="Write your name here ✏️" style="width:100%;padding:14px 18px;border-radius:16px;border:3px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:white;font-family:'Baloo 2',cursive;font-size:18px;text-align:center;outline:none;" onfocus="this.style.borderColor='#FFE66D'" onblur="this.style.borderColor='rgba(255,255,255,.3)'">
+        <button onclick="generateCertKids()" style="margin-top:16px;padding:14px 36px;border-radius:16px;border:none;background:linear-gradient(135deg,#4ECDC4,#FFE66D);color:#2D3436;font-family:'Baloo 2',cursive;font-size:20px;font-weight:800;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(78,205,196,.4);display:block;width:100%;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🎓 Get My Certificate!</button>
+      </div>`;
+    } else {
+      // Regular page
+      if(p.svg) html+=`<div class="illust ${p.anim||'float'}">${SVG[p.svg]||''}</div>`;
+      html+=`<h2 class="page-title slide-up">${p.title}</h2>`;
+      if(p.sub) html+=`<p class="page-subtitle">${p.sub}</p>`;
+      html+=`<p class="page-text">${nl2br(p.text)}</p>`;
+      if(p.tip) html+=`<div class="page-tip slide-up"><span class="tip-icon">💡</span>${p.tip}</div>`;
+    }
+    html+='</div>';
+    div.innerHTML=html;
+    container.appendChild(div);
+  });
+  buildTOC();
+  updateNav();
+}
+
+function generateDecos(){
+  const emojis=['⭐','✨','🌟','💫','🔮','💎','🌈','🦋','🌸','💕','🎈','🎀'];
+  let d='';
+  for(let i=0;i<5;i++){
+    const e=emojis[Math.floor(Math.random()*emojis.length)];
+    const x=Math.random()*90+5;
+    const y=Math.random()*90+5;
+    const s=20+Math.random()*25;
+    d+=`<div class="deco" style="left:${x}%;top:${y}%;font-size:${s}px;animation:float ${3+Math.random()*3}s ease-in-out infinite;animation-delay:${Math.random()*2}s">${e}</div>`;
+  }
+  return d;
+}
+
+function nl2br(s){return s.replace(/\n/g,'<br>');}
+
+// ========== NAVIGATION ==========
+function goToPage(n){
+  if(n<0||n>=pages.length)return;
+  const cur=document.getElementById(`page-${currentPage}`);
+  const next=document.getElementById(`page-${n}`);
+  if(cur){
+    cur.classList.remove('active');
+    cur.classList.add(n>currentPage?'exit-left':'exit-right');
+    setTimeout(()=>{cur.classList.remove('exit-left','exit-right');},600);
+  }
+  currentPage=n;
+  next.classList.add('active');
+  updateNav();
+  // Check for chapter badge
+  const p=pages[n];
+  if(p.type==='chapter' && p.badge && !earnedBadges.has(n)){
+    earnedBadges.add(n);
+    setTimeout(()=>showBadge(p.badge.icon,p.badge.name,p.badge.desc),800);
+  }
+}
+function nextPage(){goToPage(currentPage+1);}
+function prevPage(){goToPage(currentPage-1);}
+
+function updateNav(){
+  document.getElementById('prevBtn').disabled=currentPage===0;
+  document.getElementById('nextBtn').disabled=currentPage===pages.length-1;
+  document.getElementById('pageIndicator').textContent=`${currentPage+1} / ${pages.length}`;
+  document.getElementById('progressBar').style.width=`${((currentPage+1)/pages.length)*100}%`;
+}
+
+// Keyboard nav
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')nextPage();
+  else if(e.key==='ArrowLeft')prevPage();
+});
+// Swipe nav
+let touchStartX=0;
+document.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{
+  const diff=e.changedTouches[0].clientX-touchStartX;
+  if(Math.abs(diff)>50){diff<0?nextPage():prevPage();}
+},{passive:true});
+
+// ========== QUIZ ==========
+function answerQuiz(pageIdx,ansIdx,correct){
+  const quiz=document.getElementById(`quiz-${pageIdx}`);
+  const result=document.getElementById(`qr-${pageIdx}`);
+  if(answeredQuizzes.has(pageIdx))return;
+  const opts=quiz.querySelectorAll('.quiz-option');
+  opts[ansIdx].classList.add(correct?'correct':'wrong');
+  if(correct){
+    answeredQuizzes.add(pageIdx);
+    addStars(3);
+    result.innerHTML='✅ Awesome! You got it! +3 ⭐';
+    result.style.color='#6BCB77';
+    createStarBurst(opts[ansIdx]);
+    // Mark correct answer
+    opts.forEach((o,oi)=>{
+      if(pages[pageIdx].quizA[oi].c) o.classList.add('correct');
+      o.style.pointerEvents='none';
+    });
+  } else {
+    result.innerHTML='❌ Oops! Try again! '+pages[pageIdx].quizExp;
+    result.style.color='#FF6B6B';
+    setTimeout(()=>{opts[ansIdx].classList.remove('wrong');result.classList.remove('show');},1500);
+  }
+  result.classList.add('show');
+}
+
+// ========== TAP GAME ==========
+function tapCard(el,safe,pageIdx){
+  if(el.dataset.tapped==='true')return;
+  el.dataset.tapped='true';
+  if(safe){
+    el.classList.add('safe');
+    addStars(1);
+    createStarBurst(el);
+  } else {
+    el.classList.add('danger');
+    el.innerHTML='<div style="font-size:28px">⚠️</div><div style="font-size:12px;font-weight:700">Danger!</div>';
+  }
+  // Check if all safe ones found
+  const grid=document.getElementById(`game-${pageIdx}`);
+  const allCards=grid.querySelectorAll('.tap-card');
+  const allTapped=[...allCards].every(c=>c.dataset.tapped==='true');
+  if(allTapped){
+    const result=document.getElementById(`gr-${pageIdx}`);
+    result.innerHTML='🎉 Great job! You found them all!';
+    result.style.color='#6BCB77';
+    result.classList.add('show');
+  }
+}
+
+// ========== STARS ==========
+function addStars(n){
+  stars+=n;
+  document.getElementById('starCount').textContent=stars;
+  document.getElementById('scoreDisplay').style.animation='popCorrect .4s ease';
+  setTimeout(()=>{document.getElementById('scoreDisplay').style.animation='';},400);
+}
+
+function createStarBurst(el){
+  const rect=el.getBoundingClientRect();
+  for(let i=0;i<6;i++){
+    const star=document.createElement('div');
+    star.className='star-burst';
+    star.textContent='⭐';
+    star.style.left=(rect.left+rect.width/2+Math.random()*60-30)+'px';
+    star.style.top=(rect.top+rect.height/2+Math.random()*60-30)+'px';
+    star.style.animationDelay=(i*.08)+'s';
+    document.body.appendChild(star);
+    setTimeout(()=>star.remove(),1000);
+  }
+}
+
+// ========== BADGES ==========
+function showBadge(icon,name,desc){
+  document.getElementById('badgeIcon').textContent=icon;
+  document.getElementById('badgeTitle').textContent=name;
+  document.getElementById('badgeDesc').textContent=desc;
+  document.getElementById('badgePopup').classList.add('show');
+  addStars(5);
+}
+function closeBadge(){document.getElementById('badgePopup').classList.remove('show');}
+
+// ========== TOC ==========
+function buildTOC(){
+  const list=document.getElementById('tocList');
+  const chapters=[
+    {p:0,icon:"🛡️",name:"Cover"},
+    {p:1,icon:"🌍",name:"Welcome to the Internet"},
+    {p:5,icon:"🎭",name:"Ch.1 Stranger Danger Online"},
+    {p:14,icon:"🔐",name:"Ch.2 Password Power"},
+    {p:22,icon:"🤫",name:"Ch.3 Keep It Private"},
+    {p:31,icon:"💕",name:"Ch.4 Be Kind Online"},
+    {p:40,icon:"👻",name:"Ch.5 Scary Stuff Online"},
+    {p:48,icon:"🖱️",name:"Ch.6 Don't Click That"},
+    {p:55,icon:"📱",name:"Ch.7 App Safety"},
+    {p:62,icon:"⏰",name:"Ch.8 Screen Time Balance"},
+    {p:68,icon:"🎣",name:"Ch.9 Phishing Tricks"},
+    {p:75,icon:"📱",name:"Ch.10 Social Media Smarts"},
+    {p:82,icon:"🎮",name:"Ch.11 Gaming Safety"},
+    {p:88,icon:"📡",name:"Ch.12 Device & WiFi Safety"},
+    {p:93,icon:"🏠",name:"Ch.13 Smart Devices"},
+    {p:97,icon:"🦸",name:"Final: You're a CyberHero!"},
+    {p:100,icon:"🎓",name:"Certificate"}
+  ];
+  list.innerHTML=chapters.map(c=>`<div class="toc-chapter" onclick="goToPage(${c.p});toggleTOC();"><span class="ch-icon">${c.icon}</span>${c.name}<span style="margin-left:auto;opacity:.5;font-size:13px;">p.${c.p+1}</span></div>`).join('');
+}
+function toggleTOC(){document.getElementById('tocModal').classList.toggle('show');}
+
+// ========== INIT ==========
+// CERTIFICATE
+function generateCertKids(){
+  const name=document.getElementById('certNameKids').value.trim();
+  if(!name){document.getElementById('certNameKids').style.borderColor='#FF6B6B';return;}
+  const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('certKidsName').textContent=name;
+  document.getElementById('certKidsDate').textContent=date;
+  document.getElementById('certKidsOverlay').style.display='flex';
+}
+function printCertKids(){
+  const cert=document.getElementById('certKidsPrint');
+  const w=window.open('','','width=1000,height=700');
+  w.document.write('<!DOCTYPE html><html><head><title>CyberShield Certificate</title><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;font-family:Quicksand,sans-serif;}@media print{body{background:white;}.no-print{display:none!important;}}</style></head><body>');
+  w.document.write(cert.outerHTML);
+  w.document.write('<div class="no-print" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);"><button onclick="window.print()" style="padding:14px 40px;border:none;border-radius:14px;background:#4ECDC4;color:white;font-family:Baloo 2,cursive;font-size:18px;font-weight:700;cursor:pointer;">🖨️ Print / Save PDF</button></div></body></html>');
+  w.document.close();
+}
+function closeCertKids(){document.getElementById('certKidsOverlay').style.display='none';}
+
+renderPages();
+</script>
+</body>
+</html>

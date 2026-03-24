@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberShield: Digital Survival Guide for Teens</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#0a0a0f;--surface:#12121a;--surface2:#1a1a28;--border:#2a2a3a;
+--neon-cyan:#00f0ff;--neon-pink:#ff2d7b;--neon-green:#00ff88;--neon-purple:#b44dff;
+--neon-orange:#ff8c00;--neon-yellow:#ffe100;--neon-red:#ff3b3b;--neon-blue:#4d8dff;
+--text:#e8e8f0;--text-dim:#8888a0;--text-bright:#ffffff;
+--glow-cyan:0 0 20px rgba(0,240,255,.3);--glow-pink:0 0 20px rgba(255,45,123,.3);
+--glow-green:0 0 20px rgba(0,255,136,.3);--glow-purple:0 0 20px rgba(180,77,255,.3);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+h1,h2,h3,.display{font-family:'Sora',sans-serif;}
+code,.mono{font-family:'JetBrains Mono',monospace;}
+
+/* GRID BACKGROUND */
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,240,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,.03) 1px,transparent 1px);
+  background-size:40px 40px;}
+.grid-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(0,240,255,.06),transparent 60%);}
+
+/* PROGRESS */
+.progress{position:fixed;top:0;left:0;height:3px;z-index:100;transition:width .4s ease;
+  background:linear-gradient(90deg,var(--neon-cyan),var(--neon-pink),var(--neon-purple));}
+
+/* TOP BAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:48px;z-index:90;display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+  background:rgba(10,10,15,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.topbar .logo{font-family:'Sora';font-weight:700;font-size:14px;color:var(--neon-cyan);letter-spacing:1px;display:flex;align-items:center;gap:8px;}
+.topbar .logo span{color:var(--neon-pink);}
+.score-pill{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:13px;font-weight:600;color:var(--neon-yellow);display:flex;align-items:center;gap:6px;}
+.toc-trigger{background:none;border:1px solid var(--border);color:var(--text-dim);font-size:13px;font-family:'Outfit';padding:4px 14px;border-radius:20px;cursor:pointer;transition:all .3s;}
+.toc-trigger:hover{border-color:var(--neon-cyan);color:var(--neon-cyan);}
+
+/* PAGES */
+.book{flex:1;position:relative;overflow:hidden;margin-top:48px;margin-bottom:60px;}
+.page{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:30px 20px;opacity:0;pointer-events:none;transform:translateX(60px);transition:all .5s cubic-bezier(.4,0,.2,1);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.page.active{opacity:1;pointer-events:auto;transform:translateX(0);}
+.page.exit{opacity:0;transform:translateX(-60px);}
+.page-inner{max-width:720px;width:100%;position:relative;}
+
+/* BOTTOM NAV */
+.navbar{position:fixed;bottom:0;left:0;right:0;height:60px;z-index:90;display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+  background:rgba(10,10,15,.9);backdrop-filter:blur(12px);border-top:1px solid var(--border);}
+.nav-btn{background:none;border:1px solid var(--border);color:var(--text);width:44px;height:44px;border-radius:12px;cursor:pointer;font-size:18px;transition:all .3s;display:flex;align-items:center;justify-content:center;}
+.nav-btn:hover{border-color:var(--neon-cyan);color:var(--neon-cyan);box-shadow:var(--glow-cyan);}
+.nav-btn:disabled{opacity:.25;cursor:not-allowed;box-shadow:none;border-color:var(--border);color:var(--text-dim);}
+.page-info{font-family:'JetBrains Mono';font-size:13px;color:var(--text-dim);}
+
+/* TYPOGRAPHY */
+.tag{display:inline-block;font-family:'JetBrains Mono';font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:12px;}
+.tag-cyan{background:rgba(0,240,255,.12);color:var(--neon-cyan);border:1px solid rgba(0,240,255,.2);}
+.tag-pink{background:rgba(255,45,123,.12);color:var(--neon-pink);border:1px solid rgba(255,45,123,.2);}
+.tag-green{background:rgba(0,255,136,.12);color:var(--neon-green);border:1px solid rgba(0,255,136,.2);}
+.tag-purple{background:rgba(180,77,255,.12);color:var(--neon-purple);border:1px solid rgba(180,77,255,.2);}
+.tag-orange{background:rgba(255,140,0,.12);color:var(--neon-orange);border:1px solid rgba(255,140,0,.2);}
+.tag-red{background:rgba(255,59,59,.12);color:var(--neon-red);border:1px solid rgba(255,59,59,.2);}
+.tag-yellow{background:rgba(255,225,0,.12);color:var(--neon-yellow);border:1px solid rgba(255,225,0,.2);}
+
+.page-title{font-size:clamp(26px,5vw,40px);font-weight:800;line-height:1.15;margin-bottom:14px;letter-spacing:-.5px;}
+.glow-cyan{color:var(--neon-cyan);text-shadow:var(--glow-cyan);}
+.glow-pink{color:var(--neon-pink);text-shadow:var(--glow-pink);}
+.glow-green{color:var(--neon-green);text-shadow:var(--glow-green);}
+.glow-purple{color:var(--neon-purple);text-shadow:var(--glow-purple);}
+.subtitle{font-size:clamp(16px,2.5vw,20px);color:var(--text-dim);font-weight:400;margin-bottom:20px;line-height:1.5;}
+.body-text{font-size:clamp(15px,2.2vw,18px);line-height:1.7;margin-bottom:16px;color:var(--text);}
+.highlight{color:var(--neon-cyan);font-weight:600;}
+.warn{color:var(--neon-red);font-weight:600;}
+.ok{color:var(--neon-green);font-weight:600;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px;margin:12px 0;transition:all .3s;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--neon-cyan),transparent);opacity:0;transition:opacity .3s;}
+.card:hover::before{opacity:1;}
+.card-danger{border-color:rgba(255,59,59,.25);}
+.card-danger::before{background:linear-gradient(90deg,transparent,var(--neon-red),transparent);}
+.card-safe{border-color:rgba(0,255,136,.25);}
+.card-safe::before{background:linear-gradient(90deg,transparent,var(--neon-green),transparent);}
+.card-warn{border-color:rgba(255,140,0,.25);}
+.card-warn::before{background:linear-gradient(90deg,transparent,var(--neon-orange),transparent);}
+.card h3{font-size:17px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.card p{font-size:15px;line-height:1.6;color:var(--text-dim);}
+
+/* ICON HERO */
+.icon-hero{font-size:64px;margin-bottom:16px;display:block;filter:drop-shadow(0 0 20px rgba(0,240,255,.3));animation:floatIcon 3s ease-in-out infinite;}
+@keyframes floatIcon{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.icon-sm{font-size:24px;line-height:1;}
+
+/* ALERT BOX */
+.alert{border-radius:12px;padding:16px 20px;margin:14px 0;font-size:15px;line-height:1.6;display:flex;gap:12px;align-items:flex-start;}
+.alert-danger{background:rgba(255,59,59,.08);border:1px solid rgba(255,59,59,.2);color:var(--neon-red);}
+.alert-warn{background:rgba(255,140,0,.08);border:1px solid rgba(255,140,0,.2);color:var(--neon-orange);}
+.alert-safe{background:rgba(0,255,136,.08);border:1px solid rgba(0,255,136,.2);color:var(--neon-green);}
+.alert-info{background:rgba(0,240,255,.08);border:1px solid rgba(0,240,255,.2);color:var(--neon-cyan);}
+.alert-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.alert a{color:inherit;text-decoration:underline;font-weight:600;}
+
+/* LIST */
+.list{list-style:none;margin:10px 0;}
+.list li{padding:8px 0 8px 28px;position:relative;font-size:15px;line-height:1.6;color:var(--text);}
+.list li::before{content:'';position:absolute;left:0;top:16px;width:8px;height:8px;border-radius:50%;background:var(--neon-cyan);}
+.list-red li::before{background:var(--neon-red);}
+.list-green li::before{background:var(--neon-green);}
+.list-pink li::before{background:var(--neon-pink);}
+.list-orange li::before{background:var(--neon-orange);}
+
+/* QUIZ */
+.quiz-q{font-size:clamp(16px,2.5vw,20px);font-weight:700;margin-bottom:16px;line-height:1.4;}
+.quiz-opt{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin:8px 0;cursor:pointer;font-size:15px;font-family:'Outfit';color:var(--text);transition:all .3s;display:flex;align-items:center;gap:12px;}
+.quiz-opt:hover{border-color:var(--neon-cyan);background:var(--surface2);transform:translateX(4px);}
+.quiz-opt .letter{width:30px;height:30px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono';font-size:13px;font-weight:700;flex-shrink:0;color:var(--neon-cyan);}
+.quiz-opt.correct{border-color:var(--neon-green);background:rgba(0,255,136,.08);animation:popIn .4s ease;}
+.quiz-opt.correct .letter{background:var(--neon-green);color:var(--bg);border-color:var(--neon-green);}
+.quiz-opt.wrong{border-color:var(--neon-red);background:rgba(255,59,59,.08);animation:shakeX .4s ease;}
+.quiz-opt.wrong .letter{background:var(--neon-red);color:var(--bg);border-color:var(--neon-red);}
+.quiz-feedback{margin-top:14px;padding:14px 18px;border-radius:12px;font-size:14px;line-height:1.6;display:none;}
+.quiz-feedback.show{display:block;animation:slideIn .3s ease;}
+
+/* TAP GAME */
+.tap-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin:14px 0;}
+.tap-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:all .3s;font-size:14px;font-weight:600;}
+.tap-item:hover{border-color:var(--neon-cyan);transform:scale(1.03);}
+.tap-item .tap-emoji{font-size:28px;display:block;margin-bottom:6px;}
+.tap-item.tapped-safe{border-color:var(--neon-green);background:rgba(0,255,136,.1);animation:popIn .3s ease;}
+.tap-item.tapped-danger{border-color:var(--neon-red);background:rgba(255,59,59,.1);animation:shakeX .3s ease;}
+
+/* CASE STUDY */
+.case-study{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin:14px 0;}
+.case-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.case-header .case-icon{font-size:28px;}
+.case-header h3{font-size:16px;font-weight:700;}
+.case-header .case-year{font-family:'JetBrains Mono';font-size:12px;color:var(--text-dim);margin-left:auto;}
+.case-body{padding:16px 20px;font-size:14px;line-height:1.7;color:var(--text-dim);}
+.case-lesson{padding:12px 20px 16px;border-top:1px solid var(--border);font-size:13px;display:flex;align-items:flex-start;gap:8px;color:var(--neon-green);}
+
+/* RESOURCE LINK */
+.resource{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin:8px 0;transition:all .3s;text-decoration:none;color:var(--text);}
+.resource:hover{border-color:var(--neon-cyan);background:var(--surface2);}
+.resource .r-icon{font-size:24px;flex-shrink:0;}
+.resource .r-info{flex:1;min-width:0;}
+.resource .r-name{font-weight:600;font-size:14px;margin-bottom:2px;}
+.resource .r-desc{font-size:12px;color:var(--text-dim);}
+.resource .r-arrow{color:var(--text-dim);font-size:16px;}
+
+/* CHAPTER DIVIDER */
+.ch-divider{text-align:center;padding:20px 0;}
+.ch-number{font-family:'JetBrains Mono';font-size:13px;letter-spacing:4px;text-transform:uppercase;margin-bottom:10px;}
+.ch-title{font-size:clamp(30px,6vw,48px);font-weight:900;line-height:1.1;margin-bottom:10px;letter-spacing:-1px;}
+.ch-sub{font-size:clamp(15px,2.5vw,18px);color:var(--text-dim);max-width:500px;margin:0 auto;line-height:1.5;}
+
+/* TOC MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:20px;max-width:560px;width:92%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column;}
+.modal-head{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-head h2{font-size:18px;font-weight:700;}
+.modal-close{background:none;border:none;color:var(--text-dim);font-size:22px;cursor:pointer;padding:4px;}
+.modal-body{overflow-y:auto;padding:12px 16px;flex:1;}
+.toc-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all .2s;font-size:14px;color:var(--text);}
+.toc-item:hover{background:var(--surface2);color:var(--neon-cyan);}
+.toc-item .ti-icon{font-size:20px;flex-shrink:0;}
+.toc-item .ti-page{font-family:'JetBrains Mono';font-size:11px;color:var(--text-dim);margin-left:auto;}
+.toc-section{font-family:'JetBrains Mono';font-size:11px;color:var(--text-dim);letter-spacing:2px;text-transform:uppercase;padding:14px 12px 6px;border-top:1px solid var(--border);margin-top:6px;}
+
+/* BADGE */
+.badge-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;display:none;align-items:center;justify-content:center;}
+.badge-overlay.show{display:flex;}
+.badge-card{background:var(--surface);border:1px solid var(--neon-cyan);border-radius:20px;padding:30px;text-align:center;max-width:340px;width:90%;box-shadow:0 0 60px rgba(0,240,255,.15);animation:popIn .5s cubic-bezier(.68,-.55,.27,1.55);}
+.badge-emoji{font-size:60px;display:block;margin-bottom:10px;}
+.badge-card h3{font-size:22px;font-weight:800;margin-bottom:4px;color:var(--neon-cyan);}
+.badge-card p{font-size:14px;color:var(--text-dim);margin-bottom:16px;}
+.badge-btn{background:var(--neon-cyan);color:var(--bg);border:none;padding:10px 30px;border-radius:10px;font-family:'Outfit';font-size:15px;font-weight:700;cursor:pointer;transition:all .3s;}
+.badge-btn:hover{box-shadow:var(--glow-cyan);transform:scale(1.04);}
+
+/* STAR PARTICLES */
+.particle{position:fixed;pointer-events:none;z-index:400;font-size:20px;animation:particleUp .8s ease forwards;}
+@keyframes particleUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-60px) scale(.3)}}
+@keyframes popIn{0%{transform:scale(.85)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes glitchText{0%,100%{text-shadow:var(--glow-cyan)}50%{text-shadow:2px 0 var(--neon-pink),-2px 0 var(--neon-cyan)}}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text-dim);}
+
+/* RESPONSIVE */
+@media(max-width:600px){
+  .page{padding:20px 14px;}
+  .card{padding:16px;}
+  .tap-grid{grid-template-columns:repeat(2,1fr);}
+  .topbar{padding:0 10px;}
+}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="progress" id="progress"></div>
+
+<header class="topbar">
+  <div class="logo">🛡️ CYBER<span>SHIELD</span></div>
+  <button class="toc-trigger" onclick="toggleTOC()">☰ Index</button>
+  <div class="score-pill">⚡ <span id="xp">0</span> XP</div>
+</header>
+
+<div class="book" id="book"></div>
+
+<nav class="navbar">
+  <button class="nav-btn" id="prevBtn" onclick="prev()">◂</button>
+  <span class="page-info"><span id="cur">1</span> / <span id="tot">180</span></span>
+  <button class="nav-btn" id="nextBtn" onclick="next()">▸</button>
+</nav>
+
+<div class="modal-overlay" id="tocModal">
+  <div class="modal">
+    <div class="modal-head"><h2>📑 Table of Contents</h2><button class="modal-close" onclick="toggleTOC()">✕</button></div>
+    <div class="modal-body" id="tocBody"></div>
+  </div>
+</div>
+
+<div class="badge-overlay" id="badgeOv">
+  <div class="badge-card">
+    <span class="badge-emoji" id="bIcon">🏆</span>
+    <h3 id="bTitle">Badge Unlocked!</h3>
+    <p id="bDesc">You're leveling up!</p>
+    <button class="badge-btn" onclick="closeBadge()">Continue ▸</button>
+  </div>
+</div>
+
+<div class="badge-overlay" id="certOverlay">
+<div style="background:white;border-radius:20px;max-width:740px;width:95%;max-height:92vh;overflow-y:auto;position:relative;">
+<button onclick="closeCert()" style="position:absolute;top:12px;right:16px;background:none;border:none;font-size:24px;cursor:pointer;color:#666;z-index:5;">✕</button>
+<div id="certPrintArea" style="background:white;padding:40px;text-align:center;position:relative;overflow:hidden;border-radius:20px;">
+<div style="position:absolute;inset:12px;border:3px solid #00f0ff;border-radius:12px;pointer-events:none;"></div>
+<div style="position:absolute;inset:20px;border:1px solid #ddd;border-radius:8px;pointer-events:none;"></div>
+<div style="position:relative;z-index:2;">
+<div style="font-size:42px;margin-bottom:4px;">🛡️</div>
+<h1 style="font-family:'Sora',sans-serif;font-size:28px;font-weight:800;color:#0a0a0f;letter-spacing:2px;margin-bottom:2px;">CYBERSHIELD</h1>
+<p style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:4px;color:#888;text-transform:uppercase;margin-bottom:20px;">Digital Survival Guide for Teens</p>
+<p style="font-family:'Sora',sans-serif;font-size:13px;color:#666;margin-bottom:6px;">This certifies that</p>
+<h2 id="certPersonName" style="font-family:'Sora',sans-serif;font-size:clamp(22px,4vw,34px);font-weight:800;color:#0a0a0f;margin:8px 0;padding:8px 0;border-top:2px solid #e0e0e0;border-bottom:2px solid #e0e0e0;">Name</h2>
+<p style="font-family:'Sora',sans-serif;font-size:14px;color:#444;line-height:1.7;max-width:500px;margin:16px auto;">has successfully completed the <strong>Digital Survival Guide for Teens</strong>, demonstrating knowledge in cybersecurity awareness, online safety, digital privacy, and responsible digital citizenship.</p>
+<div style="display:flex;justify-content:center;gap:40px;margin:24px 0 16px;flex-wrap:wrap;">
+<div><p style="font-family:'Sora',sans-serif;font-weight:700;font-size:13px;color:#00b4d8;">CyberShield Guardian</p><p style="font-size:11px;color:#888;">Level Achieved</p></div>
+<div><p id="certDate" style="font-family:'Sora',sans-serif;font-weight:700;font-size:13px;color:#00b4d8;">Date</p><p style="font-size:11px;color:#888;">Date of Completion</p></div>
+</div>
+<div style="margin-top:14px;padding-top:14px;border-top:1px solid #e0e0e0;">
+<p style="font-size:12px;color:#888;">Created by <strong style="color:#0a0a0f;">Joas Antonio dos Santos</strong> · Founder Red Team Leaders</p>
+<p style="font-size:11px;color:#aaa;margin-top:2px;">joasantonio.com</p>
+</div>
+</div>
+</div>
+<div style="text-align:center;padding:12px 20px 20px;">
+<button onclick="printCert()" style="padding:12px 36px;border:none;border-radius:10px;background:#00b4d8;color:white;font-family:'Sora',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">🖨️ Print / Save as PDF</button>
+</div>
+</div>
+</div>
+
+<script>
+let cp=0, xp=0, answered=new Set(), badges=new Set();
+const P=[];
+
+// ===== HELPERS =====
+const h=(tag,cls='',inner='')=>`<${tag} class="${cls}">${inner}</${tag}>`;
+const tag=(text,cls)=>`<span class="tag ${cls}">${text}</span>`;
+const icon=(e)=>`<span class="icon-hero">${e}</span>`;
+const iconSm=(e)=>`<span class="icon-sm">${e}</span>`;
+const alert=(type,ico,text)=>`<div class="alert alert-${type}"><span class="alert-icon">${ico}</span><div>${text}</div></div>`;
+const card=(cls,title,body)=>`<div class="card ${cls}"><h3>${title}</h3><p>${body}</p></div>`;
+const list=(items,cls='')=>`<ul class="list ${cls}">${items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+const res=(ico,name,desc)=>`<div class="resource"><span class="r-icon">${ico}</span><div class="r-info"><div class="r-name">${name}</div><div class="r-desc">${desc}</div></div><span class="r-arrow">→</span></div>`;
+const caseStudy=(ico,name,year,body,lesson)=>`<div class="case-study"><div class="case-header"><span class="case-icon">${ico}</span><h3>${name}</h3><span class="case-year">${year}</span></div><div class="case-body">${body}</div><div class="case-lesson">${iconSm('💡')} ${lesson}</div></div>`;
+
+function addPage(html){P.push(html);}
+function chapterPage(num,title,sub,color){
+  return `<div class="ch-divider"><div class="ch-number glow-${color}">Chapter ${num}</div><h1 class="ch-title glow-${color}">${title}</h1><p class="ch-sub">${sub}</p></div>`;
+}
+
+// ===== BUILD ALL PAGES =====
+function buildPages(){
+
+// ─── COVER (0) ───
+addPage(`<div style="text-align:center;">
+${icon('🛡️')}
+<h1 class="page-title" style="font-size:clamp(32px,7vw,56px);background:linear-gradient(135deg,var(--neon-cyan),var(--neon-pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">CyberShield</h1>
+<p class="subtitle" style="font-size:clamp(18px,3vw,24px);color:var(--text);">Digital Survival Guide for Teens</p>
+
+<div style="margin-top:24px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;display:inline-block;">
+<p style="font-size:13px;color:var(--text-dim);margin-bottom:4px;">Created by</p>
+<p style="font-size:17px;font-weight:700;color:var(--neon-cyan);">Joas Antonio dos Santos</p>
+<p style="font-size:13px;color:var(--text-dim);">Founder — Red Team Leaders</p>
+<p style="font-size:13px;margin-top:4px;"><a href="https://joasantonio.com/" target="_blank" style="color:var(--neon-pink);text-decoration:none;font-weight:600;">joasantonio.com ↗</a></p>
+</div>
+<div style="margin-top:30px;animation:floatIcon 2s ease-in-out infinite;">
+<span style="font-size:16px;color:var(--text-dim);">Swipe or tap ▸ to start</span>
+</div>
+</div>`);
+
+// ─── INTRO (1-4) ───
+addPage(`${tag('INTRODUCTION','tag-cyan')}
+<h1 class="page-title">Welcome, <span class="glow-cyan">Digital Warrior</span></h1>
+<p class="body-text">The internet is powerful. It connects, educates, and entertains — but it's also a battlefield. <span class="highlight">Predators, scammers, hackers, and bullies</span> hide behind screens.</p>
+<p class="body-text">This guide is your <span class="highlight">digital armor</span>. Every chapter gives you real knowledge to protect yourself and others.</p>
+${alert('info','⚡','You\'ll earn XP by answering quizzes. Complete all chapters to become a certified CyberShield Guardian!')}`);
+
+addPage(`${tag('WHY THIS MATTERS','tag-pink')}
+<h1 class="page-title">The Internet <span class="glow-pink">Isn't a Game</span></h1>
+<p class="body-text">Every day, teens face real dangers online:</p>
+${card('card-danger','🎭 Predators','Adults disguise themselves as teens to manipulate and exploit young people.')}
+${card('card-danger','💀 Cyberbullying','Relentless harassment that has driven teens to depression, self-harm, and worse.')}
+${card('card-danger','🕳️ Scams & Malware','Phishing, viruses, and social engineering target unsuspecting users.')}
+${card('card-danger','📸 Digital Footprint','What you post today can haunt you forever — colleges and employers check.')}`);
+
+addPage(`${tag('YOUR JOURNEY','tag-green')}
+<h1 class="page-title">What You'll <span class="glow-green">Learn</span></h1>
+${list([
+'Grooming, predators & how to detect them',
+'Cyberbullying — real cases & how to fight back',
+'Sexting dangers & how to remove leaked content',
+'Social media safety across ALL platforms',
+'Deep web, dark web & what lurks there',
+'Social engineering & manipulation tactics',
+'Device security, malware & safe browsing',
+'Mental health: depression, anxiety & self-esteem',
+'Laws that protect you worldwide',
+'How to be a digital citizen who makes a difference'
+])}
+${alert('safe','🛡️','Knowledge is your best defense. Let\'s begin.')}`);
+
+addPage(`${tag('GROUND RULES','tag-yellow')}
+<h1 class="page-title">Before We Start</h1>
+<p class="body-text">Some topics in this guide are <span class="warn">heavy and serious</span>. That's intentional — you deserve the truth, not a watered-down version.</p>
+${alert('warn','⚠️','If any topic makes you uncomfortable or reminds you of something you\'re going through, <strong>please talk to a trusted adult</strong>. You are not alone.')}
+${alert('info','📞','Crisis Text Line: Text HOME to 741741 (US) · Childline: 0800 1111 (UK) · CVV: 188 (Brazil)')}`);
+
+// ─── CH 1: GROOMING & PREDATORS (5-18) ───
+addPage(chapterPage('01','Grooming &<br>Online Predators','How predators target teens and how to detect their tactics','pink'));
+
+addPage(`${tag('WHAT IS GROOMING','tag-pink')}
+<h1 class="page-title">The <span class="glow-pink">Grooming</span> Playbook</h1>
+<p class="body-text">Grooming is when an adult <span class="warn">deliberately builds trust</span> with a young person to exploit them — sexually, emotionally, or financially. It happens gradually and can take weeks or months.</p>
+<p class="body-text">Predators study their victims. They look for teens who seem <span class="highlight">lonely, insecure, or in conflict with their families</span>.</p>
+${alert('danger','🚨','Grooming is a CRIME in most countries. It\'s never your fault if this happens to you.')}`);
+
+addPage(`${tag('THE 6 STAGES','tag-red')}
+<h1 class="page-title">6 Stages of <span class="glow-pink">Grooming</span></h1>
+${card('card-danger','1. 🎯 Targeting','They pick vulnerable teens — those who post about being sad, lonely, or having family problems.')}
+${card('card-danger','2. 💬 Gaining Trust','They become your "best friend." They listen, compliment, and seem to understand you better than anyone.')}
+${card('card-danger','3. 🎁 Filling Needs','They offer gifts, game credits, attention, or emotional support to create dependency.')}
+${card('card-danger','4. 🔒 Isolation','They slowly separate you from friends and family: "They don\'t understand you like I do."')}
+${card('card-danger','5. 🔞 Sexualization','They start introducing sexual topics, sharing explicit content, or asking for photos.')}
+${card('card-danger','6. ⛓️ Control','They use threats, shame, or blackmail to keep you silent and maintain control.')}`);
+
+addPage(`${tag('RED FLAGS','tag-red')}
+<h1 class="page-title">🚩 Warning Signs</h1>
+<p class="body-text">A person online might be a predator if they:</p>
+${list([
+'Ask your age, then say "you seem mature for your age"',
+'Want to move the conversation to a <span class="warn">private platform</span> (secret chat, Discord DM)',
+'Get angry or guilt-trip you when you can\'t talk',
+'Ask you to send photos — especially selfies or body pics',
+'Tell you to keep the relationship <span class="warn">secret from parents</span>',
+'Share sexual content with you "to educate you"',
+'Claim to be a teen but have an <span class="warn">adult vocabulary and behavior</span>',
+'Offer money, gifts, or game items for "small favors"'
+],'list-red')}`);
+
+addPage(`${tag('DISCORD & GAMING','tag-purple')}
+<h1 class="page-title">Predators on <span class="glow-purple">Discord</span> & Games</h1>
+<p class="body-text">Discord, Roblox, Fortnite, Minecraft servers, and gaming communities are <span class="warn">hunting grounds</span> for predators.</p>
+${card('card-danger','🎮 In-Game Grooming','They befriend you in games, offer to "help you level up," then move to private voice/text chats.')}
+${card('card-danger','💬 Discord Servers','Some servers are created specifically to lure teens. They may seem like fan groups but have <span class="warn">hidden NSFW channels</span>.')}
+${card('card-danger','🎙️ Voice Chats','Predators use voice calls to create a false sense of intimacy and trust.')}
+${alert('warn','⚠️','Never join a private server or accept DMs from people you don\'t know in real life.')}`);
+
+addPage(`${tag('RECRUITMENT GROUPS','tag-red')}
+<h1 class="page-title">🕸️ Luring & Recruitment Groups</h1>
+<p class="body-text">Some organized groups specifically target teens for exploitation. They operate on:</p>
+${list([
+'Closed Telegram and Discord groups',
+'Anonymous chat apps (Omegle-style)',
+'Social media DMs (Instagram, TikTok)',
+'Gaming platforms and forums',
+'Even comment sections of innocent videos'
+],'list-red')}
+${alert('danger','🚨','These groups use fake profiles, flattery, and manipulation. Some even use OTHER TEENS as recruiters.')}
+<p class="body-text">If someone invites you to a "secret" or "exclusive" group — that's a <span class="warn">massive red flag</span>.</p>`);
+
+addPage(`${tag('HOW TO PROTECT YOURSELF','tag-green')}
+<h1 class="page-title"><span class="glow-green">Defense</span> Protocol</h1>
+${card('card-safe','🔒 Lock Down Profiles','Set ALL social media to private. Don\'t accept follow requests from strangers.')}
+${card('card-safe','🚫 Never Share Personal Info','No real name, school, address, phone number, or location in chats or profiles.')}
+${card('card-safe','📵 No Private Chats with Strangers','Keep conversations in public channels. Never switch to DMs with someone you don\'t know.')}
+${card('card-safe','🗣️ Tell Someone','If ANYONE makes you uncomfortable, tell a parent, teacher, or call a helpline immediately.')}
+${card('card-safe','📸 Screenshot Everything','If something feels wrong, take screenshots BEFORE blocking. This is evidence.')}
+${card('card-safe','🛑 Block & Report','Every platform has a report function. USE IT. You could save someone else too.')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Knowledge Check</h1>
+<div id="q0">
+<p class="quiz-q">An online friend you've never met says: "Don't tell your parents about us, they won't understand." What should you do?</p>
+<div class="quiz-opt" onclick="quiz(0,0,false)"><span class="letter">A</span>Agree — your parents ARE annoying</div>
+<div class="quiz-opt" onclick="quiz(0,1,true)"><span class="letter">B</span>Tell your parents immediately — this is a grooming red flag</div>
+<div class="quiz-opt" onclick="quiz(0,2,false)"><span class="letter">C</span>Test them by sharing a little info first</div>
+<div class="quiz-opt" onclick="quiz(0,3,false)"><span class="letter">D</span>Keep it secret but be careful</div>
+</div>
+<div class="quiz-feedback" id="qf0">"Don't tell your parents" is one of the BIGGEST red flags. A real friend would never isolate you from your family.</div>`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Spot the Predator</h1>
+<div id="q1">
+<p class="quiz-q">Which behavior is MOST suspicious from an online contact?</p>
+<div class="quiz-opt" onclick="quiz(1,0,false)"><span class="letter">A</span>They share memes in a group chat</div>
+<div class="quiz-opt" onclick="quiz(1,1,false)"><span class="letter">B</span>They ask about your favorite game</div>
+<div class="quiz-opt" onclick="quiz(1,2,true)"><span class="letter">C</span>They offer to send you money/gifts and want photos in return</div>
+<div class="quiz-opt" onclick="quiz(1,3,false)"><span class="letter">D</span>They invite you to play a public match</div>
+</div>
+<div class="quiz-feedback" id="qf1">Offering gifts/money in exchange for photos is a textbook predator move. Never send photos to anyone online for any "payment."</div>`);
+
+addPage(`${tag('RESOURCES','tag-green')}
+<h1 class="page-title">📞 Where to <span class="glow-green">Report</span></h1>
+<p class="body-text">If you or someone you know is being groomed or exploited:</p>
+${res('🇺🇸','NCMEC CyberTipline','report.cybertip.org — Report child exploitation (USA)')}
+${res('🇬🇧','CEOP (UK)','ceop.police.uk — Report online predators')}
+${res('🇧🇷','SaferNet Brazil','safernet.org.br — Report cybercrimes against minors')}
+${res('🌍','Internet Watch Foundation','iwf.org.uk — Report child sexual abuse material worldwide')}
+${res('📱','On ANY Platform','Use the Report/Block button. Most platforms have specialized child safety teams.')}
+${alert('safe','💚','You are NEVER in trouble for reporting. You could save a life — including your own.')}`);
+
+// ─── CH 2: SEXTING (19-27) ───
+addPage(chapterPage('02','Sexting &<br>Digital Exploitation','The real consequences of sharing intimate content','red'));
+
+addPage(`${tag('WHAT IS SEXTING','tag-red')}
+<h1 class="page-title">Sexting: The <span class="glow-pink">Brutal Truth</span></h1>
+<p class="body-text">Sexting means sending, receiving, or forwarding sexually explicit messages, photos, or videos — usually via phone or social media.</p>
+${alert('danger','⚠️','For minors, sending or possessing nude images of other minors can be considered <strong>distribution of child sexual abuse material</strong> — even if it\'s "consensual" or your own photo.')}
+<p class="body-text">Once you hit send, you <span class="warn">lose ALL control</span>. Screenshots exist. Cloud backups exist. Forwarding takes one tap.</p>`);
+
+addPage(`${tag('SEXTORTION','tag-red')}
+<h1 class="page-title">🔗 Sextortion</h1>
+<p class="body-text">Sextortion is when someone <span class="warn">threatens to share your intimate images</span> unless you send more, pay money, or do what they demand.</p>
+${card('card-danger','How It Happens','1. Someone gains your trust<br>2. They convince you to send intimate photos<br>3. They threaten to leak them unless you comply<br>4. The demands never stop — they escalate')}
+${alert('danger','🚨','This is BLACKMAIL and it\'s a serious crime. Report it immediately — do NOT comply with demands.')}
+${alert('info','📊','FBI reports sextortion cases have increased 300%+ among teens in recent years.')}`);
+
+addPage(`${tag('CONSEQUENCES','tag-red')}
+<h1 class="page-title">Real <span class="glow-pink">Consequences</span></h1>
+<p class="body-text">Sharing intimate images as a minor can lead to:</p>
+${list([
+'<span class="warn">Criminal charges</span> — even against the person in the photo',
+'<span class="warn">Sex offender registry</span> in some jurisdictions',
+'<span class="warn">School expulsion</span> and social devastation',
+'<span class="warn">Permanent digital footprint</span> — images resurface years later',
+'<span class="warn">Severe mental health impact</span> — anxiety, depression, PTSD',
+'<span class="warn">Exploitation by organized crime networks</span> that trade images'
+],'list-red')}
+${alert('warn','⚠️','Even "disappearing" messages on Snapchat can be screenshot or recorded.')}`);
+
+addPage(`${tag('IF IMAGES LEAK','tag-orange')}
+<h1 class="page-title">🆘 What To Do If <span class="glow-pink">Images Leak</span></h1>
+<p class="body-text">Don't panic. You have options.</p>
+${card('card-safe','1. 🗣️ Tell a Trusted Adult','This is the hardest step but the most important. You need support.')}
+${card('card-safe','2. 📸 Document Everything','Screenshot the threat messages, the sender\'s profile, and any shared content.')}
+${card('card-safe','3. 🚔 Report to Police','Sharing intimate images of minors is a crime. File a report.')}
+${card('card-safe','4. 📋 Report to Platforms','Every major platform will remove non-consensual intimate images.')}
+${card('card-safe','5. 🌐 Use Removal Services','Organizations can help get images removed from the internet.')}`);
+
+addPage(`${tag('REMOVAL RESOURCES','tag-green')}
+<h1 class="page-title">🛡️ Image <span class="glow-green">Removal</span> Help</h1>
+<p class="body-text">These organizations help remove intimate/compromising content:</p>
+${res('🛡️','StopNCII.org','Free tool by Meta — creates hash of images to prevent spread across platforms')}
+${res('🇬🇧','Internet Watch Foundation (IWF)','iwf.org.uk — Removes child sexual abuse material globally')}
+${res('🇺🇸','NCMEC Take It Down','takeitdown.ncmec.org — Free tool for minors to remove explicit images')}
+${res('🇧🇷','SaferNet Brazil','safernet.org.br/helpline — Brazilian helpline for online crimes')}
+${res('🌍','Cyber Civil Rights Initiative','cybercivilrights.org — Crisis helpline & image removal support')}
+${res('📱','Platform-Specific','Google, Meta, TikTok, Snapchat all have non-consensual image removal forms')}
+${alert('safe','💚','You deserve help. Using these services is free and confidential.')}`);
+
+addPage(`${tag('PROTECTION','tag-green')}
+<h1 class="page-title">🛡️ How To <span class="glow-green">Stay Safe</span></h1>
+${card('card-safe','📵 Never Send Intimate Images','No matter how much you trust someone. Relationships end, phones get stolen, accounts get hacked.')}
+${card('card-safe','🚫 Never Pressure or Be Pressured','If someone asks for nudes, that\'s a red flag. If they threaten to leave — let them.')}
+${card('card-safe','🔐 Secure Your Devices','Use strong passwords, 2FA, and encrypted messaging if you must discuss sensitive topics.')}
+${card('card-safe','💬 Open Conversation','Talk to parents or counselors. Shame is the predator\'s greatest weapon — break the silence.')}
+${alert('info','💡','"If you wouldn\'t put it on a billboard with your name on it, don\'t send it digitally."')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Sexting Quiz</h1>
+<div id="q2">
+<p class="quiz-q">Your partner asks you to send an intimate photo and says "I'll delete it right away, I promise." What's the safest response?</p>
+<div class="quiz-opt" onclick="quiz(2,0,true)"><span class="letter">A</span>Refuse — once sent, you lose all control</div>
+<div class="quiz-opt" onclick="quiz(2,1,false)"><span class="letter">B</span>Send it — they promised to delete it</div>
+<div class="quiz-opt" onclick="quiz(2,2,false)"><span class="letter">C</span>Send it with your face hidden — that's safe enough</div>
+<div class="quiz-opt" onclick="quiz(2,3,false)"><span class="letter">D</span>Send it on Snapchat — it disappears</div>
+</div>
+<div class="quiz-feedback" id="qf2">Nothing truly "disappears" online. Screenshots, screen recordings, and backups exist. The only safe option is to never send intimate content. A respectful partner will understand.</div>`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Sextortion Scenario</h1>
+<div id="q3">
+<p class="quiz-q">Someone threatens to share your photos unless you send more. What do you do?</p>
+<div class="quiz-opt" onclick="quiz(3,0,false)"><span class="letter">A</span>Send more photos to keep them quiet</div>
+<div class="quiz-opt" onclick="quiz(3,1,false)"><span class="letter">B</span>Pay them what they're asking</div>
+<div class="quiz-opt" onclick="quiz(3,2,true)"><span class="letter">C</span>Stop all communication, screenshot everything, tell an adult, report to police</div>
+<div class="quiz-opt" onclick="quiz(3,3,false)"><span class="letter">D</span>Delete your account and hope they stop</div>
+</div>
+<div class="quiz-feedback" id="qf3">NEVER comply with demands — they will ALWAYS escalate. Save evidence, tell a trusted adult, and report to law enforcement immediately.</div>`);
+
+// ─── CH 3: CYBERBULLYING (28-42) ───
+addPage(chapterPage('03','Cyberbullying:<br>Real Stories, Real Pain','10 cases that changed the world — and lessons to protect yourself','orange'));
+
+addPage(`${tag('DEFINITION','tag-orange')}
+<h1 class="page-title">What is <span class="glow-pink">Cyberbullying</span>?</h1>
+<p class="body-text">Cyberbullying is <span class="warn">repeated, intentional harassment</span> using digital technology — texts, social media, gaming, forums, or any online platform.</p>
+<p class="body-text">Unlike schoolyard bullying, cyberbullying <span class="warn">follows you everywhere</span>. There's no escape — it's on your phone, your computer, everywhere you go online.</p>
+${card('card-danger','Forms of Cyberbullying','• Threats and intimidation • Spreading rumors and lies • Sharing embarrassing photos/videos • Exclusion from groups • Creating fake profiles to humiliate • Doxxing (sharing personal information) • Constant insults and hate messages • Encouraging self-harm')}`);
+
+addPage(`${tag('CASE STUDY 01','tag-red')}
+<h1 class="page-title">Amanda Todd 🇨🇦</h1>
+${caseStudy('🕊️','Amanda Todd','2012','Amanda, a 15-year-old from British Columbia, was blackmailed by a predator who had convinced her to flash on webcam. He shared the images, and relentless cyberbullying followed across multiple schools. Despite moving and seeking help, the harassment continued. Amanda shared her story via a YouTube video using flashcards before tragically taking her own life in October 2012.','Her case led to Canada\'s Bill C-13 (Protecting Canadians from Online Crime Act) and global awareness of cyberbullying\'s fatal consequences.')}
+${alert('info','📌','The predator was identified as a Dutch national and was convicted in 2022 of extortion and child exploitation charges.')}`);
+
+addPage(`${tag('CASE STUDY 02','tag-red')}
+<h1 class="page-title">Megan Meier 🇺🇸</h1>
+${caseStudy('🕊️','Megan Meier','2006','Megan, 13, from Missouri, developed an online friendship with "Josh Evans" on MySpace. "Josh" was actually created by an adult neighbor and her daughter to spy on Megan. After weeks of building trust, they turned cruel, sending devastating messages. The last message said "the world would be better without you." Megan died by suicide that day.','This case led to the Megan Meier Cyberbullying Prevention Act and showed that adults can be cyberbullies too — and that fake profiles can kill.')}
+`);
+
+addPage(`${tag('CASE STUDY 03','tag-red')}
+<h1 class="page-title">Ryan Halligan 🇺🇸</h1>
+${caseStudy('🕊️','Ryan Halligan','2003','Ryan, 13, from Vermont, was bullied online via AIM (AOL Instant Messenger). Classmates spread rumors that he was gay, and a girl pretended to like him online only to share their private conversations publicly to humiliate him. Ryan took his own life. His father discovered the extent of the cyberbullying by reading Ryan\'s chat logs.','Ryan\'s father John became a leading anti-bullying advocate. Vermont passed one of the first anti-bullying laws (Act 117) in response.')}
+`);
+
+addPage(`${tag('CASE STUDY 04','tag-red')}
+<h1 class="page-title">Rehtaeh Parsons 🇨🇦</h1>
+${caseStudy('🕊️','Rehtaeh Parsons','2013','Rehtaeh, 17, from Nova Scotia, was assaulted at a party and a photo of the assault was shared among classmates. She endured months of cyberbullying, victim-blaming, and harassment. Despite changing schools and seeking treatment for depression and PTSD, the harassment continued online. She attempted suicide and died days later.','Her case led to Nova Scotia\'s Cyber-safety Act and highlighted how victim-blaming compounds the trauma of cyberbullying.')}
+`);
+
+addPage(`${tag('CASE STUDY 05','tag-red')}
+<h1 class="page-title">Tyler Clementi 🇺🇸</h1>
+${caseStudy('🕊️','Tyler Clementi','2010','Tyler, 18, a Rutgers University freshman, was secretly filmed by his roommate during an intimate encounter via webcam. The roommate broadcast it and tweeted about it. Tyler died by suicide by jumping from the George Washington Bridge. His roommate was convicted of invasion of privacy and bias intimidation.','This case led to "Tyler\'s Law" in New Jersey and the Tyler Clementi Foundation, which works to end bullying in schools.')}
+`);
+
+addPage(`${tag('CASE STUDY 06','tag-red')}
+<h1 class="page-title">Jessica Logan 🇺🇸</h1>
+${caseStudy('🕊️','Jessica Logan','2008','Jessica, 18, from Ohio, sent nude photos to her boyfriend. After they broke up, he shared the images with other students. She was relentlessly bullied and called names at school and online. Despite appearing on local TV to warn others about sexting, the harassment didn\'t stop. Jessica took her own life shortly after.','Known as one of the first "sexting tragedies," this case showed the devastating intersection of sexting and cyberbullying.')}
+`);
+
+addPage(`${tag('CASE STUDY 07','tag-red')}
+<h1 class="page-title">Dolly Everett 🇦🇺</h1>
+${caseStudy('🕊️','Dolly Everett','2018','Amy "Dolly" Everett, 14, from Australia, was the face of an iconic Akubra hat advertisement as a child. She suffered severe cyberbullying and took her own life. Her parents launched "Dolly\'s Dream," a foundation fighting bullying and cyberbullying that has become one of Australia\'s most prominent anti-bullying organizations.','Dolly\'s Dream has reached millions with its message: "Speak even if your voice shakes." Australia strengthened its cyberbullying laws following her death.')}
+`);
+
+addPage(`${tag('CASE STUDY 08','tag-red')}
+<h1 class="page-title">Hana Kimura 🇯🇵</h1>
+${caseStudy('🕊️','Hana Kimura','2020','Hana, 22, a Japanese professional wrestler and reality TV star on "Terrace House," received massive amounts of hate and death threats on social media after an episode aired. The relentless cyberbullying drove her to take her own life. Her death sparked international outcry and Japan passed a new law making online insults punishable by imprisonment.','Japan\'s 2022 amendment to its Penal Code made online insults punishable by up to 1 year in prison — directly inspired by Hana\'s case.')}
+`);
+
+addPage(`${tag('CASE STUDY 09','tag-red')}
+<h1 class="page-title">Daniel Perry 🇬🇧</h1>
+${caseStudy('🕊️','Daniel Perry','2013','Daniel, 17, from Scotland, was blackmailed on Skype by a criminal gang based in the Philippines. They convinced him to engage in a video call, recorded it, and demanded money or they would share the footage. Unable to pay and terrified of exposure, Daniel took his own life within hours of the threats.','This case highlighted the global reach of sextortion scams targeting teens and led to increased cooperation between international law enforcement agencies.')}
+`);
+
+addPage(`${tag('CASE STUDY 10','tag-red')}
+<h1 class="page-title">Brandy Vela 🇺🇸</h1>
+${caseStudy('🕊️','Brandy Vela','2016','Brandy, 18, from Texas, was cyberbullied through fake dating profiles, harassing texts from anonymous phone apps, and relentless online abuse about her appearance. Despite her family\'s efforts to stop the harassment — including contacting police and school — the bullying continued. Brandy took her own life in front of her family.','Her case exposed the gap in cyberbullying laws and the difficulty of prosecuting anonymous online harassment. Texas subsequently strengthened its cyberbullying legislation.')}
+`);
+
+addPage(`${tag('LESSONS LEARNED','tag-green')}
+<h1 class="page-title">What These Cases <span class="glow-green">Teach Us</span></h1>
+${card('card-safe','🗣️ SPEAK UP','Every case had warning signs. If you\'re being bullied or see someone being bullied — speak up immediately.')}
+${card('card-safe','📸 SAVE EVIDENCE','Screenshots, messages, usernames, dates — document EVERYTHING before blocking.')}
+${card('card-safe','🚔 REPORT TO AUTHORITIES','Cyberbullying is illegal in most countries. Police can trace anonymous accounts.')}
+${card('card-safe','❤️ YOU ARE NOT ALONE','Depression lies to you. Reach out to helplines, counselors, friends, family — someone cares.')}
+${card('card-safe','🌐 DIGITAL ACTIONS HAVE REAL CONSEQUENCES','Sharing someone\'s photos, bullying, or harassing online can lead to criminal charges and someone\'s death.')}
+`);
+
+addPage(`${tag('HOW TO REPORT','tag-green')}
+<h1 class="page-title">📋 Reporting <span class="glow-green">Cyberbullying</span></h1>
+<p class="body-text">Step-by-step guide to reporting:</p>
+${list([
+'<strong>Document:</strong> Screenshot EVERYTHING — messages, profiles, timestamps',
+'<strong>Don\'t engage:</strong> Never reply to bullies — it fuels them',
+'<strong>Block:</strong> Block the person on every platform',
+'<strong>Report on platform:</strong> Use built-in report tools (Instagram, TikTok, Discord, etc.)',
+'<strong>Tell a trusted adult:</strong> Parent, teacher, school counselor',
+'<strong>Contact police:</strong> If threats are involved, file a police report',
+'<strong>Contact helplines:</strong> If you feel overwhelmed or unsafe'
+],'list-green')}
+${res('🆘','StopBullying.gov','Official US government resource for bullying prevention')}
+${res('🇧🇷','SaferNet Brazil','safernet.org.br — Report cyberbullying and cyber crimes')}
+${res('🌍','CyberSmile Foundation','cybersmile.org — Global cyberbullying support')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Cyberbullying Quiz</h1>
+<div id="q4">
+<p class="quiz-q">Your friend is being cyberbullied in a group chat. Everyone else is laughing or staying silent. What should you do?</p>
+<div class="quiz-opt" onclick="quiz(4,0,false)"><span class="letter">A</span>Stay silent — it's not your problem</div>
+<div class="quiz-opt" onclick="quiz(4,1,false)"><span class="letter">B</span>Laugh along to fit in</div>
+<div class="quiz-opt" onclick="quiz(4,2,true)"><span class="letter">C</span>Support your friend privately, screenshot the bullying, report it to an adult</div>
+<div class="quiz-opt" onclick="quiz(4,3,false)"><span class="letter">D</span>Leave the group chat quietly</div>
+</div>
+<div class="quiz-feedback" id="qf4">Bystanders who stay silent enable bullying. Support your friend, save evidence, and report. You could literally save a life.</div>`);
+
+// ─── CH 4: DEEP & DARK WEB (43-49) ───
+addPage(chapterPage('04','The Deep &<br>Dark Web','What lurks beneath the surface internet','purple'));
+
+addPage(`${tag('UNDERSTANDING THE WEB','tag-purple')}
+<h1 class="page-title">Layers of the <span class="glow-purple">Internet</span></h1>
+${card('','🌐 Surface Web (4%)','Google, YouTube, Wikipedia — everything indexed by search engines. This is where most people spend their time.')}
+${card('card-warn','🔒 Deep Web (90%)','Anything not indexed: bank accounts, medical records, private databases, paywalled content. Mostly harmless.')}
+${card('card-danger','🕳️ Dark Web (6%)','Accessed via Tor browser. Intentionally hidden. Contains both legal (privacy activists, whistleblowers) and illegal content (drug markets, stolen data, exploitation material).')}
+`);
+
+addPage(`${tag('DANGERS','tag-red')}
+<h1 class="page-title">Dark Web <span class="glow-pink">Dangers</span></h1>
+<p class="body-text">The dark web hosts:</p>
+${list([
+'<span class="warn">Illegal marketplaces</span> selling drugs, weapons, stolen data',
+'<span class="warn">Hacking services</span> and malware-for-hire',
+'<span class="warn">Stolen personal information</span> (credit cards, passwords, identities)',
+'<span class="warn">Child exploitation material</span> (CSAM)',
+'<span class="warn">Scams</span> — most "services" are scams targeting curious visitors',
+'<span class="warn">Extremist recruitment</span> content'
+],'list-red')}
+${alert('danger','🚨','Visiting the dark web is not illegal, but interacting with illegal content IS. Your anonymity is NOT guaranteed — law enforcement monitors it.')}`);
+
+addPage(`${tag('YOUR DATA','tag-orange')}
+<h1 class="page-title">Your Data on the <span class="glow-purple">Dark Web</span></h1>
+<p class="body-text">After data breaches, your info might end up on dark web marketplaces:</p>
+${card('card-danger','💳 Credit Card Data','Stolen cards sold for as little as $5-$20 each')}
+${card('card-danger','🔑 Login Credentials','Email + password combos sold in bulk')}
+${card('card-danger','🪪 Full Identities','Name, SSN, DOB, address — used for identity theft')}
+${card('card-danger','📱 Phone Numbers','Used for SIM-swapping attacks and scams')}
+${alert('info','🔍','Check if your data was breached: haveibeenpwned.com — it\'s free and safe to use.')}`);
+
+addPage(`${tag('STAY AWAY','tag-green')}
+<h1 class="page-title">🛡️ The Simple <span class="glow-green">Rule</span></h1>
+<p class="body-text" style="font-size:clamp(18px,3vw,24px);text-align:center;margin:20px 0;"><span class="ok">Stay off the dark web.</span><br>There is nothing there worth the risk.</p>
+${alert('warn','⚠️','Curiosity is natural, but the dark web is full of scams, viruses, traumatic content, and legal risks. Even "just looking" can expose you to malware or illegal content.')}
+${card('card-safe','✅ Instead','If you\'re interested in cybersecurity, explore ethical hacking through platforms like TryHackMe, Hack The Box, or CyberStart — legal and educational ways to learn.')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Dark Web Quiz</h1>
+<div id="q5">
+<p class="quiz-q">A friend tells you about a "cool hidden website" on the dark web and dares you to visit. What do you do?</p>
+<div class="quiz-opt" onclick="quiz(5,0,false)"><span class="letter">A</span>Visit it — it's probably harmless</div>
+<div class="quiz-opt" onclick="quiz(5,1,true)"><span class="letter">B</span>Decline — the risks far outweigh any curiosity</div>
+<div class="quiz-opt" onclick="quiz(5,2,false)"><span class="letter">C</span>Visit it using a VPN for "protection"</div>
+<div class="quiz-opt" onclick="quiz(5,3,false)"><span class="letter">D</span>Ask them to show you instead</div>
+</div>
+<div class="quiz-feedback" id="qf5">No amount of "protection" makes browsing illegal content safe or legal. A VPN doesn't make you invisible to law enforcement. Stay away.</div>`);
+
+// ─── CH 5: SOCIAL MEDIA PLATFORMS (50-63) ───
+addPage(chapterPage('05','Social Media<br>Survival Guide','Platform-by-platform safety for TikTok, Instagram, Snapchat & more','cyan'));
+
+addPage(`${tag('TIKTOK','tag-pink')}
+<h1 class="page-title">🎵 TikTok <span class="glow-pink">Safety</span></h1>
+${card('card-danger','Dangers','• Algorithm can push inappropriate content • Predators in comments/DMs • Dangerous challenges and trends • Location exposure through videos • Privacy concerns with data collection')}
+${card('card-safe','Protection','• Set account to PRIVATE • Disable DMs from strangers • Turn off location services • Filter comments • Enable Restricted Mode • Think before participating in trends • Never show your school, home, or identifying details in videos')}`);
+
+addPage(`${tag('INSTAGRAM','tag-purple')}
+<h1 class="page-title">📸 Instagram <span class="glow-purple">Safety</span></h1>
+${card('card-danger','Dangers','• Predators using DMs and story replies • Comparison culture damaging self-esteem • Fake influencer scams • Location tagging reveals where you are • Screenshots of stories and disappearing messages')}
+${card('card-safe','Protection','• Private account is non-negotiable • Hide your story from people you don\'t trust • Disable activity status • Don\'t accept follow requests from strangers • Never post in real-time (post after you leave a location) • Use Close Friends for personal content')}`);
+
+addPage(`${tag('SNAPCHAT','tag-yellow')}
+<h1 class="page-title">👻 Snapchat <span class="glow-cyan">Safety</span></h1>
+${card('card-danger','Dangers','• FALSE sense of security — "disappearing" messages can be saved • Snap Map shows your EXACT location to friends • Quick Add suggests your profile to strangers • Predators exploit the privacy illusion')}
+${card('card-safe','Protection','• Ghost Mode ON — always • Only add people you know IRL • Disable Quick Add • Remember: everything can be screenshot • Don\'t send anything you wouldn\'t want shared publicly')}`);
+
+addPage(`${tag('YOUTUBE','tag-red')}
+<h1 class="page-title">▶️ YouTube <span class="glow-pink">Safety</span></h1>
+${card('card-danger','Dangers','• Predatory comments on videos featuring minors • Rabbit holes of extremist and harmful content • Scam links in descriptions and comments • Doxing through personal vlogs')}
+${card('card-safe','Protection','• Disable comments on your videos (or filter heavily) • Never share personal details in videos • Use Restricted Mode • Be careful with live streaming — you can\'t take it back • Report predatory comments immediately')}`);
+
+addPage(`${tag('DISCORD','tag-purple')}
+<h1 class="page-title">💬 Discord <span class="glow-purple">Safety</span></h1>
+${card('card-danger','Dangers','• Unmoderated servers with NSFW content • Predators in gaming communities • Malicious bots and links • Raiding and harassment campaigns • Grooming through voice channels')}
+${card('card-safe','Protection','• Only join servers you trust • Disable DMs from server members • Don\'t click random links or install unknown bots • Never share personal info in any server • Use Privacy & Safety settings: keep "Safe Direct Messaging" on')}`);
+
+addPage(`${tag('X / TWITTER','tag-cyan')}
+<h1 class="page-title">𝕏 X/Twitter <span class="glow-cyan">Safety</span></h1>
+${card('card-danger','Dangers','• Viral pile-ons and cancel culture • Doxxing and harassment • Misinformation spreads rapidly • Predators using DMs • Screenshots of tweets taken out of context')}
+${card('card-safe','Protection','• Protected tweets (private account) • Disable DMs from strangers • Think before you tweet — it can go viral • Don\'t engage with trolls • Block generously')}`);
+
+addPage(`${tag('KWAI & OTHERS','tag-orange')}
+<h1 class="page-title">📱 Kwai & Other <span class="glow-pink">Platforms</span></h1>
+<p class="body-text">Every social platform carries similar risks. Whether it's Kwai, BeReal, Threads, or the next big app:</p>
+${list([
+'<span class="ok">Set to private</span> by default',
+'<span class="ok">Disable DMs</span> from strangers',
+'<span class="ok">Never share</span> personal information',
+'<span class="ok">Report</span> suspicious behavior immediately',
+'<span class="ok">Think before posting</span> — the internet never forgets',
+'<span class="ok">Check privacy settings</span> every time the app updates'
+],'list-green')}
+${alert('info','💡','New apps often have weaker safety features. Be EXTRA cautious with new or trending platforms.')}`);
+
+addPage(`${tag('LIVESTREAMING','tag-red')}
+<h1 class="page-title">🔴 Live Streaming <span class="glow-pink">Dangers</span></h1>
+<p class="body-text">Live streaming (TikTok Live, Instagram Live, YouTube Live, Twitch) is especially dangerous because:</p>
+${list([
+'You can\'t edit or delete what happens in real time',
+'Viewers can screenshot or record without your knowledge',
+'Predators watch live streams to identify vulnerable teens',
+'Location and personal details can be accidentally revealed',
+'Chat rooms can become toxic instantly',
+'Pressure to perform dangerous stunts for viewers'
+],'list-red')}
+${alert('warn','⚠️','If you livestream: never show your location, never read out personal info from chat, have a trusted adult nearby, and know how to end the stream instantly.')}`);
+
+addPage(`${tag('CHAT ROOMS','tag-red')}
+<h1 class="page-title">💬 Chat Rooms & <span class="glow-pink">Anonymous Apps</span></h1>
+<p class="body-text">Anonymous chat platforms (Omegle-type sites, anonymous Q&A apps) are <span class="warn">extremely dangerous</span> for teens.</p>
+${card('card-danger','Why They\'re Dangerous','• No age verification • No accountability • Predators specifically target these platforms • Exposure to explicit content is nearly guaranteed • Conversations can be recorded without consent')}
+${alert('danger','🚨','These platforms have been directly linked to child exploitation cases worldwide. Omegle itself shut down in 2023 after facing a lawsuit involving a child.')}
+<p class="body-text"><span class="ok">Simple rule: avoid ALL anonymous chat platforms.</span></p>`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Social Media Quiz</h1>
+<div id="q6">
+<p class="quiz-q">Which Snapchat feature can reveal your exact location to everyone on your friends list?</p>
+<div class="quiz-opt" onclick="quiz(6,0,false)"><span class="letter">A</span>Spotlight</div>
+<div class="quiz-opt" onclick="quiz(6,1,true)"><span class="letter">B</span>Snap Map</div>
+<div class="quiz-opt" onclick="quiz(6,2,false)"><span class="letter">C</span>Quick Add</div>
+<div class="quiz-opt" onclick="quiz(6,3,false)"><span class="letter">D</span>Memories</div>
+</div>
+<div class="quiz-feedback" id="qf6">Snap Map shows your real-time location to friends. ALWAYS enable Ghost Mode to hide your location.</div>`);
+
+// ─── CH 6: SOCIAL ENGINEERING (64-72) ───
+addPage(chapterPage('06','Social Engineering<br>& Manipulation','How criminals hack the human mind','cyan'));
+
+addPage(`${tag('WHAT IS IT','tag-cyan')}
+<h1 class="page-title">Hacking <span class="glow-cyan">Your Mind</span></h1>
+<p class="body-text">Social engineering is the art of <span class="highlight">manipulating people</span> into giving up confidential information or taking actions that compromise their security. It targets the weakest link in any system: <span class="warn">human psychology</span>.</p>
+${alert('info','🧠','Over 90% of successful cyberattacks involve some form of social engineering.')}`);
+
+addPage(`${tag('TACTICS','tag-orange')}
+<h1 class="page-title">Common <span class="glow-cyan">Tactics</span></h1>
+${card('card-danger','🎣 Phishing','Fake emails/messages that look legitimate to steal your credentials')}
+${card('card-danger','📞 Vishing','Voice phishing — someone calls pretending to be from your bank, tech support, etc.')}
+${card('card-danger','📱 Smishing','SMS phishing — fake text messages with malicious links')}
+${card('card-danger','🎭 Pretexting','Creating a fake scenario to gain your trust and extract information')}
+${card('card-danger','🎁 Baiting','Offering something enticing (free games, prizes) to lure you into a trap')}
+${card('card-danger','🚪 Tailgating','Following authorized users to gain access to restricted areas or accounts')}`);
+
+addPage(`${tag('HOW THEY TARGET TEENS','tag-red')}
+<h1 class="page-title">How Criminals <span class="glow-pink">Target Teens</span></h1>
+${list([
+'<span class="warn">Fake giveaways:</span> "Free V-Bucks! Free Robux! Click here!" — always a scam',
+'<span class="warn">Impersonation:</span> Pretending to be a friend, influencer, or game admin',
+'<span class="warn">Urgency:</span> "Your account will be DELETED in 24 hours!" — designed to make you panic',
+'<span class="warn">Flattery:</span> "You\'re so talented, I want to sponsor you!" — fake brand deals',
+'<span class="warn">Fear:</span> "I hacked your camera, I have footage of you" — usually a bluff',
+'<span class="warn">FOMO:</span> "Everyone is joining this exclusive group" — manufactured peer pressure'
+],'list-red')}
+`);
+
+addPage(`${tag('PHISHING DEEP DIVE','tag-orange')}
+<h1 class="page-title">🎣 Phishing: <span class="glow-cyan">Spot the Fake</span></h1>
+<p class="body-text">Red flags in phishing messages:</p>
+${list([
+'Sender email doesn\'t match the company (support@g00gle-security.com)',
+'Generic greeting: "Dear User" instead of your name',
+'Urgent language: "ACT NOW or lose access!"',
+'Suspicious links — hover before clicking to see the real URL',
+'Spelling and grammar errors',
+'Asks for passwords, credit card numbers, or personal info',
+'Attachments from unknown senders',
+'"Too good to be true" offers'
+],'list-orange')}
+${alert('safe','✅','When in doubt, go directly to the official website by typing the URL yourself. Never click links in suspicious emails.')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Social Engineering Quiz</h1>
+<div id="q7">
+<p class="quiz-q">You receive a DM from an "admin" of your favorite game saying your account was flagged and you need to "verify" by entering your password on their link. What is this?</p>
+<div class="quiz-opt" onclick="quiz(7,0,false)"><span class="letter">A</span>A legitimate security check</div>
+<div class="quiz-opt" onclick="quiz(7,1,true)"><span class="letter">B</span>Phishing — a social engineering attack</div>
+<div class="quiz-opt" onclick="quiz(7,2,false)"><span class="letter">C</span>A routine verification process</div>
+<div class="quiz-opt" onclick="quiz(7,3,false)"><span class="letter">D</span>Safe if the profile looks official</div>
+</div>
+<div class="quiz-feedback" id="qf7">No legitimate service will EVER ask for your password via DM or email. This is classic phishing. Report and block immediately.</div>`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Spot the Scam</h1>
+<div id="q8">
+<p class="quiz-q">A YouTube comment says: "I'm giving away 10,000 V-Bucks! Just enter your Epic Games login at this link!" What do you do?</p>
+<div class="quiz-opt" onclick="quiz(8,0,false)"><span class="letter">A</span>Click the link — free V-Bucks!</div>
+<div class="quiz-opt" onclick="quiz(8,1,false)"><span class="letter">B</span>Enter your login — worst case it doesn't work</div>
+<div class="quiz-opt" onclick="quiz(8,2,true)"><span class="letter">C</span>Ignore and report the comment — it's a phishing scam</div>
+<div class="quiz-opt" onclick="quiz(8,3,false)"><span class="letter">D</span>Share it with friends first to check</div>
+</div>
+<div class="quiz-feedback" id="qf8">This is a classic baiting scam. No one gives away thousands of dollars in game currency via YouTube comments. Report it.</div>`);
+
+// ─── CH 7: TROLLS, HATERS & FLAMERS (73-79) ───
+addPage(chapterPage('07','Trolls, Haters,<br>Flamers & Baiters','Identifying and disarming online toxic behavior','orange'));
+
+addPage(`${tag('KNOW YOUR ENEMY','tag-orange')}
+<h1 class="page-title">Types of <span class="glow-pink">Online Toxicity</span></h1>
+${card('card-danger','🧌 Trolls','People who post inflammatory content deliberately to provoke emotional reactions. They feed on your anger and attention.')}
+${card('card-danger','😤 Haters','People who target individuals with persistent negativity — insults, criticism, and personal attacks without provocation.')}
+${card('card-danger','🔥 Flamers','Users who engage in hostile, aggressive arguments online. They escalate conflicts and turn discussions into wars.')}
+${card('card-danger','🪝 Baiters','People who craft messages specifically designed to lure you into arguments or saying something they can use against you.')}`);
+
+addPage(`${tag('HOW TO HANDLE','tag-green')}
+<h1 class="page-title">The <span class="glow-green">Power Move</span></h1>
+<p class="body-text" style="font-size:clamp(18px,3vw,26px);text-align:center;margin:20px 0;font-weight:700;color:var(--neon-green);">"Don't feed the trolls."</p>
+<p class="body-text">This isn't just advice — it's strategy. Trolls, haters, and baiters are powered by YOUR reaction. Every reply, every angry comment, every defensive response <span class="highlight">gives them exactly what they want</span>.</p>
+${card('card-safe','The Protocol','1. <strong>Don\'t respond.</strong> Not even once.<br>2. <strong>Screenshot</strong> if it\'s threatening or targeted harassment.<br>3. <strong>Block</strong> without explanation.<br>4. <strong>Report</strong> using the platform\'s tools.<br>5. <strong>Move on.</strong> Your peace of mind is worth more than any comeback.')}
+${alert('info','💡','The best revenge against a hater is living a good life and not giving them a second of your time.')}`);
+
+addPage(`${tag('PROTECTING YOUR PEACE','tag-green')}
+<h1 class="page-title">🧘 Mental Armor</h1>
+<p class="body-text">Dealing with online hate is emotionally draining. Here's how to protect your mental health:</p>
+${list([
+'<span class="ok">Limit your time</span> on platforms where you encounter toxicity',
+'<span class="ok">Curate your feed</span> — mute, block, unfollow aggressively',
+'<span class="ok">Remember:</span> online hate says everything about THEM, nothing about you',
+'<span class="ok">Talk about it</span> — don\'t bottle up how online interactions make you feel',
+'<span class="ok">Take social media breaks</span> — your mental health comes first',
+'<span class="ok">Focus on real-life relationships</span> that make you feel valued'
+],'list-green')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Troll Defense Quiz</h1>
+<div id="q9">
+<p class="quiz-q">Someone leaves a nasty comment on your post designed to make you angry. What's the BEST response?</p>
+<div class="quiz-opt" onclick="quiz(9,0,false)"><span class="letter">A</span>Write an even meaner reply</div>
+<div class="quiz-opt" onclick="quiz(9,1,false)"><span class="letter">B</span>Explain why they're wrong in a long paragraph</div>
+<div class="quiz-opt" onclick="quiz(9,2,true)"><span class="letter">C</span>Don't respond, block, and move on</div>
+<div class="quiz-opt" onclick="quiz(9,3,false)"><span class="letter">D</span>Screenshot and post it to shame them</div>
+</div>
+<div class="quiz-feedback" id="qf9">Engaging with trolls only amplifies them. Block, report if necessary, and protect your peace. You win by not playing their game.</div>`);
+
+addPage(`<div id="tg0">
+${tag('TAP GAME','tag-cyan')}
+<h1 class="page-title">🎮 Identify the Behavior</h1>
+<p class="body-text" style="margin-bottom:14px;">Tap the <span class="ok">SAFE responses</span>, avoid the <span class="warn">toxic</span> ones:</p>
+<div class="tap-grid">
+<div class="tap-item" onclick="tap(this,true)"><span class="tap-emoji">🧘</span>Block & move on</div>
+<div class="tap-item" onclick="tap(this,false)"><span class="tap-emoji">🔥</span>Fire back insults</div>
+<div class="tap-item" onclick="tap(this,true)"><span class="tap-emoji">📸</span>Screenshot & report</div>
+<div class="tap-item" onclick="tap(this,false)"><span class="tap-emoji">😤</span>Start a flame war</div>
+<div class="tap-item" onclick="tap(this,true)"><span class="tap-emoji">🗣️</span>Talk to a friend</div>
+<div class="tap-item" onclick="tap(this,false)"><span class="tap-emoji">👊</span>Threaten them back</div>
+</div></div>`);
+
+// ─── CH 8: MENTAL HEALTH (80-89) ───
+addPage(chapterPage('08','Mental Health &<br>The Digital World','Depression, anxiety, self-esteem & the impact of social media','green'));
+
+addPage(`${tag('THE CONNECTION','tag-green')}
+<h1 class="page-title">Social Media & <span class="glow-pink">Your Brain</span></h1>
+<p class="body-text">Social media is designed to be <span class="highlight">addictive</span>. Every like, comment, and notification triggers a dopamine hit in your brain — the same chemical involved in addiction.</p>
+${card('card-warn','📊 The Data','Studies show teens who spend 3+ hours daily on social media have double the risk of depression and anxiety symptoms.')}
+<p class="body-text">This doesn't mean social media is inherently evil — but understanding how it affects you gives you <span class="ok">the power to control it instead of letting it control you</span>.</p>`);
+
+addPage(`${tag('COMPARISON TRAP','tag-orange')}
+<h1 class="page-title">The <span class="glow-pink">Comparison</span> Trap</h1>
+<p class="body-text">Instagram, TikTok, and YouTube show you <span class="warn">highlight reels</span>, not real life.</p>
+${card('card-warn','What You See','Perfect bodies, luxury lifestyles, constant fun, flawless skin, amazing relationships')}
+${card('card-safe','The Reality','Filters, editing, Photoshop, curated angles, multiple takes, borrowed items, rented locations, hidden struggles')}
+${alert('safe','💚','No one\'s life is as perfect as their social media suggests. You are comparing your behind-the-scenes to someone else\'s highlight reel.')}`);
+
+addPage(`${tag('DEPRESSION','tag-pink')}
+<h1 class="page-title">Understanding <span class="glow-pink">Depression</span></h1>
+<p class="body-text">Depression isn't just "feeling sad." It's a medical condition that can be triggered or worsened by online experiences like cyberbullying, social isolation, and comparison culture.</p>
+<p class="body-text">Signs to watch for in yourself or friends:</p>
+${list([
+'Persistent sadness or emptiness lasting weeks',
+'Loss of interest in things you used to enjoy',
+'Changes in sleep (too much or too little)',
+'Withdrawing from friends and family',
+'Difficulty concentrating',
+'Feeling worthless or hopeless',
+'Changes in appetite or weight',
+'Thinking about self-harm'
+],'list-pink')}
+${alert('safe','💚','Depression is treatable. Talk to a trusted adult, school counselor, or call a helpline. You deserve help.')}`);
+
+addPage(`${tag('ANXIETY','tag-orange')}
+<h1 class="page-title">Digital <span class="glow-cyan">Anxiety</span></h1>
+<p class="body-text">The digital world can fuel anxiety in many ways:</p>
+${card('card-warn','📱 FOMO','Fear of Missing Out — constantly checking to see what others are doing')}
+${card('card-warn','💬 Response Anxiety','Stress about when/how someone will reply to your message')}
+${card('card-warn','❤️ Validation Seeking','Tying your self-worth to likes, followers, and engagement')}
+${card('card-warn','🔔 Notification Overload','Constant alerts keeping your brain in fight-or-flight mode')}
+${card('card-safe','🧘 Management','Turn off non-essential notifications • Set screen time limits • Practice being present offline • Talk to a professional if anxiety interferes with daily life')}`);
+
+addPage(`${tag('SELF-ESTEEM','tag-green')}
+<h1 class="page-title">Building <span class="glow-green">Self-Esteem</span></h1>
+<p class="body-text">Your worth is NOT measured by followers, likes, or comments. Here's how to build genuine self-esteem:</p>
+${card('card-safe','🏆 Celebrate Real Achievements','Focus on skills, learning, creativity — things that matter beyond a screen')}
+${card('card-safe','🧹 Curate Your Feed','Unfollow accounts that make you feel bad. Follow ones that inspire and educate.')}
+${card('card-safe','🪞 Practice Self-Compassion','Talk to yourself the way you\'d talk to a best friend')}
+${card('card-safe','🌱 Grow Offline','Hobbies, sports, art, music, volunteering — build an identity beyond social media')}
+${card('card-safe','🗣️ Seek Support','Therapy isn\'t weakness — it\'s leveling up your mental game')}`);
+
+addPage(`${tag('DIGITAL DETOX','tag-green')}
+<h1 class="page-title">🔌 Digital <span class="glow-green">Detox</span></h1>
+<p class="body-text">Try these practices to reset your relationship with technology:</p>
+${list([
+'<span class="ok">No screens 1 hour before bed</span> — better sleep changes everything',
+'<span class="ok">Phone-free meals</span> — reconnect with people around you',
+'<span class="ok">Social media-free days</span> — start with one day a week',
+'<span class="ok">Turn off notifications</span> — check on YOUR schedule',
+'<span class="ok">Delete apps that drain you</span> — you can always reinstall',
+'<span class="ok">Replace scroll time</span> with reading, exercise, or creating',
+'<span class="ok">Use screen time tracking</span> — knowledge is power'
+],'list-green')}`);
+
+addPage(`${tag('RESOURCES','tag-green')}
+<h1 class="page-title">📞 Mental Health <span class="glow-green">Help</span></h1>
+<p class="body-text">You are never alone. Professional help is available:</p>
+${res('🆘','Crisis Text Line','Text HOME to 741741 (US) — Free 24/7 crisis support')}
+${res('🇧🇷','CVV Brazil','Dial 188 or cvv.org.br — 24/7 emotional support')}
+${res('🇬🇧','Childline UK','0800 1111 — Free helpline for under 19s')}
+${res('🌍','Befrienders Worldwide','befrienders.org — International crisis centers')}
+${res('📱','7 Cups','7cups.com — Free online therapy chat for teens')}
+${alert('safe','💚','Asking for help is the bravest thing you can do. You matter.')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Mental Health Quiz</h1>
+<div id="q10">
+<p class="quiz-q">You notice a friend has been posting sad lyrics, withdrawn from social activities, and their social media has gone quiet. What should you do?</p>
+<div class="quiz-opt" onclick="quiz(10,0,false)"><span class="letter">A</span>Nothing — they're probably just being dramatic</div>
+<div class="quiz-opt" onclick="quiz(10,1,true)"><span class="letter">B</span>Reach out privately, ask how they're doing, and tell a trusted adult</div>
+<div class="quiz-opt" onclick="quiz(10,2,false)"><span class="letter">C</span>Comment "you okay?" on their post and leave it</div>
+<div class="quiz-opt" onclick="quiz(10,3,false)"><span class="letter">D</span>Wait for them to come to you</div>
+</div>
+<div class="quiz-feedback" id="qf10">Those are warning signs. Reach out privately, listen without judgment, and involve a trusted adult. A simple check-in can save a life.</div>`);
+
+// ─── CH 9: DEVICE SECURITY (90-101) ───
+addPage(chapterPage('09','Device Security<br>& Safe Browsing','Protecting your phone, computer, and digital life','cyan'));
+
+addPage(`${tag('LOCK IT DOWN','tag-cyan')}
+<h1 class="page-title">📱 Phone <span class="glow-cyan">Security 101</span></h1>
+${card('card-safe','🔒 Strong Passcode','Use a 6-digit PIN minimum. Biometrics (fingerprint/face) are even better. Never share your code.')}
+${card('card-safe','🔄 Keep Updated','Updates fix security holes. Enable auto-updates for your OS and all apps.')}
+${card('card-safe','📲 App Store Only','Only install apps from official stores (Google Play, Apple App Store). Even then, check reviews and permissions.')}
+${card('card-safe','🗺️ Location Services','Disable location for apps that don\'t need it. Most apps don\'t need your location.')}
+${card('card-safe','☁️ Backup','Enable encrypted cloud backup. If your phone is stolen, you don\'t lose everything.')}`);
+
+addPage(`${tag('MALWARE','tag-red')}
+<h1 class="page-title">🦠 Viruses & <span class="glow-pink">Malware</span></h1>
+<p class="body-text">Malware (malicious software) includes:</p>
+${card('card-danger','🦠 Viruses','Programs that replicate and damage your device')}
+${card('card-danger','🪱 Worms','Spread automatically across networks without user action')}
+${card('card-danger','🐴 Trojans','Disguised as legitimate apps but contain hidden malware')}
+${card('card-danger','💰 Ransomware','Locks your files and demands payment to unlock')}
+${card('card-danger','👁️ Spyware','Secretly monitors your activity, keystrokes, and camera')}
+${card('card-danger','📢 Adware','Floods you with unwanted ads and pop-ups')}`);
+
+addPage(`${tag('DETECTION','tag-orange')}
+<h1 class="page-title">🔍 How to <span class="glow-cyan">Detect</span> Malware</h1>
+<p class="body-text">Your device might be infected if:</p>
+${list([
+'It\'s <span class="warn">suddenly slow</span> or crashes frequently',
+'<span class="warn">Battery drains</span> unusually fast',
+'<span class="warn">Unknown apps</span> appear that you didn\'t install',
+'<span class="warn">Pop-up ads</span> appear even when not browsing',
+'<span class="warn">Data usage spikes</span> without explanation',
+'Your device <span class="warn">overheats</span> when idle',
+'<span class="warn">Contacts receive</span> messages you didn\'t send',
+'<span class="warn">Unfamiliar charges</span> on your account'
+],'list-orange')}
+${alert('safe','✅','If you notice these signs: disconnect from internet, run antivirus scan, tell a parent, and consider factory reset as last resort.')}`);
+
+addPage(`${tag('SAFE DOWNLOADS','tag-green')}
+<h1 class="page-title">⬇️ Download <span class="glow-green">Safety</span></h1>
+<p class="body-text"><span class="warn">Golden rule: don't download anything unless you're 100% sure it's safe.</span></p>
+${card('card-danger','🚫 Never Download','• Files from unknown email attachments • "Cracked" or pirated software • Apps from random websites • Files from strangers on Discord/chat • Anything that promises "free" paid content')}
+${card('card-safe','✅ Safe Downloads','• Official app stores with verified publishers • Trusted websites (check the URL carefully) • Links sent by people you KNOW and trust • Software recommended by reputable sources')}`);
+
+addPage(`${tag('LINKS & URLS','tag-orange')}
+<h1 class="page-title">🔗 Link <span class="glow-cyan">Safety</span></h1>
+<p class="body-text">Before clicking ANY link:</p>
+${list([
+'<span class="ok">Hover over it</span> to see the actual URL (on desktop)',
+'<span class="ok">Long-press</span> on mobile to preview the URL',
+'<span class="ok">Check for HTTPS</span> — the padlock icon (but this alone doesn\'t guarantee safety)',
+'<span class="ok">Look for misspellings</span>: go0gle.com, faceb00k.com, amaz0n.net',
+'<span class="ok">Use URL checkers</span>: VirusTotal.com lets you scan URLs for free',
+'<span class="ok">Never click shortened links</span> from strangers (bit.ly, tinyurl)',
+'<span class="ok">Type URLs directly</span> instead of clicking links in messages'
+],'list-green')}`);
+
+addPage(`${tag('PASSWORDS','tag-cyan')}
+<h1 class="page-title">🔐 Password <span class="glow-cyan">Mastery</span></h1>
+${card('card-safe','Strong Password Formula','12+ characters • Mix of uppercase, lowercase, numbers, symbols • No personal info (name, birthday, pet) • Unique for EVERY account')}
+${card('card-safe','🗄️ Use a Password Manager','Apps like Bitwarden (free) generate and store unique passwords for every account. You only remember ONE master password.')}
+${card('card-safe','🔐 Enable 2FA Everywhere','Two-Factor Authentication adds a second layer of security. Even if someone steals your password, they can\'t log in without your phone.')}
+${alert('warn','⚠️','Never reuse passwords. If one account is breached, hackers try the same password on ALL your other accounts.')}`);
+
+addPage(`${tag('WIFI SECURITY','tag-orange')}
+<h1 class="page-title">📡 WiFi <span class="glow-cyan">Safety</span></h1>
+${card('card-danger','☕ Public WiFi Risks','Free WiFi at cafes, malls, and airports can be monitored by attackers. They can see your passwords, messages, and browsing activity.')}
+${card('card-safe','Protection','• Use mobile data for sensitive activities (banking, login) • Use a VPN on public WiFi • Forget networks after use • Disable auto-connect • Never access bank accounts on public WiFi')}
+${alert('info','💡','A VPN (Virtual Private Network) encrypts your connection. Good free options include ProtonVPN and Cloudflare WARP.')}`);
+
+addPage(`${tag('SAFE BROWSING','tag-green')}
+<h1 class="page-title">🌐 Safe Browsing <span class="glow-green">Habits</span></h1>
+${list([
+'<span class="ok">Check URLs carefully</span> before entering any information',
+'<span class="ok">Look for HTTPS</span> and the padlock icon on sensitive sites',
+'<span class="ok">Don\'t save passwords</span> in your browser — use a password manager instead',
+'<span class="ok">Clear cookies and browsing data</span> regularly',
+'<span class="ok">Use an ad blocker</span> — many ads contain malware',
+'<span class="ok">Be skeptical</span> of pop-ups, especially "Your device is infected!" warnings',
+'<span class="ok">Keep your browser updated</span> — updates patch security holes',
+'<span class="ok">Use private/incognito mode</span> on shared computers'
+],'list-green')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Security Quiz</h1>
+<div id="q11">
+<p class="quiz-q">Which password is the MOST secure?</p>
+<div class="quiz-opt" onclick="quiz(11,0,false)"><span class="letter">A</span>MyDog2024</div>
+<div class="quiz-opt" onclick="quiz(11,1,false)"><span class="letter">B</span>password123!</div>
+<div class="quiz-opt" onclick="quiz(11,2,true)"><span class="letter">C</span>Tr!c3r@tops_J4zz_91!xK</div>
+<div class="quiz-opt" onclick="quiz(11,3,false)"><span class="letter">D</span>qwerty</div>
+</div>
+<div class="quiz-feedback" id="qf11">Long, random combinations of letters, numbers, and symbols are strongest. Use a password manager so you don't have to memorize them.</div>`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Malware Quiz</h1>
+<div id="q12">
+<p class="quiz-q">A pop-up appears: "WARNING! Your phone has 3 viruses! Download this FREE antivirus NOW!" What should you do?</p>
+<div class="quiz-opt" onclick="quiz(12,0,false)"><span class="letter">A</span>Download it immediately — 3 viruses!</div>
+<div class="quiz-opt" onclick="quiz(12,1,true)"><span class="letter">B</span>Close the browser — it's a fake scare tactic (scareware)</div>
+<div class="quiz-opt" onclick="quiz(12,2,false)"><span class="letter">C</span>Click to see if it's real</div>
+<div class="quiz-opt" onclick="quiz(12,3,false)"><span class="letter">D</span>Share it with friends as a warning</div>
+</div>
+<div class="quiz-feedback" id="qf12">This is "scareware" — a social engineering tactic. Real antivirus software never works through browser pop-ups. Close the tab immediately.</div>`);
+
+// ─── CH 10: DIGITAL FOOTPRINT & POSTING (102-110) ───
+addPage(chapterPage('10','Your Digital<br>Footprint','Everything you post online lasts forever','pink'));
+
+addPage(`${tag('PERMANENT RECORD','tag-pink')}
+<h1 class="page-title">The Internet <span class="glow-pink">Never Forgets</span></h1>
+<p class="body-text">Every post, comment, photo, like, and search creates a <span class="highlight">digital footprint</span>. This includes:</p>
+${list([
+'Social media posts (even deleted ones can be cached or screenshot)',
+'Comments and replies on any platform',
+'Photos and videos you share or appear in',
+'Websites you visit and searches you make',
+'Online purchases and account registrations',
+'Reviews you write and forums you participate in'
+])}
+${alert('warn','⚠️','College admissions officers, employers, and background check companies search for your online presence. What you post at 14 can affect you at 24.')}`);
+
+addPage(`${tag('THINK BEFORE POSTING','tag-orange')}
+<h1 class="page-title">The <span class="glow-cyan">THINK</span> Test</h1>
+<p class="body-text">Before posting ANYTHING, ask yourself:</p>
+${card('','🤔 T — Is it TRUE?','Am I sharing facts or rumors? Could this be misinformation?')}
+${card('','❤️ H — Is it HELPFUL?','Does this add value, or could it hurt someone?')}
+${card('','💡 I — Is it INSPIRING?','Will this lift someone up or drag them down?')}
+${card('','🤝 N — Is it NECESSARY?','Does the world need to see this? Or is it oversharing?')}
+${card('','😊 K — Is it KIND?','Would I say this to someone\'s face?')}
+`);
+
+addPage(`${tag('WHAT NOT TO POST','tag-red')}
+<h1 class="page-title">🚫 Never Post <span class="glow-pink">These</span></h1>
+${list([
+'Your <span class="warn">current location</span> in real-time',
+'Photos of your <span class="warn">ID, passport, tickets, or boarding passes</span>',
+'Your <span class="warn">home address, school name, or daily routine</span>',
+'<span class="warn">Intimate or compromising</span> photos/videos',
+'<span class="warn">Angry or emotional</span> posts you might regret',
+'Other people\'s <span class="warn">private information or photos</span> without consent',
+'Details about your family\'s <span class="warn">finances, vacations, or absences</span>',
+'Screenshots of <span class="warn">private conversations</span>'
+],'list-red')}
+${alert('info','💡','A good rule: If you wouldn\'t want your grandparents, your school principal, and a future employer to see it — don\'t post it.')}`);
+
+addPage(`${tag('EXPOSURE RISKS','tag-orange')}
+<h1 class="page-title">📸 The Dangers of <span class="glow-pink">Oversharing</span></h1>
+${card('card-danger','🏠 Burglary Risk','Posting vacation photos in real-time tells criminals your house is empty.')}
+${card('card-danger','📍 Stalking Risk','Frequent location posts create a predictable pattern of your movements.')}
+${card('card-danger','🎭 Identity Theft','Personal details scattered across profiles can be pieced together for fraud.')}
+${card('card-danger','💼 Career Damage','Inappropriate posts have cost people college acceptances and job offers.')}
+${card('card-danger','🎯 Targeted Attacks','Oversharing makes you an easier target for social engineering and manipulation.')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Posting Quiz</h1>
+<div id="q13">
+<p class="quiz-q">You're excited about a family vacation and want to post. What's the safest approach?</p>
+<div class="quiz-opt" onclick="quiz(13,0,false)"><span class="letter">A</span>Post "Leaving for Hawaii! House is empty for 2 weeks!"</div>
+<div class="quiz-opt" onclick="quiz(13,1,false)"><span class="letter">B</span>Share your boarding pass with your name and flight info</div>
+<div class="quiz-opt" onclick="quiz(13,2,true)"><span class="letter">C</span>Post photos AFTER you return home</div>
+<div class="quiz-opt" onclick="quiz(13,3,false)"><span class="letter">D</span>Livestream from the airport with your gate number visible</div>
+</div>
+<div class="quiz-feedback" id="qf13">Posting vacation photos after you return is the safest option. Real-time posts broadcast your location and that your home is empty.</div>`);
+
+// ─── CH 11: ANONYMITY & CONSEQUENCES (111-117) ───
+addPage(chapterPage('11','Anonymity<br>Is a Myth','Why "anonymous" doesn\'t mean untraceable','purple'));
+
+addPage(`${tag('THE MYTH','tag-purple')}
+<h1 class="page-title">You're NOT <span class="glow-purple">Anonymous</span></h1>
+<p class="body-text">Many teens believe they're invisible online. The truth:</p>
+${card('card-danger','🔍 IP Addresses','Every device has a unique address. Law enforcement can trace it to your home.')}
+${card('card-danger','📱 Device Fingerprinting','Your browser, OS, screen resolution, and plugins create a unique signature.')}
+${card('card-danger','🗄️ Server Logs','Platforms keep records of everything — even deleted messages and accounts.')}
+${card('card-danger','📸 Metadata','Photos contain hidden data: GPS coordinates, device info, timestamps.')}
+${card('card-danger','🤝 Digital Forensics','Police have specialized units that recover "deleted" data from devices and platforms.')}
+${alert('warn','⚠️','VPNs and incognito mode do NOT make you untraceable. They offer limited privacy, not anonymity.')}`);
+
+addPage(`${tag('REAL CONSEQUENCES','tag-red')}
+<h1 class="page-title">⚖️ Real <span class="glow-pink">Consequences</span></h1>
+<p class="body-text">Things teens have faced criminal charges for:</p>
+${list([
+'<span class="warn">Cyberbullying</span> — criminal harassment charges',
+'<span class="warn">Sharing nudes of minors</span> — child exploitation charges (even your own photos)',
+'<span class="warn">Doxxing</span> — publishing someone\'s private info',
+'<span class="warn">Swatting</span> — fake emergency calls that endanger lives',
+'<span class="warn">Hacking</span> — unauthorized access to accounts or systems',
+'<span class="warn">Threats</span> — even "jokes" about violence are taken seriously',
+'<span class="warn">Defamation</span> — spreading lies that damage someone\'s reputation'
+],'list-red')}
+${alert('danger','🚨','"I was just joking" and "I didn\'t think anyone would find out" are NOT legal defenses.')}`);
+
+addPage(`${tag('THINK BEFORE ACT','tag-green')}
+<h1 class="page-title">🧠 The 10-Second Rule</h1>
+<p class="body-text" style="font-size:clamp(18px,3vw,24px);text-align:center;margin:20px 0;font-weight:700;color:var(--neon-green);">Before you post, send, or share — wait 10 seconds and ask:</p>
+${card('card-safe','','1. Would I say this to someone\'s face?<br>2. Would I be okay if my parents saw this?<br>3. Could this hurt someone?<br>4. Could this come back to haunt me?<br>5. Am I posting out of anger or impulse?')}
+<p class="body-text">If you answer YES to any of 2-5, <span class="warn">don't post it</span>.</p>`);
+
+// ─── CH 12: LAWS & PROTECTION (118-124) ───
+addPage(chapterPage('12','Laws That<br>Protect You','Cybersecurity legislation around the world','blue'));
+
+addPage(`${tag('GLOBAL LAWS','tag-cyan')}
+<h1 class="page-title">⚖️ Laws Around the <span class="glow-cyan">World</span></h1>
+<p class="body-text">Countries have enacted specific laws to protect minors online:</p>
+${card('','🇺🇸 United States','COPPA (Children\'s Online Privacy Protection Act) • CIPA (Children\'s Internet Protection Act) • Various state cyberbullying laws • Federal sextortion laws')}
+${card('','🇧🇷 Brazil','Marco Civil da Internet • Lei Carolina Dieckmann (cybercrime) • ECA (Estatuto da Criança e do Adolescente) • Lei 13.185/2015 (anti-bullying) • Lei 14.811/2024 (criminalizes cyberbullying)')}
+${card('','🇬🇧 United Kingdom','Online Safety Act 2023 • Malicious Communications Act • Protection from Harassment Act • Criminal Justice Act (revenge porn)')}
+`);
+
+addPage(`${tag('MORE LAWS','tag-cyan')}
+<h1 class="page-title">⚖️ More <span class="glow-cyan">Global Laws</span></h1>
+${card('','🇪🇺 European Union','GDPR (data protection, strict on minors) • Digital Services Act • Directive on combating sexual abuse of children')}
+${card('','🇦🇺 Australia','Online Safety Act 2021 • Enhancing Online Safety for Children Act • eSafety Commissioner powers to remove content within 24 hours')}
+${card('','🇨🇦 Canada','Bill C-13 (Protecting Canadians from Online Crime) • Criminal Code provisions on cyberbullying and non-consensual intimate images')}
+${card('','🇯🇵 Japan','2022 amendment criminalizing online insults (up to 1 year imprisonment) • Act on Prevention of Cyberbullying')}
+${alert('info','📌','In most countries, cyberbullying, sextortion, grooming, and sharing intimate images of minors are CRIMINAL offenses with serious penalties.')}`);
+
+addPage(`${tag('YOUR RIGHTS','tag-green')}
+<h1 class="page-title">🛡️ Your <span class="glow-green">Rights</span></h1>
+<p class="body-text">As a minor, you have the right to:</p>
+${list([
+'<span class="ok">Privacy</span> — your data should be protected',
+'<span class="ok">Safety</span> — platforms must have safety features for minors',
+'<span class="ok">Removal</span> — you can request removal of your personal data and images',
+'<span class="ok">Protection</span> — law enforcement must investigate crimes against you',
+'<span class="ok">Support</span> — access to helplines, counselors, and legal aid',
+'<span class="ok">Justice</span> — perpetrators can and should be held accountable'
+],'list-green')}
+${alert('safe','💚','Knowing your rights is power. If someone violates them, you have legal recourse — and there are people ready to help.')}`);
+
+// ─── CH 13: FILMS & MEDIA (125-128) ───
+addPage(chapterPage('13','Films & Series<br>to Watch','Educational content about cybersecurity and online safety','yellow'));
+
+addPage(`${tag('RECOMMENDED VIEWING','tag-yellow')}
+<h1 class="page-title">🎬 Films & <span class="glow-cyan">Documentaries</span></h1>
+${res('🎬','The Social Dilemma (2020)','Netflix doc on how social media manipulates and addicts users')}
+${res('🎬','Audrie & Daisy (2016)','Netflix doc on sexual assault, cyberbullying, and their aftermath')}
+${res('🎬','Screened Out (2020)','Documentary on screen addiction and its effects on families')}
+${res('🎬','Sextortion: The Hidden Pandemic (2020)','Thorn documentary on online sexual exploitation of minors')}
+${res('🎬','Cyberbully (2011)','ABC Family TV movie depicting cyberbullying\'s impact on teens')}
+${res('🎬','Trust (2010)','Film about online grooming and exploitation starring Clive Owen')}`);
+
+addPage(`${tag('SERIES & MORE','tag-yellow')}
+<h1 class="page-title">📺 Series & <span class="glow-cyan">More</span></h1>
+${res('📺','Black Mirror','Anthology series exploring technology\'s dark potential')}
+${res('📺','Clickbait (2021)','Netflix thriller about how social media can destroy lives')}
+${res('📺','Web of Make Believe (2022)','Netflix docuseries on internet crimes')}
+${res('📺','Don\'t F**k with Cats (2019)','Netflix doc on how internet users tracked a criminal')}
+${res('📺','The Most Hated Man on the Internet (2022)','Netflix doc on revenge porn and fighting back')}
+${res('📖','So You\'ve Been Publicly Shamed — Jon Ronson','Book on public shaming and cancel culture in the digital age')}
+${alert('info','📌','These aren\'t just entertainment — they\'re education. Watch with a parent or friend and discuss what you learn.')}`);
+
+// ─── CH 14: EMPOWERMENT (129-137) ───
+addPage(chapterPage('14','Be a Digital<br>Citizen','Using your power for good','green'));
+
+addPage(`${tag('YOUR POWER','tag-green')}
+<h1 class="page-title">You Have <span class="glow-green">Power</span></h1>
+<p class="body-text">You're part of the first generation that grew up completely digital. That gives you <span class="ok">incredible power</span>:</p>
+${list([
+'You can <span class="ok">amplify voices</span> that need to be heard',
+'You can <span class="ok">stand up against</span> bullying when you see it',
+'You can <span class="ok">educate others</span> who don\'t know the risks',
+'You can <span class="ok">report</span> dangerous content and protect others',
+'You can <span class="ok">build communities</span> based on kindness and respect',
+'You can <span class="ok">create content</span> that inspires and helps people'
+],'list-green')}`);
+
+addPage(`${tag('BE AN ALLY','tag-green')}
+<h1 class="page-title">🤝 Be an <span class="glow-green">Upstander</span></h1>
+<p class="body-text">A "bystander" watches. An <span class="ok">"upstander" acts</span>.</p>
+${card('card-safe','In Practice','• If you see someone being bullied, privately message them support<br>• Report harmful content — don\'t just scroll past<br>• Don\'t share embarrassing content of others<br>• Include people who seem left out<br>• If a friend is in danger, tell a trusted adult — even if they asked you not to')}
+${alert('safe','💪','Being an upstander isn\'t always easy, but it\'s always right. You could save someone\'s life.')}`);
+
+addPage(`${tag('QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Upstander Quiz</h1>
+<div id="q14">
+<p class="quiz-q">You see a classmate's embarrassing video being shared in a group chat. What's the right thing to do?</p>
+<div class="quiz-opt" onclick="quiz(14,0,false)"><span class="letter">A</span>Share it with other groups — it's funny</div>
+<div class="quiz-opt" onclick="quiz(14,1,false)"><span class="letter">B</span>Ignore it — not your problem</div>
+<div class="quiz-opt" onclick="quiz(14,2,true)"><span class="letter">C</span>Don't share, support the person, report it, tell an adult</div>
+<div class="quiz-opt" onclick="quiz(14,3,false)"><span class="letter">D</span>Save it "just in case"</div>
+</div>
+<div class="quiz-feedback" id="qf14">Sharing embarrassing content makes you part of the bullying. Be the person who stops the chain, supports the victim, and reports it.</div>`);
+
+addPage(`<div id="tg1">
+${tag('TAP GAME','tag-cyan')}
+<h1 class="page-title">🎮 Digital Citizen Challenge</h1>
+<p class="body-text" style="margin-bottom:14px;">Tap the <span class="ok">good digital citizen</span> behaviors:</p>
+<div class="tap-grid">
+<div class="tap-item" onclick="tap(this,true)"><span class="tap-emoji">🛡️</span>Report bullying</div>
+<div class="tap-item" onclick="tap(this,false)"><span class="tap-emoji">📸</span>Share others' private photos</div>
+<div class="tap-item" onclick="tap(this,true)"><span class="tap-emoji">💕</span>Support a friend</div>
+<div class="tap-item" onclick="tap(this,false)"><span class="tap-emoji">🤡</span>Troll someone for laughs</div>
+<div class="tap-item" onclick="tap(this,true)"><span class="tap-emoji">🔒</span>Use strong passwords</div>
+<div class="tap-item" onclick="tap(this,false)"><span class="tap-emoji">🎣</span>Click suspicious links</div>
+<div class="tap-item" onclick="tap(this,true)"><span class="tap-emoji">🧘</span>Take screen breaks</div>
+<div class="tap-item" onclick="tap(this,false)"><span class="tap-emoji">📍</span>Share real-time location</div>
+</div></div>`);
+
+// ─── MASTER SUMMARY (138-142) ───
+addPage(`${tag('COMPREHENSIVE REVIEW','tag-cyan')}
+<h1 class="page-title">📋 The Complete <span class="glow-cyan">Checklist</span></h1>
+${card('card-safe','🔐 Accounts & Passwords','✓ Unique strong passwords everywhere ✓ 2FA enabled ✓ Password manager ✓ Private profiles ✓ Regular security checkups')}
+${card('card-safe','📱 Device Security','✓ Strong passcode ✓ Auto-updates ON ✓ Only official app stores ✓ VPN on public WiFi ✓ Regular backups')}
+${card('card-safe','🌐 Online Behavior','✓ THINK before posting ✓ No personal info shared ✓ No strangers in DMs ✓ Screenshots of threats ✓ Report & block toxic users')}
+${card('card-safe','🧠 Mental Health','✓ Regular screen breaks ✓ Curated feed ✓ Real-life connections ✓ Self-worth beyond likes ✓ Professional help when needed')}`);
+
+addPage(`${tag('EMERGENCY CONTACTS','tag-red')}
+<h1 class="page-title">🆘 Emergency <span class="glow-pink">Resources</span></h1>
+${res('🆘','Emergency Services','Call 911 (US), 999 (UK), 190 (Brazil) for immediate danger')}
+${res('📱','Crisis Text Line','Text HOME to 741741 (US)')}
+${res('🇧🇷','CVV - Centro de Valorização da Vida','Dial 188 (Brazil) — 24/7')}
+${res('🇬🇧','Childline UK','0800 1111 — Free, confidential')}
+${res('🌍','NCMEC CyberTipline','report.cybertip.org — Report exploitation')}
+${res('🛡️','StopNCII.org','Image hash tool to prevent intimate image spread')}
+${res('🇧🇷','SaferNet Brazil','safernet.org.br — Report cybercrimes')}
+${res('🌍','Internet Watch Foundation','iwf.org.uk — Remove exploitation material')}`);
+
+addPage(`${tag('FINAL QUIZ','tag-cyan')}
+<h1 class="page-title">🧪 Final Knowledge Test</h1>
+<div id="q15">
+<p class="quiz-q">What's the SINGLE most important thing to remember from this entire guide?</p>
+<div class="quiz-opt" onclick="quiz(15,0,false)"><span class="letter">A</span>Never use the internet — it's too dangerous</div>
+<div class="quiz-opt" onclick="quiz(15,1,false)"><span class="letter">B</span>Trust anyone who seems nice online</div>
+<div class="quiz-opt" onclick="quiz(15,2,true)"><span class="letter">C</span>If something feels wrong, trust your gut, save evidence, and tell a trusted adult</div>
+<div class="quiz-opt" onclick="quiz(15,3,false)"><span class="letter">D</span>Anonymity protects you from all consequences</div>
+</div>
+<div class="quiz-feedback" id="qf15">Your instincts are powerful. If something feels wrong, it probably IS wrong. Save evidence, talk to someone you trust, and never be afraid to ask for help.</div>`);
+
+addPage(`${tag('PLEDGE','tag-green')}
+<h1 class="page-title">🛡️ The CyberShield <span class="glow-cyan">Pledge</span></h1>
+<div class="card card-safe" style="text-align:center;font-size:16px;line-height:2;">
+<p><strong>I pledge to:</strong></p>
+<p>🛡️ Protect my personal information online</p>
+<p>🤝 Treat others with respect and kindness</p>
+<p>🗣️ Speak up when I see something wrong</p>
+<p>🚫 Never share intimate content of myself or others</p>
+<p>🧠 Think before I post, send, or share</p>
+<p>📱 Balance my screen time with real life</p>
+<p>💪 Ask for help when I need it</p>
+<p>🌟 Use my digital power for good</p>
+</div>`);
+
+// ─── FINALE (143) ───
+addPage(`<div style="text-align:center;">
+${icon('🦸')}
+<h1 class="page-title" style="font-size:clamp(28px,6vw,44px);background:linear-gradient(135deg,var(--neon-cyan),var(--neon-green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">You Are Now a<br>CyberShield Guardian</h1>
+<p class="body-text" style="font-size:clamp(16px,2.5vw,20px);color:var(--text-dim);margin:20px 0;">You've completed the entire Digital Survival Guide.<br>Share this knowledge. Protect your friends.<br>Be the change the internet needs.</p>
+<div style="margin:24px 0;padding:20px;background:var(--surface);border:1px solid var(--neon-cyan);border-radius:16px;display:inline-block;">
+<p style="font-size:14px;color:var(--text-dim);margin-bottom:8px;">Created with ❤️ by</p>
+<p style="font-size:20px;font-weight:800;color:var(--neon-cyan);">Joas Antonio dos Santos</p>
+<p style="font-size:14px;color:var(--text-dim);margin-top:4px;">Founder — Red Team Leaders</p>
+<p style="font-size:14px;margin-top:8px;"><a href="https://joasantonio.com/" target="_blank" style="color:var(--neon-pink);text-decoration:none;font-weight:600;">🌐 joasantonio.com</a></p>
+</div>
+<p style="font-size:14px;color:var(--text-dim);margin-top:20px;">Stay safe. Stay smart. Stay kind. 🛡️</p>
+</div>`);
+
+// ─── CERTIFICATE ───
+addPage(`<div style="text-align:center;">
+${icon('🎓')}
+<h1 class="page-title" style="background:linear-gradient(135deg,var(--neon-cyan),var(--neon-green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Get Your Certificate!</h1>
+<p class="body-text" style="color:var(--text-dim);margin-bottom:20px;">Congratulations on completing the guide! Enter your name below to generate your official CyberShield Guardian certificate.</p>
+<div style="max-width:400px;margin:0 auto;">
+<input type="text" id="certName" placeholder="Enter your full name" style="width:100%;padding:14px 20px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text-bright);font-family:'Outfit';font-size:16px;text-align:center;outline:none;transition:border .3s;" onfocus="this.style.borderColor='var(--neon-cyan)'" onblur="this.style.borderColor='var(--border)'">
+<button onclick="generateCert()" style="margin-top:16px;padding:14px 40px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-green));color:var(--bg);font-family:'Sora';font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px rgba(0,240,255,.3);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">🎓 Generate Certificate</button>
+</div>
+</div>`);
+
+} // end buildPages
+
+// ===== RENDER =====
+function render(){
+  buildPages();
+  const book=document.getElementById('book');
+  book.innerHTML='';
+  P.forEach((html,i)=>{
+    const d=document.createElement('div');
+    d.className='page'+(i===0?' active':'');
+    d.id='p'+i;
+    d.innerHTML='<div class="page-inner">'+html+'</div>';
+    book.appendChild(d);
+  });
+  document.getElementById('tot').textContent=P.length;
+  buildTOC();
+  updateNav();
+}
+
+// ===== NAV =====
+function goTo(n){
+  if(n<0||n>=P.length)return;
+  const old=document.getElementById('p'+cp);
+  const nw=document.getElementById('p'+n);
+  if(old){old.classList.remove('active');old.classList.add('exit');setTimeout(()=>old.classList.remove('exit'),500);}
+  cp=n;
+  nw.classList.add('active');
+  nw.scrollTop=0;
+  updateNav();
+}
+function next(){goTo(cp+1);}
+function prev(){goTo(cp-1);}
+function updateNav(){
+  document.getElementById('prevBtn').disabled=cp===0;
+  document.getElementById('nextBtn').disabled=cp===P.length-1;
+  document.getElementById('cur').textContent=cp+1;
+  document.getElementById('progress').style.width=((cp+1)/P.length*100)+'%';
+}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')next();else if(e.key==='ArrowLeft')prev();});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+document.addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50){d<0?next():prev();}},{passive:true});
+
+// ===== QUIZ =====
+function quiz(id,opt,correct){
+  if(answered.has(id))return;
+  const el=document.querySelectorAll('#q'+id+' .quiz-opt')[opt];
+  const fb=document.getElementById('qf'+id);
+  if(correct){
+    answered.add(id);
+    el.classList.add('correct');
+    fb.style.background='rgba(0,255,136,.08)';fb.style.border='1px solid rgba(0,255,136,.2)';fb.style.color='var(--neon-green)';
+    fb.classList.add('show');
+    addXP(15);
+    document.querySelectorAll('#q'+id+' .quiz-opt').forEach(o=>o.style.pointerEvents='none');
+    particles(el);
+  } else {
+    el.classList.add('wrong');
+    fb.style.background='rgba(255,59,59,.08)';fb.style.border='1px solid rgba(255,59,59,.2)';fb.style.color='var(--neon-red)';
+    fb.textContent='❌ Not quite. Try again!';fb.classList.add('show');
+    setTimeout(()=>{el.classList.remove('wrong');fb.classList.remove('show');},1200);
+  }
+}
+
+// ===== TAP GAME =====
+function tap(el,safe){
+  if(el.classList.contains('tapped-safe')||el.classList.contains('tapped-danger'))return;
+  if(safe){el.classList.add('tapped-safe');addXP(5);particles(el);}
+  else{el.classList.add('tapped-danger');}
+}
+
+// ===== XP =====
+function addXP(n){
+  xp+=n;document.getElementById('xp').textContent=xp;
+  const pill=document.querySelector('.score-pill');pill.style.animation='popIn .3s ease';
+  setTimeout(()=>pill.style.animation='',300);
+  if(xp>=50&&!badges.has('50')){badges.add('50');showBadge('⚡','First 50 XP!','You\'re learning fast!');}
+  if(xp>=150&&!badges.has('150')){badges.add('150');showBadge('🔥','150 XP!','CyberShield Apprentice!');}
+  if(xp>=300&&!badges.has('300')){badges.add('300');showBadge('🛡️','300 XP!','CyberShield Guardian!');}
+}
+function particles(el){
+  const r=el.getBoundingClientRect();
+  for(let i=0;i<5;i++){
+    const p=document.createElement('div');p.className='particle';p.textContent='⚡';
+    p.style.left=(r.left+r.width/2+Math.random()*40-20)+'px';
+    p.style.top=(r.top+Math.random()*20)+'px';
+    document.body.appendChild(p);setTimeout(()=>p.remove(),800);
+  }
+}
+
+// ===== BADGE =====
+function showBadge(i,t,d){
+  document.getElementById('bIcon').textContent=i;
+  document.getElementById('bTitle').textContent=t;
+  document.getElementById('bDesc').textContent=d;
+  document.getElementById('badgeOv').classList.add('show');
+}
+function closeBadge(){document.getElementById('badgeOv').classList.remove('show');}
+
+// ===== TOC =====
+const TOC=[
+{s:'INTRODUCTION',items:[{p:0,i:'🛡️',n:'Cover'},{p:1,i:'🌐',n:'Welcome'},{p:2,i:'⚠️',n:'Why This Matters'},{p:3,i:'📋',n:'What You\'ll Learn'},{p:4,i:'📌',n:'Ground Rules'}]},
+{s:'CH 1: GROOMING & PREDATORS',items:[{p:5,i:'🎭',n:'Chapter Start'},{p:6,i:'📖',n:'The Grooming Playbook'},{p:7,i:'📊',n:'6 Stages of Grooming'},{p:8,i:'🚩',n:'Red Flags'},{p:9,i:'💬',n:'Discord & Gaming'},{p:10,i:'🕸️',n:'Recruitment Groups'},{p:11,i:'🛡️',n:'Defense Protocol'},{p:12,i:'🧪',n:'Quiz: Grooming'},{p:13,i:'🧪',n:'Quiz: Spot the Predator'},{p:14,i:'📞',n:'Reporting Resources'}]},
+{s:'CH 2: SEXTING & EXPLOITATION',items:[{p:15,i:'📕',n:'Chapter Start'},{p:16,i:'📱',n:'Sexting: Brutal Truth'},{p:17,i:'🔗',n:'Sextortion'},{p:18,i:'⚖️',n:'Consequences'},{p:19,i:'🆘',n:'If Images Leak'},{p:20,i:'🛡️',n:'Removal Resources'},{p:21,i:'✅',n:'How To Stay Safe'},{p:22,i:'🧪',n:'Quiz: Sexting'},{p:23,i:'🧪',n:'Quiz: Sextortion'}]},
+{s:'CH 3: CYBERBULLYING & REAL CASES',items:[{p:24,i:'💔',n:'Chapter Start'},{p:25,i:'📖',n:'What is Cyberbullying'},{p:26,i:'🕊️',n:'Amanda Todd'},{p:27,i:'🕊️',n:'Megan Meier'},{p:28,i:'🕊️',n:'Ryan Halligan'},{p:29,i:'🕊️',n:'Rehtaeh Parsons'},{p:30,i:'🕊️',n:'Tyler Clementi'},{p:31,i:'🕊️',n:'Jessica Logan'},{p:32,i:'🕊️',n:'Dolly Everett'},{p:33,i:'🕊️',n:'Hana Kimura'},{p:34,i:'🕊️',n:'Daniel Perry'},{p:35,i:'🕊️',n:'Brandy Vela'},{p:36,i:'💡',n:'Lessons Learned'},{p:37,i:'📋',n:'How To Report'},{p:38,i:'🧪',n:'Quiz'}]},
+{s:'CH 4: DEEP & DARK WEB',items:[{p:39,i:'🕳️',n:'Chapter Start'},{p:40,i:'🌐',n:'Layers of Internet'},{p:41,i:'⚠️',n:'Dangers'},{p:42,i:'💳',n:'Your Data'},{p:43,i:'🛡️',n:'Stay Away'},{p:44,i:'🧪',n:'Quiz'}]},
+{s:'CH 5: SOCIAL MEDIA',items:[{p:45,i:'📱',n:'Chapter Start'},{p:46,i:'🎵',n:'TikTok'},{p:47,i:'📸',n:'Instagram'},{p:48,i:'👻',n:'Snapchat'},{p:49,i:'▶️',n:'YouTube'},{p:50,i:'💬',n:'Discord'},{p:51,i:'𝕏',n:'X/Twitter'},{p:52,i:'📱',n:'Kwai & Others'},{p:53,i:'🔴',n:'Livestreaming'},{p:54,i:'💬',n:'Chat Rooms'},{p:55,i:'🧪',n:'Quiz'}]},
+{s:'CH 6: SOCIAL ENGINEERING',items:[{p:56,i:'🧠',n:'Chapter Start'},{p:57,i:'📖',n:'Hacking Your Mind'},{p:58,i:'🎭',n:'Common Tactics'},{p:59,i:'🎯',n:'Targeting Teens'},{p:60,i:'🎣',n:'Phishing Deep Dive'},{p:61,i:'🧪',n:'Quiz: Engineering'},{p:62,i:'🧪',n:'Quiz: Spot the Scam'}]},
+{s:'CH 7: TROLLS & HATERS',items:[{p:63,i:'🧌',n:'Chapter Start'},{p:64,i:'📖',n:'Types of Toxicity'},{p:65,i:'💪',n:'The Power Move'},{p:66,i:'🧘',n:'Mental Armor'},{p:67,i:'🧪',n:'Quiz'},{p:68,i:'🎮',n:'Tap Game'}]},
+{s:'CH 8: MENTAL HEALTH',items:[{p:69,i:'🧠',n:'Chapter Start'},{p:70,i:'📱',n:'Social Media & Brain'},{p:71,i:'📊',n:'Comparison Trap'},{p:72,i:'💔',n:'Depression'},{p:73,i:'😰',n:'Anxiety'},{p:74,i:'💪',n:'Self-Esteem'},{p:75,i:'🔌',n:'Digital Detox'},{p:76,i:'📞',n:'Resources'},{p:77,i:'🧪',n:'Quiz'}]},
+{s:'CH 9: DEVICE SECURITY',items:[{p:78,i:'📱',n:'Chapter Start'},{p:79,i:'🔒',n:'Phone Security'},{p:80,i:'🦠',n:'Malware Types'},{p:81,i:'🔍',n:'Detection'},{p:82,i:'⬇️',n:'Safe Downloads'},{p:83,i:'🔗',n:'Link Safety'},{p:84,i:'🔐',n:'Passwords'},{p:85,i:'📡',n:'WiFi Safety'},{p:86,i:'🌐',n:'Safe Browsing'},{p:87,i:'🧪',n:'Quiz: Passwords'},{p:88,i:'🧪',n:'Quiz: Malware'}]},
+{s:'CH 10: DIGITAL FOOTPRINT',items:[{p:89,i:'👣',n:'Chapter Start'},{p:90,i:'📖',n:'Permanent Record'},{p:91,i:'🤔',n:'THINK Test'},{p:92,i:'🚫',n:'What Not to Post'},{p:93,i:'📸',n:'Oversharing Dangers'},{p:94,i:'🧪',n:'Quiz'}]},
+{s:'CH 11: ANONYMITY & CONSEQUENCES',items:[{p:95,i:'🎭',n:'Chapter Start'},{p:96,i:'🔍',n:'The Myth'},{p:97,i:'⚖️',n:'Consequences'},{p:98,i:'🧠',n:'10-Second Rule'}]},
+{s:'CH 12: LAWS & PROTECTION',items:[{p:99,i:'⚖️',n:'Chapter Start'},{p:100,i:'🌍',n:'Global Laws'},{p:101,i:'🌍',n:'More Laws'},{p:102,i:'🛡️',n:'Your Rights'}]},
+{s:'CH 13: FILMS & SERIES',items:[{p:103,i:'🎬',n:'Chapter Start'},{p:104,i:'🎬',n:'Films & Docs'},{p:105,i:'📺',n:'Series & More'}]},
+{s:'CH 14: DIGITAL CITIZENSHIP',items:[{p:106,i:'🌟',n:'Chapter Start'},{p:107,i:'💪',n:'Your Power'},{p:108,i:'🤝',n:'Be an Upstander'},{p:109,i:'🧪',n:'Quiz'},{p:110,i:'🎮',n:'Tap Game'}]},
+{s:'CONCLUSION',items:[{p:111,i:'📋',n:'Complete Checklist'},{p:112,i:'🆘',n:'Emergency Resources'},{p:113,i:'🧪',n:'Final Quiz'},{p:114,i:'🛡️',n:'CyberShield Pledge'},{p:115,i:'🦸',n:'Congratulations!'},{p:116,i:'🎓',n:'Certificate'}]}
+];
+
+function buildTOC(){
+  const body=document.getElementById('tocBody');
+  body.innerHTML=TOC.map(s=>{
+    return `<div class="toc-section">${s.s}</div>`+s.items.map(it=>`<div class="toc-item" onclick="goTo(${it.p});toggleTOC()"><span class="ti-icon">${it.i}</span>${it.n}<span class="ti-page">${it.p+1}</span></div>`).join('');
+  }).join('');
+}
+function toggleTOC(){document.getElementById('tocModal').classList.toggle('show');}
+
+// ===== INIT =====
+// CERTIFICATE
+function generateCert(){
+  const name=document.getElementById('certName').value.trim();
+  if(!name){document.getElementById('certName').style.borderColor='var(--neon-red)';return;}
+  const date=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('certPersonName').textContent=name;
+  document.getElementById('certDate').textContent=date;
+  document.getElementById('certOverlay').classList.add('show');
+}
+function printCert(){
+  const cert=document.getElementById('certPrintArea');
+  const w=window.open('','','width=1000,height=700');
+  w.document.write('<!DOCTYPE html><html><head><title>CyberShield Certificate</title><link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;font-family:Sora,sans-serif;}@media print{body{background:white;}.no-print{display:none!important;}}</style></head><body>');
+  w.document.write(cert.outerHTML);
+  w.document.write('<div class="no-print" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);"><button onclick="window.print()" style="padding:12px 36px;border:none;border-radius:10px;background:#00b4d8;color:white;font-family:Sora;font-size:16px;font-weight:700;cursor:pointer;">🖨️ Print / Save PDF</button></div></body></html>');
+  w.document.close();
+}
+function closeCert(){document.getElementById('certOverlay').classList.remove('show');}
+
+render();
+</script>
+</body>
+</html>
