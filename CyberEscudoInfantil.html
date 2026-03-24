@@ -2,7 +2,12 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>CyberEscudo Aventuras — Segurança Online para Crianças 🇧🇷</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -12,18 +17,19 @@
   --green:#6BCB77;--blue:#4D96FF;--pink:#FF85A1;--orange:#FF9F43;
   --dark:#2D3436;--light:#FFF9F0;
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Quicksand',sans-serif;background:#0a1628;overflow:hidden;height:100vh;width:100vw;display:flex;align-items:center;justify-content:center;user-select:none;}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;height:100%;height:-webkit-fill-available;}
+body{font-family:'Quicksand','Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#0a1628;overflow:hidden;height:100vh;height:100dvh;width:100vw;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;}
 h1,h2,h3,.title-text{font-family:'Baloo 2',cursive;}
 
-.book-container{width:100vw;height:100vh;position:relative;overflow:hidden;}
-.page{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 30px;opacity:0;pointer-events:none;transition:opacity .6s ease,transform .6s ease;transform:scale(.95);overflow-y:auto;}
-.page.active{opacity:1;pointer-events:auto;transform:scale(1);}
-.page.exit-left{opacity:0;transform:translateX(-100%) scale(.9);}
-.page.exit-right{opacity:0;transform:translateX(100%) scale(.9);}
+.book-container{width:100vw;height:100vh;height:100dvh;position:relative;overflow:hidden;}
+.page{position:absolute;top:0;left:0;width:100%;height:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;padding:40px 30px;padding-bottom:max(90px,calc(90px + env(safe-area-inset-bottom,0px)));opacity:0;pointer-events:none;-webkit-transition:opacity .6s ease,-webkit-transform .6s ease;transition:opacity .6s ease,transform .6s ease;-webkit-transform:scale(.95);transform:scale(.95);overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
+.page.active{opacity:1;pointer-events:auto;-webkit-transform:scale(1);transform:scale(1);}
+.page.exit-left{opacity:0;-webkit-transform:translateX(-100%) scale(.9);transform:translateX(-100%) scale(.9);}
+.page.exit-right{opacity:0;-webkit-transform:translateX(100%) scale(.9);transform:translateX(100%) scale(.9);}
 
-.nav-bar{position:fixed;bottom:0;left:0;right:0;height:70px;background:rgba(0,20,50,.6);backdrop-filter:blur(15px);display:flex;align-items:center;justify-content:space-between;padding:0 20px;z-index:1000;border-top:2px solid rgba(0,151,57,.3);}
-.nav-btn{background:none;border:none;cursor:pointer;font-size:40px;color:white;transition:all .3s;padding:8px 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;height:70px;padding-bottom:env(safe-area-inset-bottom,0px);background:rgba(0,20,50,.6);-webkit-backdrop-filter:blur(15px);backdrop-filter:blur(15px);display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;align-items:center;-webkit-box-pack:justify;justify-content:space-between;padding-left:max(20px,env(safe-area-inset-left,20px));padding-right:max(20px,env(safe-area-inset-right,20px));z-index:1000;border-top:2px solid rgba(0,151,57,.3);}
+.nav-btn{background:none;border:none;cursor:pointer;font-size:40px;color:white;-webkit-transition:all .3s;transition:all .3s;padding:8px 16px;border-radius:50%;display:-webkit-box;display:flex;-webkit-box-align:center;align-items:center;-webkit-box-pack:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
 .nav-btn:hover{background:rgba(255,255,255,.15);transform:scale(1.15);}
 .nav-btn:active{transform:scale(.95);}
 .nav-btn:disabled{opacity:.3;cursor:not-allowed;transform:none;}
@@ -120,15 +126,40 @@ h1,h2,h3,.title-text{font-family:'Baloo 2',cursive;}
 
 .deco{position:absolute;pointer-events:none;opacity:.12;font-size:36px;}
 
+@media(max-width:360px){
+  .page{padding:50px 12px 95px;}
+  .illust{width:110px;height:110px;}
+  .page-title{font-size:22px;}
+  .page-text{font-size:13px;}
+  .page-tip{padding:12px 14px;font-size:12px;}
+  .tap-grid{grid-template-columns:repeat(2,1fr);gap:8px;max-width:230px;}
+  .quiz-option{padding:10px 14px;font-size:13px;}
+}
 @media(max-width:600px){
   .page{padding:55px 18px 90px;}
   .illust{width:140px;height:140px;}
   .nav-bar{height:60px;}
   .tap-grid{grid-template-columns:repeat(2,1fr);max-width:280px;}
+  .score-display{font-size:15px;padding:6px 14px;}
+  .toc-btn{font-size:14px;padding:6px 14px;}
+}
+@media(min-width:601px) and (max-width:900px){
+  .page{padding:45px 24px 85px;}
+  .illust{width:160px;height:160px;}
+  .page-content{max-width:600px;}
 }
 @media(min-width:1200px){
   .page-content{max-width:800px;}
   .illust{width:220px;height:220px;}
+}
+@media(hover:none) and (pointer:coarse){
+  .nav-btn:hover{background:transparent;-webkit-transform:none;transform:none;}
+  .quiz-option:hover{-webkit-transform:none;transform:none;}
+  .tap-card:hover{-webkit-transform:none;transform:none;}
+  .toc-chapter:hover{-webkit-transform:none;transform:none;}
+}
+@supports(padding:max(0px)){
+  .nav-bar{padding-bottom:max(0px,env(safe-area-inset-bottom));}
 }
 </style>
 </head>
