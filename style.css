@@ -1538,6 +1538,23 @@ img {
     max-width: 600px;
 }
 
+.pub-meta {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.72rem;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--primary);
+    opacity: 0.75;
+    letter-spacing: 0.03em;
+}
+
+.pub-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
 /* ============================================
    PROJECTS SECTION
    ============================================ */
