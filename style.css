@@ -1458,6 +1458,14 @@ img {
     line-height: 1.4;
 }
 
+.book-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 0.6rem;
+}
+
 .book-tag {
     font-family: var(--font-mono);
     font-size: 0.65rem;
