@@ -1508,8 +1508,6 @@ img {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    max-height: 280px;
-    overflow-y: auto;
     padding-right: 0.5rem;
 }
 
